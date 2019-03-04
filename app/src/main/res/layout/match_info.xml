@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/relativeLayoutMatchInfo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center">
+
+    <TextView
+            android:id="@+id/tv_match_info_title"
+            android:text="@string/default_match_info_competition_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"/>
+
+    <TextView
+            android:id="@+id/tv_match_info_name"
+            android:text="@string/default_match_info_competition_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tv_match_info_title"
+            android:layout_centerHorizontal="true"/>
+
+</RelativeLayout>

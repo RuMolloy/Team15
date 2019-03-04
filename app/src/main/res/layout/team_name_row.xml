@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                android:orientation="vertical"
+                android:padding="@dimen/fab_margin">
+
+    <TextView
+            android:id="@+id/tv_team_name"
+            android:text="@string/default_team_name"
+            android:textSize="@dimen/font_size_medium"
+            android:gravity="start"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+</RelativeLayout>

@@ -1,0 +1,31 @@
+<resources>
+    <string name="app_name">First15</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_select_team_name">Select Team</string>
+    <string name="default_team_name">Team</string>
+    <string name="default_team_name_a">Select Team A</string>
+    <string name="default_team_name_b">Select Team B</string>
+    <string name="default_match_info_competition_title">Competition</string>
+    <string name="default_match_info_competition_name">Enter Competition</string>
+    <string name="default_match_info_venue_title">Venue</string>
+    <string name="default_match_info_venue_name">Enter Venue</string>
+    <string name="default_match_info_time_title">Time</string>
+    <string name="default_match_info_time_name">Enter Time</string>
+    <string name="default_player_name">Select Player</string>
+
+    <string-array name="team_names">
+        <item>Boyle</item>
+        <item>Clan na Gael</item>
+        <item>Elphin</item>
+        <item>Fuerty</item>
+        <item>Michael Glaveys</item>
+        <item>Padraig Pearses</item>
+        <item>Roscommon Gaels</item>
+        <item>Strokestown</item>
+        <item>St.Brigids</item>
+        <item>St.Croans</item>
+        <item>St. Faithleachs</item>
+        <item>Western Gaels</item>
+    </string-array>
+
+</resources>
