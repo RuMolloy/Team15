@@ -7,7 +7,10 @@ import android.support.v4.content.ContextCompat
 import android.support.v7.app.AlertDialog
 import android.util.AttributeSet
 import android.view.View
+import java.util.*
 import android.view.MotionEvent
+import android.widget.Toast
+
 
 class PitchView : View  {
 
@@ -23,6 +26,7 @@ class PitchView : View  {
     private val borderY = 40
     private var paintPitchPerimeter: Paint = Paint()
     private var paintPitchText: Paint = Paint()
+    private var paintTranslucent: Paint = Paint()
 
     private var rectPitchPerimeter = Rect(
         borderX,
@@ -38,10 +42,13 @@ class PitchView : View  {
     private val screenResolutionHeightInPixels = this.resources.displayMetrics.heightPixels.toFloat()
     private val halfScreenResolutionWidthInPixels = screenResolutionWidthInPixels / 2
     private val halfScreenResolutionHeightInPixels = screenResolutionHeightInPixels / 2
+    private val textOffsetY = 150
 
     private var bitmapJersey: Bitmap? = null
 
     private lateinit var dialogSelectPlayer: AlertDialog
+
+    private lateinit var mapOfPlayers: TreeMap<Int, Player>
 
     constructor(context: Context) : super(context) {
         init()
@@ -71,8 +78,23 @@ class PitchView : View  {
         paintPitchText.color = ContextCompat.getColor(context, R.color.colorPitchLinesAndText)
         paintPitchText.strokeWidth = 3f
         paintPitchText.textSize = 30f
+        paintPitchText.textAlign = Paint.Align.CENTER
+
+        paintTranslucent = Paint()
+        paintTranslucent.color = Color.TRANSPARENT
+        paintTranslucent.style = Paint.Style.STROKE
+        paintTranslucent.isAntiAlias = true
 
         bitmapJersey = BitmapFactory.decodeResource(this.resources, R.drawable.jersey_default)
+
+        mapOfPlayers = TreeMap()
+
+        for(item in resources.getStringArray(R.array.team_positions).indices){
+            val playerPosition = resources.getStringArray(R.array.team_positions)[item]
+            val player = Player(playerPosition, item+1)
+            setPlayerPositionParameters(player)
+            mapOfPlayers[item] = player
+        }
     }
 
     public override fun onDraw(canvas: Canvas) {
@@ -80,63 +102,124 @@ class PitchView : View  {
     }
 
     private fun drawJersey(canvas: Canvas){
-        val centerX = halfScreenResolutionWidthInPixels - bitmapJersey!!.width/2
-        val centerY = rectPitchPerimeter.bottom/2 - bitmapJersey!!.height/2
-        val p = Point(centerX.toInt(), centerY)
-
-        val left = (centerX - centerX/1.6).toFloat()
-        val right = (centerX + centerX/1.6).toFloat()
-
-        paintPitchText.textAlign = Paint.Align.CENTER
-
-        canvas.drawBitmap(bitmapJersey, p.x.toFloat(), getXmLine(0.0) - bitmapJersey!!.height/4, Paint())
-        canvas.drawText("1. Goalkeeper", p.x.toFloat()+bitmapJersey!!.width/2, ((getXmLine(0.0) - bitmapJersey!!.height/4) + 150), paintPitchText)
-
-        canvas.drawBitmap(bitmapJersey, left, getXmLine(line13m), Paint())
-        canvas.drawText("2. Left corner back", left+bitmapJersey!!.width/2, getXmLine(line13m)+150, paintPitchText)
-
-        canvas.drawBitmap(bitmapJersey, p.x.toFloat(), getXmLine(line13m), Paint())
-        canvas.drawText("3. Full back", p.x.toFloat()+bitmapJersey!!.width/2, getXmLine(line13m)+150, paintPitchText)
-
-        canvas.drawBitmap(bitmapJersey, right, getXmLine(line13m), Paint())
-        canvas.drawText("4. Right corner back", right+bitmapJersey!!.width/2, getXmLine(line13m)+150, paintPitchText)
-
-        canvas.drawBitmap(bitmapJersey, left, getXmLine(line30m), Paint())
-        canvas.drawText("5. Left half back", left+bitmapJersey!!.width/2, getXmLine(line30m)+150, paintPitchText)
-
-        canvas.drawBitmap(bitmapJersey, p.x.toFloat(), getXmLine(line30m), Paint())
-        canvas.drawText("6. Center back", p.x.toFloat()+bitmapJersey!!.width/2, getXmLine(line30m)+150, paintPitchText)
-
-        canvas.drawBitmap(bitmapJersey, right, getXmLine(line30m), Paint())
-        canvas.drawText("7. Right half back", right+bitmapJersey!!.width/2, getXmLine(line30m)+150, paintPitchText)
-
-        canvas.drawBitmap(bitmapJersey, p.x.toFloat()-100, getXmLine(line50m), Paint())
-        canvas.drawText("8. Midfield A", p.x.toFloat()-100+bitmapJersey!!.width/2, getXmLine(line50m)+150, paintPitchText)
-
-        canvas.drawBitmap(bitmapJersey, p.x.toFloat()+100, getXmLine(line50m), Paint())
-        canvas.drawText("9. Midfield B", p.x.toFloat()+100+bitmapJersey!!.width/2, getXmLine(line50m)+150, paintPitchText)
-
-        canvas.drawBitmap(bitmapJersey, left, getXmLine(line70m), Paint())
-        canvas.drawText("10. Left half forward", left+bitmapJersey!!.width/2, getXmLine(line70m)+150, paintPitchText)
-
-        canvas.drawBitmap(bitmapJersey, p.x.toFloat(), getXmLine(line70m), Paint())
-        canvas.drawText("11. Center forward", p.x.toFloat()+bitmapJersey!!.width/2, getXmLine(line70m)+150, paintPitchText)
-
-        canvas.drawBitmap(bitmapJersey, right, getXmLine(line70m), Paint())
-        canvas.drawText("12. Right half forward", right+bitmapJersey!!.width/2, getXmLine(line70m)+150, paintPitchText)
-
-        canvas.drawBitmap(bitmapJersey, left, getXmLine(line87m), Paint())
-        canvas.drawText("13. Left corner forward", left+bitmapJersey!!.width/2, getXmLine(line87m)+150, paintPitchText)
-
-        canvas.drawBitmap(bitmapJersey, p.x.toFloat(), getXmLine(line87m), Paint())
-        canvas.drawText("14. Full forward", p.x.toFloat()+bitmapJersey!!.width/2, getXmLine(line87m)+150, paintPitchText)
-
-        canvas.drawBitmap(bitmapJersey, right, getXmLine(line87m), Paint())
-        canvas.drawText("15. Right corner forward", right+bitmapJersey!!.width/2, getXmLine(line87m)+150, paintPitchText)
-
+        for(Item in mapOfPlayers) {
+            val player = Item.value
+            canvas.drawBitmap(bitmapJersey, player.getBitmapPoint()!!.x.toFloat(), player.getBitmapPoint()!!.y.toFloat(), Paint())
+            canvas.drawText(player.getNumberAndPosition(), player.getTextPoint()!!.x.toFloat(), player.getTextPoint()!!.y.toFloat(), paintPitchText)
+            canvas.drawRect(player.getRect(), paintTranslucent)
+        }
     }
 
-    private fun getXmLine(xLineInMetres: Double): Float {
-        return (rectPitchPerimeter.top + xLineInMetres * pixelsPerMetre).toFloat()
+    private fun setPlayerPositionParameters(player: Player){
+        val centreX = halfScreenResolutionWidthInPixels - bitmapJersey!!.width/2
+        val centreY = rectPitchPerimeter.bottom/2 - bitmapJersey!!.height/2
+        val pitchCentre = Point(centreX.toInt(), centreY)
+        val pitchLeft = (centreX - centreX/1.6).toInt()
+        val pitchRight = (centreX + centreX/1.6).toInt()
+        val offset = bitmapJersey!!.width/2
+
+        var p = Point(pitchLeft, getXmLine(line13m))
+        var r = Point(p.x+offset, getYmLine(line13m))
+        val position: String = player.getPosition()
+
+        if(position == resources.getStringArray(R.array.team_positions)[0]){
+            p = Point(pitchCentre.x, (getXmLine(0.0) - bitmapJersey!!.height/4))
+            r = Point(p.x+offset, (getYmLine(0.0) - bitmapJersey!!.height/4))
+        }
+        else if(position == resources.getStringArray(R.array.team_positions)[1]){
+            p = Point(pitchLeft, getXmLine(line13m))
+            r = Point(p.x+offset, getYmLine(line13m))
+        }
+        else if(position == resources.getStringArray(R.array.team_positions)[2]){
+            p = Point(pitchCentre.x, getXmLine(line13m))
+            r = Point(p.x+offset, getYmLine(line13m))
+        }
+        else if(position == resources.getStringArray(R.array.team_positions)[3]){
+            p = Point(pitchRight, getXmLine(line13m))
+            r = Point(p.x+offset, getYmLine(line13m))
+        }
+        else if(position == resources.getStringArray(R.array.team_positions)[4]){
+            p = Point(pitchLeft, getXmLine(line30m))
+            r = Point(p.x+offset, getYmLine(line30m))
+        }
+        else if(position == resources.getStringArray(R.array.team_positions)[5]){
+            p = Point(pitchCentre.x, getXmLine(line30m))
+            r = Point(p.x+offset, getYmLine(line30m))
+        }
+        else if(position == resources.getStringArray(R.array.team_positions)[6]){
+            p = Point(pitchRight, getXmLine(line30m))
+            r = Point(p.x+offset, getYmLine(line30m))
+        }
+        else if(position == resources.getStringArray(R.array.team_positions)[7]){
+            p = Point(pitchCentre.x-100, getXmLine(line50m))
+            r = Point(p.x+offset, getYmLine(line50m))
+        }
+        else if(position == resources.getStringArray(R.array.team_positions)[8]){
+            p = Point(pitchCentre.x+100, getXmLine(line50m))
+            r = Point(p.x+offset, getYmLine(line50m))
+        }
+        else if(position == resources.getStringArray(R.array.team_positions)[9]){
+            p = Point(pitchLeft, getXmLine(line70m))
+            r = Point(p.x+offset, getYmLine(line70m))
+        }
+        else if(position == resources.getStringArray(R.array.team_positions)[10]){
+            p = Point(pitchCentre.x, getXmLine(line70m))
+            r = Point(p.x+offset, getYmLine(line70m))
+        }
+        else if(position == resources.getStringArray(R.array.team_positions)[11]){
+            p = Point(pitchRight, getXmLine(line70m))
+            r = Point(p.x+offset, getYmLine(line70m))
+        }
+        else if(position == resources.getStringArray(R.array.team_positions)[12]){
+            p = Point(pitchLeft, getXmLine(line87m))
+            r = Point(p.x+offset, getYmLine(line87m))
+        }
+        else if(position == resources.getStringArray(R.array.team_positions)[13]){
+            p = Point(pitchCentre.x, getXmLine(line87m))
+            r = Point(p.x+offset, getYmLine(line87m))
+        }
+        else if(position == resources.getStringArray(R.array.team_positions)[14]){
+            p = Point(pitchRight, getXmLine(line87m))
+            r = Point(p.x+offset, getYmLine(line87m))
+        }
+
+        player.setBitmapPoint(p)
+        player.setTextPoint(r)
+
+        val rect = Rect(player.getBitmapPoint()!!.x, player.getBitmapPoint()!!.y, player.getBitmapPoint()!!.x + bitmapJersey!!.width, player.getBitmapPoint()!!.y + bitmapJersey!!.height)
+        player.setRect(rect)
+    }
+
+    private fun getXmLine(xLineInMetres: Double): Int {
+        return (rectPitchPerimeter.top + xLineInMetres * pixelsPerMetre).toInt()
+    }
+
+    private fun getYmLine(xLineInMetres :Double): Int{
+        return getXmLine(xLineInMetres) + textOffsetY
+    }
+
+    override fun onTouchEvent(event: MotionEvent): Boolean {
+        val eventX = event.x.toInt()
+        val eventY = event.y.toInt()
+
+        when (event.action) {
+            MotionEvent.ACTION_DOWN -> {
+                val player = isMouseEventOnThePlayer(eventX, eventY)
+                if(player != null){
+                    Toast.makeText(this.context, player.getNumberAndPosition(), Toast.LENGTH_LONG).show()
+                }
+            }
+        }
+        return true
+    }
+
+    private fun isMouseEventOnThePlayer(eventX: Int, eventY: Int): Player? {
+        for(Item in mapOfPlayers) {
+            val player = Item.value
+            if(player.getRect()!!.contains(eventX, eventY)){
+                return player
+            }
+        }
+        return null
     }
 }

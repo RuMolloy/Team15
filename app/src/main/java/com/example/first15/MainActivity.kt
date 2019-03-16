@@ -6,11 +6,13 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.*
 import kotlinx.android.synthetic.main.activity_main.*
 import android.widget.TextView
+import java.util.*
 
 class MainActivity : OnTeamClickListener, AppCompatActivity(){
 

@@ -13,6 +13,40 @@
     <string name="default_match_info_time_name">Enter Time</string>
     <string name="default_player_name">Select Player</string>
 
+    <string-array name="team_positions">
+        <item>Goalkeeper</item>
+        <item>Left corner back</item>
+        <item>Full back</item>
+        <item>Right corner back</item>
+        <item>Left half back</item>
+        <item>Center back</item>
+        <item>Right half back</item>
+        <item>Midfield A</item>
+        <item>Midfield B</item>
+        <item>Left half forward</item>
+        <item>Center forward</item>
+        <item>Right half forward</item>
+        <item>Left corner forward</item>
+        <item>Full forward</item>
+        <item>Right corner forward</item>
+    </string-array>
+
+    <!--<string name="default_goalkeeper_name">Goalkeeper</string>-->
+    <!--<string name="default_left_corner_back_name">Left corner back</string>-->
+    <!--<string name="default_full_back_name">Full back</string>-->
+    <!--<string name="default_right_corner_back_name">Right corner back</string>-->
+    <!--<string name="default_left_half_back_name">Left half back</string>-->
+    <!--<string name="default_center_back_name">Center back</string>-->
+    <!--<string name="default_right_half_back_name">Right half back</string>-->
+    <!--<string name="default_midfielder_a_name">Midfield A</string>-->
+    <!--<string name="default_midfielder_b_name">Midfield B</string>-->
+    <!--<string name="default_left_half_forward_name">Left half forward</string>-->
+    <!--<string name="default_centre_forward_name">Center forward</string>-->
+    <!--<string name="default_right_half_forward_name">Right half forward</string>-->
+    <!--<string name="default_left_corner_forward_name">Left corner forward</string>-->
+    <!--<string name="default_full_forward_name">Full forward</string>-->
+    <!--<string name="default_right_corner_forward_name">Right corner forward</string>-->
+
     <string-array name="team_names">
         <item>Boyle</item>
         <item>Clan na Gael</item>
