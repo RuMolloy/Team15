@@ -11,7 +11,9 @@
     <string name="default_match_info_venue_name">Enter Venue</string>
     <string name="default_match_info_time_title">Time</string>
     <string name="default_match_info_time_name">Enter Time</string>
-    <string name="default_player_name">Select Player</string>
+    <string name="default_edit_player_title">Edit Player</string>
+    <string name="ok">ok</string>
+    <string name="cancel">cancel</string>
 
     <string-array name="team_positions">
         <item>Goalkeeper</item>

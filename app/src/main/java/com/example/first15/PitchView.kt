@@ -9,6 +9,7 @@ import android.util.AttributeSet
 import android.view.View
 import java.util.*
 import android.view.MotionEvent
+import android.widget.EditText
 import android.widget.Toast
 
 
@@ -49,6 +50,9 @@ class PitchView : View  {
     private lateinit var dialogSelectPlayer: AlertDialog
 
     private lateinit var mapOfPlayers: TreeMap<Int, Player>
+
+    private lateinit var etPlayerNumber: EditText
+    private lateinit var etPlayerName: EditText
 
     constructor(context: Context) : super(context) {
         init()
@@ -91,7 +95,7 @@ class PitchView : View  {
 
         for(item in resources.getStringArray(R.array.team_positions).indices){
             val playerPosition = resources.getStringArray(R.array.team_positions)[item]
-            val player = Player(playerPosition, item+1)
+            val player = Player(playerPosition, (item+1).toString())
             setPlayerPositionParameters(player)
             mapOfPlayers[item] = player
         }
@@ -105,7 +109,7 @@ class PitchView : View  {
         for(Item in mapOfPlayers) {
             val player = Item.value
             canvas.drawBitmap(bitmapJersey, player.getBitmapPoint()!!.x.toFloat(), player.getBitmapPoint()!!.y.toFloat(), Paint())
-            canvas.drawText(player.getNumberAndPosition(), player.getTextPoint()!!.x.toFloat(), player.getTextPoint()!!.y.toFloat(), paintPitchText)
+            canvas.drawText(player.getNumberAndName(), player.getTextPoint()!!.x.toFloat(), player.getTextPoint()!!.y.toFloat(), paintPitchText)
             canvas.drawRect(player.getRect(), paintTranslucent)
         }
     }
@@ -120,67 +124,69 @@ class PitchView : View  {
 
         var p = Point(pitchLeft, getXmLine(line13m))
         var r = Point(p.x+offset, getYmLine(line13m))
-        val position: String = player.getPosition()
+        val nameDefault: String = player.getDefaultName()
 
-        if(position == resources.getStringArray(R.array.team_positions)[0]){
-            p = Point(pitchCentre.x, (getXmLine(0.0) - bitmapJersey!!.height/4))
-            r = Point(p.x+offset, (getYmLine(0.0) - bitmapJersey!!.height/4))
-        }
-        else if(position == resources.getStringArray(R.array.team_positions)[1]){
-            p = Point(pitchLeft, getXmLine(line13m))
-            r = Point(p.x+offset, getYmLine(line13m))
-        }
-        else if(position == resources.getStringArray(R.array.team_positions)[2]){
-            p = Point(pitchCentre.x, getXmLine(line13m))
-            r = Point(p.x+offset, getYmLine(line13m))
-        }
-        else if(position == resources.getStringArray(R.array.team_positions)[3]){
-            p = Point(pitchRight, getXmLine(line13m))
-            r = Point(p.x+offset, getYmLine(line13m))
-        }
-        else if(position == resources.getStringArray(R.array.team_positions)[4]){
-            p = Point(pitchLeft, getXmLine(line30m))
-            r = Point(p.x+offset, getYmLine(line30m))
-        }
-        else if(position == resources.getStringArray(R.array.team_positions)[5]){
-            p = Point(pitchCentre.x, getXmLine(line30m))
-            r = Point(p.x+offset, getYmLine(line30m))
-        }
-        else if(position == resources.getStringArray(R.array.team_positions)[6]){
-            p = Point(pitchRight, getXmLine(line30m))
-            r = Point(p.x+offset, getYmLine(line30m))
-        }
-        else if(position == resources.getStringArray(R.array.team_positions)[7]){
-            p = Point(pitchCentre.x-100, getXmLine(line50m))
-            r = Point(p.x+offset, getYmLine(line50m))
-        }
-        else if(position == resources.getStringArray(R.array.team_positions)[8]){
-            p = Point(pitchCentre.x+100, getXmLine(line50m))
-            r = Point(p.x+offset, getYmLine(line50m))
-        }
-        else if(position == resources.getStringArray(R.array.team_positions)[9]){
-            p = Point(pitchLeft, getXmLine(line70m))
-            r = Point(p.x+offset, getYmLine(line70m))
-        }
-        else if(position == resources.getStringArray(R.array.team_positions)[10]){
-            p = Point(pitchCentre.x, getXmLine(line70m))
-            r = Point(p.x+offset, getYmLine(line70m))
-        }
-        else if(position == resources.getStringArray(R.array.team_positions)[11]){
-            p = Point(pitchRight, getXmLine(line70m))
-            r = Point(p.x+offset, getYmLine(line70m))
-        }
-        else if(position == resources.getStringArray(R.array.team_positions)[12]){
-            p = Point(pitchLeft, getXmLine(line87m))
-            r = Point(p.x+offset, getYmLine(line87m))
-        }
-        else if(position == resources.getStringArray(R.array.team_positions)[13]){
-            p = Point(pitchCentre.x, getXmLine(line87m))
-            r = Point(p.x+offset, getYmLine(line87m))
-        }
-        else if(position == resources.getStringArray(R.array.team_positions)[14]){
-            p = Point(pitchRight, getXmLine(line87m))
-            r = Point(p.x+offset, getYmLine(line87m))
+        when (nameDefault) {
+            resources.getStringArray(R.array.team_positions)[0] -> {
+                p = Point(pitchCentre.x, (getXmLine(0.0) - bitmapJersey!!.height/4))
+                r = Point(p.x+offset, (getYmLine(0.0) - bitmapJersey!!.height/4))
+            }
+            resources.getStringArray(R.array.team_positions)[1] -> {
+                p = Point(pitchLeft, getXmLine(line13m))
+                r = Point(p.x+offset, getYmLine(line13m))
+            }
+            resources.getStringArray(R.array.team_positions)[2] -> {
+                p = Point(pitchCentre.x, getXmLine(line13m))
+                r = Point(p.x+offset, getYmLine(line13m))
+            }
+            resources.getStringArray(R.array.team_positions)[3] -> {
+                p = Point(pitchRight, getXmLine(line13m))
+                r = Point(p.x+offset, getYmLine(line13m))
+            }
+            resources.getStringArray(R.array.team_positions)[4] -> {
+                p = Point(pitchLeft, getXmLine(line30m))
+                r = Point(p.x+offset, getYmLine(line30m))
+            }
+            resources.getStringArray(R.array.team_positions)[5] -> {
+                p = Point(pitchCentre.x, getXmLine(line30m))
+                r = Point(p.x+offset, getYmLine(line30m))
+            }
+            resources.getStringArray(R.array.team_positions)[6] -> {
+                p = Point(pitchRight, getXmLine(line30m))
+                r = Point(p.x+offset, getYmLine(line30m))
+            }
+            resources.getStringArray(R.array.team_positions)[7] -> {
+                p = Point(pitchCentre.x-100, getXmLine(line50m))
+                r = Point(p.x+offset, getYmLine(line50m))
+            }
+            resources.getStringArray(R.array.team_positions)[8] -> {
+                p = Point(pitchCentre.x+100, getXmLine(line50m))
+                r = Point(p.x+offset, getYmLine(line50m))
+            }
+            resources.getStringArray(R.array.team_positions)[9] -> {
+                p = Point(pitchLeft, getXmLine(line70m))
+                r = Point(p.x+offset, getYmLine(line70m))
+            }
+            resources.getStringArray(R.array.team_positions)[10] -> {
+                p = Point(pitchCentre.x, getXmLine(line70m))
+                r = Point(p.x+offset, getYmLine(line70m))
+            }
+            resources.getStringArray(R.array.team_positions)[11] -> {
+                p = Point(pitchRight, getXmLine(line70m))
+                r = Point(p.x+offset, getYmLine(line70m))
+            }
+            resources.getStringArray(R.array.team_positions)[12] -> {
+                p = Point(pitchLeft, getXmLine(line87m))
+                r = Point(p.x+offset, getYmLine(line87m))
+            }
+            resources.getStringArray(R.array.team_positions)[13] -> {
+                p = Point(pitchCentre.x, getXmLine(line87m))
+                r = Point(p.x+offset, getYmLine(line87m))
+            }
+            resources.getStringArray(R.array.team_positions)[14] -> {
+                p = Point(pitchRight, getXmLine(line87m))
+                r = Point(p.x+offset, getYmLine(line87m))
+            }
         }
 
         player.setBitmapPoint(p)
@@ -206,7 +212,30 @@ class PitchView : View  {
             MotionEvent.ACTION_DOWN -> {
                 val player = isMouseEventOnThePlayer(eventX, eventY)
                 if(player != null){
-                    Toast.makeText(this.context, player.getNumberAndPosition(), Toast.LENGTH_LONG).show()
+                    val view = View.inflate(context, R.layout.dialog_edit_player, null)
+                    val builder = AlertDialog.Builder(context)
+                    builder.setTitle(R.string.default_edit_player_title)
+                    builder.setView(view)
+                    builder.apply {
+                        setPositiveButton(R.string.ok) { _, _ ->
+                            if(!etPlayerNumber.text.toString().isEmpty()) player.setNumber(etPlayerNumber.text.toString())
+                            player.setCustomName(etPlayerName.text.toString())
+
+                            invalidate() //this will call the onDraw() method so the player's name gets updated
+                        }
+                        setNegativeButton(R.string.cancel) { _, _ ->
+                            // User cancelled the dialog
+                        }
+                    }
+                    builder.show()
+
+                    etPlayerNumber = view.findViewById(R.id.et_edit_player_number)
+                    etPlayerNumber.setText(player.getNumber())
+
+                    etPlayerName = view.findViewById(R.id.et_edit_player_name)
+                    if(player.isDefaultName()) etPlayerName.hint = player.getName()
+                    else etPlayerName.setText(player.getName())
+                    etPlayerName.requestFocus()
                 }
             }
         }

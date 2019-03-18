@@ -3,55 +3,65 @@ package com.example.first15
 import android.graphics.Point
 import android.graphics.Rect
 
-class Player(position: String, number: Int){
+class Player(name: String, number: String){
 
-    private var pos: String = position
-    private var num: Int = number
+    private var nameDefault: String = name
+    private var nameCustom: String = name
+    private var number: String = number
     private var pointBitmap: Point? = null
     private var pointText: Point? = null
     private var rect: Rect? = null
 
-    private fun setPosition(position: String) {
-        pos = position
+    fun setCustomName(name: String) {
+        this.nameCustom = name
     }
 
-    public fun getPosition(): String{
-        return pos
+    fun getName(): String{
+        return if(nameCustom.isNullOrEmpty()) nameDefault
+        else nameCustom
     }
 
-    private fun setNumber(number: Int) {
-        num = number
+    fun getDefaultName(): String{
+        return nameDefault
     }
 
-    private fun getNumber(): Int{
-        return num
+    fun isDefaultName(): Boolean{
+        return (nameCustom == nameDefault) || nameCustom.isNullOrEmpty()
     }
 
-    public fun getNumberAndPosition(): String{
-        return "$num. $pos"
+    fun setNumber(number: String) {
+        this.number = number
     }
 
-    public fun setBitmapPoint(bitmapPoint: Point){
+    fun getNumber(): String{
+        return number
+    }
+
+    fun getNumberAndName(): String{
+        return number + ". " + getName()
+    }
+
+    fun setBitmapPoint(bitmapPoint: Point){
         pointBitmap = bitmapPoint
     }
 
-    public fun getBitmapPoint(): Point?{
+    fun getBitmapPoint(): Point?{
         return pointBitmap
     }
 
-    public fun setTextPoint(textPoint: Point){
+    fun setTextPoint(textPoint: Point){
         pointText = textPoint
     }
 
-    public fun getTextPoint(): Point?{
+    fun getTextPoint(): Point?{
         return pointText
     }
 
-    public fun setRect(rectangle: Rect){
+    fun setRect(rectangle: Rect){
         rect = rectangle
     }
 
-    public fun getRect(): Rect?{
+    fun getRect(): Rect?{
         return rect
     }
 }
