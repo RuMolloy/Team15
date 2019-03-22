@@ -10,7 +10,6 @@ import android.view.View
 import java.util.*
 import android.view.MotionEvent
 import android.widget.EditText
-import android.widget.Toast
 
 
 class PitchView : View  {
@@ -45,11 +44,12 @@ class PitchView : View  {
     private val halfScreenResolutionHeightInPixels = screenResolutionHeightInPixels / 2
     private val textOffsetY = 150
 
-    private var bitmapJersey: Bitmap? = null
+    private var bitmapJerseyGoalkeeper: Bitmap? = null
+    private var bitmapJerseyOutfield: Bitmap? = null
 
     private lateinit var dialogSelectPlayer: AlertDialog
 
-    private lateinit var mapOfPlayers: TreeMap<Int, Player>
+    public lateinit var mapOfPlayers: TreeMap<Int, Player>
 
     private lateinit var etPlayerNumber: EditText
     private lateinit var etPlayerName: EditText
@@ -89,7 +89,7 @@ class PitchView : View  {
         paintTranslucent.style = Paint.Style.STROKE
         paintTranslucent.isAntiAlias = true
 
-        bitmapJersey = BitmapFactory.decodeResource(this.resources, R.drawable.jersey_default)
+        bitmapJerseyOutfield = BitmapFactory.decodeResource(this.resources, R.drawable.jersey_default)
 
         mapOfPlayers = TreeMap()
 
@@ -105,22 +105,32 @@ class PitchView : View  {
         drawJersey(canvas)
     }
 
+    fun setJerseyBitmaps(jerseyGoalkeeper: Int, jerseyOutfield: Int){
+        bitmapJerseyGoalkeeper = BitmapFactory.decodeResource(context.resources, jerseyGoalkeeper)
+        bitmapJerseyOutfield = BitmapFactory.decodeResource(context.resources, jerseyOutfield)
+    }
+
     private fun drawJersey(canvas: Canvas){
         for(Item in mapOfPlayers) {
             val player = Item.value
-            canvas.drawBitmap(bitmapJersey, player.getBitmapPoint()!!.x.toFloat(), player.getBitmapPoint()!!.y.toFloat(), Paint())
+
+            canvas.drawBitmap(getJersey(player), player.getBitmapPoint()!!.x.toFloat(), player.getBitmapPoint()!!.y.toFloat(), Paint())
             canvas.drawText(player.getNumberAndName(), player.getTextPoint()!!.x.toFloat(), player.getTextPoint()!!.y.toFloat(), paintPitchText)
             canvas.drawRect(player.getRect(), paintTranslucent)
         }
     }
 
+    private fun getJersey(player: Player): Bitmap?{
+        return if(player.getDefaultName() == resources.getStringArray(R.array.team_positions)[0]) bitmapJerseyGoalkeeper else bitmapJerseyOutfield
+    }
+
     private fun setPlayerPositionParameters(player: Player){
-        val centreX = halfScreenResolutionWidthInPixels - bitmapJersey!!.width/2
-        val centreY = rectPitchPerimeter.bottom/2 - bitmapJersey!!.height/2
+        val centreX = halfScreenResolutionWidthInPixels - bitmapJerseyOutfield!!.width/2
+        val centreY = rectPitchPerimeter.bottom/2 - bitmapJerseyOutfield!!.height/2
         val pitchCentre = Point(centreX.toInt(), centreY)
         val pitchLeft = (centreX - centreX/1.6).toInt()
         val pitchRight = (centreX + centreX/1.6).toInt()
-        val offset = bitmapJersey!!.width/2
+        val offset = bitmapJerseyOutfield!!.width/2
 
         var p = Point(pitchLeft, getXmLine(line13m))
         var r = Point(p.x+offset, getYmLine(line13m))
@@ -128,8 +138,8 @@ class PitchView : View  {
 
         when (nameDefault) {
             resources.getStringArray(R.array.team_positions)[0] -> {
-                p = Point(pitchCentre.x, (getXmLine(0.0) - bitmapJersey!!.height/4))
-                r = Point(p.x+offset, (getYmLine(0.0) - bitmapJersey!!.height/4))
+                p = Point(pitchCentre.x, (getXmLine(0.0) - bitmapJerseyOutfield!!.height/4))
+                r = Point(p.x+offset, (getYmLine(0.0) - bitmapJerseyOutfield!!.height/4))
             }
             resources.getStringArray(R.array.team_positions)[1] -> {
                 p = Point(pitchLeft, getXmLine(line13m))
@@ -192,7 +202,7 @@ class PitchView : View  {
         player.setBitmapPoint(p)
         player.setTextPoint(r)
 
-        val rect = Rect(player.getBitmapPoint()!!.x, player.getBitmapPoint()!!.y, player.getBitmapPoint()!!.x + bitmapJersey!!.width, player.getBitmapPoint()!!.y + bitmapJersey!!.height)
+        val rect = Rect(player.getBitmapPoint()!!.x, player.getBitmapPoint()!!.y, player.getBitmapPoint()!!.x + bitmapJerseyOutfield!!.width, player.getBitmapPoint()!!.y + bitmapJerseyOutfield!!.height)
         player.setRect(rect)
     }
 

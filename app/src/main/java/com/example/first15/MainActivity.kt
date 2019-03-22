@@ -1,14 +1,16 @@
 package com.example.first15
 
+import android.os.Build
 import android.os.Bundle
+import android.support.annotation.RequiresApi
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.*
 import kotlinx.android.synthetic.main.activity_main.*
 import android.widget.TextView
@@ -36,18 +38,26 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
     private lateinit var tvTeamB: TextView
     private lateinit var ivTeamB: ImageView
 
+    private lateinit var viewPitch: View
+
     private lateinit var viewAdapter: RecyclerView.Adapter<*>
     private lateinit var viewManager: RecyclerView.LayoutManager
     private lateinit var rvTeams: RecyclerView
 
     private lateinit var dialogSelectTeam: AlertDialog
 
+    private lateinit var mapOfTeams: TreeMap<String, Team>
+
+    private lateinit var pitchView: PitchView
+
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
         loadVars()
+        loadTeams()
         initVars()
     }
 
@@ -80,13 +90,31 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
         tvTimeTitle = rlTime.findViewById(R.id.tv_match_info_title) as TextView
         tvTimeName = rlTime.findViewById(R.id.tv_match_info_name) as TextView
 
-
         llTeamB = findViewById(R.id.ll_team_b)
         ivTeamB = llTeamB.findViewById(R.id.iv_team) as ImageView
         ivTeamB.setOnClickListener{
             openTeamSelectionDialog(getString(R.string.default_team_name_b))
         }
         tvTeamB = llTeamB.findViewById(R.id.tv_team) as TextView
+
+        pitchView = findViewById(R.id.view_pitch)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+    private fun loadTeams(){
+        mapOfTeams = TreeMap()
+        mapOfTeams[resources.getString(R.string.boyle)] = Team(resources.getString(R.string.boyle), getDrawable(R.drawable.crest_boyle), R.drawable.jersey_boyle_goalkeeper, R.drawable.jersey_boyle_outfield)
+        mapOfTeams[resources.getString(R.string.clan_na_gael)] = Team(resources.getString(R.string.clan_na_gael), getDrawable(R.drawable.crest_clan_na_gael_ros), R.drawable.jersey_default, R.drawable.jersey_default)
+        mapOfTeams[resources.getString(R.string.elphin)] = Team(resources.getString(R.string.elphin), getDrawable(R.drawable.crest_elphin), R.drawable.jersey_default, R.drawable.jersey_default)
+        mapOfTeams[resources.getString(R.string.fuerty)] = Team(resources.getString(R.string.fuerty), getDrawable(R.drawable.crest_fuerty), R.drawable.jersey_default, R.drawable.jersey_default)
+        mapOfTeams[resources.getString(R.string.micheal_glaveys)] = Team(resources.getString(R.string.micheal_glaveys), getDrawable(R.drawable.crest_michael_glaveys), R.drawable.jersey_default, R.drawable.jersey_default)
+        mapOfTeams[resources.getString(R.string.padraig_pearses)] = Team(resources.getString(R.string.padraig_pearses), getDrawable(R.drawable.crest_padraig_pearses_ros), R.drawable.jersey_default, R.drawable.jersey_default)
+        mapOfTeams[resources.getString(R.string.roscommon_gaels)] = Team(resources.getString(R.string.roscommon_gaels), getDrawable(R.drawable.crest_roscommon_gaels), R.drawable.jersey_default, R.drawable.jersey_default)
+        mapOfTeams[resources.getString(R.string.strokestown)] = Team(resources.getString(R.string.strokestown), getDrawable(R.drawable.crest_strokestown), R.drawable.jersey_strokestown_goalkeeper, R.drawable.jersey_strokestown_outfield)
+        mapOfTeams[resources.getString(R.string.st_brigids)] = Team(resources.getString(R.string.st_brigids), getDrawable(R.drawable.crest_st_brigids_ros), R.drawable.jersey_default, R.drawable.jersey_default)
+        mapOfTeams[resources.getString(R.string.st_croans)] = Team(resources.getString(R.string.st_croans), getDrawable(R.drawable.crest_st_croans), R.drawable.jersey_default, R.drawable.jersey_default)
+        mapOfTeams[resources.getString(R.string.st_faithleachs)] = Team(resources.getString(R.string.st_faithleachs), getDrawable(R.drawable.crest_st_faithleachs), R.drawable.jersey_default, R.drawable.jersey_default)
+        mapOfTeams[resources.getString(R.string.western_gaels)] = Team(resources.getString(R.string.western_gaels), getDrawable(R.drawable.crest_western_gaels), R.drawable.jersey_default, R.drawable.jersey_default)
     }
 
     private fun openTeamSelectionDialog(title: String){
@@ -126,12 +154,18 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
     override fun onTeamClick(team: String?) {
         val dialogTitle = dialogSelectTeam.findViewById<TextView>(android.support.v7.appcompat.R.id.alertTitle)
         if (dialogTitle != null) {
-            if(dialogTitle.text == getString(R.string.default_team_name_a)) tvTeamA.text = team
-            else  tvTeamB.text = team
+            if(dialogTitle.text == getString(R.string.default_team_name_a)) {
+                tvTeamA.text = team
+                ivTeamA.setImageDrawable(mapOfTeams[team]!!.getCrest())
+                pitchView.setJerseyBitmaps(mapOfTeams[team]!!.getJerseyGoalkeeper(), mapOfTeams[team]!!.getJerseyOutfield())
+                pitchView.invalidate()
+            }
+            else{
+                tvTeamB.text = team
+                ivTeamB.setImageDrawable(mapOfTeams[team]!!.getCrest())
+            }
         }
         dialogSelectTeam.dismiss()
-        Toast.makeText(this, team, Toast.LENGTH_LONG).show()
-
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -145,14 +179,31 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         return when (item.itemId) {
-            R.id.action_settings -> true
-            else -> super.onOptionsItemSelected(item)
+            R.id.action_settings -> {
+                val builder = AlertDialog.Builder(this)
+                builder.setTitle(R.string.reset_title)
+                builder.setMessage(R.string.reset_message)
+                builder.apply {
+                    setPositiveButton(R.string.ok) { _, _ ->
+                        initVars()
+                    }
+                    setNegativeButton(R.string.cancel) { _, _ ->
+                        // User cancelled the dialog
+                    }
+                }
+                builder.show()
+
+                true
+            }
+            else -> {
+                super.onOptionsItemSelected(item)
+            }
+
         }
     }
 
     private fun initVars(){
-        ivTeamA.setImageResource(R.mipmap.ic_launcher_round)
-        ivTeamA.tag = R.string.default_team_name_a
+        ivTeamA.setImageResource(R.drawable.add_team)
         tvTeamA.setText(R.string.default_team_name_a)
 
         tvCompetitionTitle.setText(R.string.default_match_info_competition_title)
@@ -164,8 +215,14 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
         tvTimeTitle.setText(R.string.default_match_info_time_title)
         tvTimeName.setText(R.string.default_match_info_time_name)
 
-        ivTeamB.setImageResource(R.mipmap.ic_launcher_round)
-        ivTeamB.tag = R.string.default_team_name_b
+        ivTeamB.setImageResource(R.drawable.add_team)
         tvTeamB.setText(R.string.default_team_name_b)
+
+        pitchView.setJerseyBitmaps(R.drawable.jersey_default, R.drawable.jersey_default)
+        pitchView.invalidate()
+
+        for(item in pitchView.mapOfPlayers){
+            item.value.setCustomName("")
+        }
     }
 }
