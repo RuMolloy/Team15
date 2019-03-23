@@ -31,28 +31,28 @@
                  layout="@layout/team_name_and_crest"/>
 
         <LinearLayout
-                android:id="@+id/ll_match_info"
+                android:id="@+id/ll_match_info_read"
                 android:orientation="vertical"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true">
 
-            <include android:id="@+id/rl_competition"
-                     layout="@layout/match_info"/>
+            <include android:id="@+id/rl_competition_read"
+                     layout="@layout/match_info_read"/>
 
             <android.support.v4.widget.Space
                     android:layout_width="wrap_content"
                     android:layout_height="10dp"/>
 
-            <include android:id="@+id/rl_venue"
-                     layout="@layout/match_info"/>
+            <include android:id="@+id/rl_venue_write_read"
+                     layout="@layout/match_info_read"/>
 
             <android.support.v4.widget.Space
                     android:layout_width="wrap_content"
                     android:layout_height="10dp"/>
 
-            <include android:id="@+id/rl_time"
-                     layout="@layout/match_info"/>
+            <include android:id="@+id/rl_time_write_read"
+                     layout="@layout/match_info_read"/>
         </LinearLayout>
 
         <include android:id="@+id/ll_team_b"

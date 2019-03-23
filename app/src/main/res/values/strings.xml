@@ -14,6 +14,7 @@
     <string name="default_edit_player_title">Edit Player</string>
     <string name="reset_title">Reset?</string>
     <string name="reset_message">All team, player and venue information will be cleared</string>
+    <string name="set_match_details">Edit Match Info</string>
     <string name="ok">ok</string>
     <string name="cancel">cancel</string>
 

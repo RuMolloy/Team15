@@ -33,7 +33,7 @@ class MyAdapter(private val myDataset: Array<String>, private val myOnTeamClickL
         // - replace the contents of the view with that element
         holder.textView.text = myDataset[position]
         holder.itemView.setOnClickListener {
-            myOnTeamClickListener?.onTeamClick(myDataset[position])
+            myOnTeamClickListener.onTeamClick(myDataset[position])
         }
     }
 

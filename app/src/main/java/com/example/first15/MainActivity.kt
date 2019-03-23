@@ -18,6 +18,8 @@ import java.util.*
 
 class MainActivity : OnTeamClickListener, AppCompatActivity(){
 
+    private lateinit var llMatchInfo: LinearLayout
+
     private lateinit var llTeamA: LinearLayout
     private lateinit var tvTeamA: TextView
     private lateinit var ivTeamA: ImageView
@@ -26,19 +28,26 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
     private lateinit var tvCompetitionTitle: TextView
     private lateinit var tvCompetitionName: TextView
 
+    private lateinit var rlCompetitionWrite: RelativeLayout
+    private lateinit var etCompetitionName: EditText
+
     private lateinit var rlVenue: RelativeLayout
     private lateinit var tvVenueTitle: TextView
     private lateinit var tvVenueName: TextView
+
+    private lateinit var rlVenueWrite: RelativeLayout
+    private lateinit var etVenueName: EditText
 
     private lateinit var rlTime: RelativeLayout
     private lateinit var tvTimeTitle: TextView
     private lateinit var tvTimeName: TextView
 
+    private lateinit var rlTimeWrite: RelativeLayout
+    private lateinit var etTimeName: EditText
+
     private lateinit var llTeamB: LinearLayout
     private lateinit var tvTeamB: TextView
     private lateinit var ivTeamB: ImageView
-
-    private lateinit var viewPitch: View
 
     private lateinit var viewAdapter: RecyclerView.Adapter<*>
     private lateinit var viewManager: RecyclerView.LayoutManager
@@ -62,6 +71,11 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
     }
 
     private fun loadVars(){
+        llMatchInfo = findViewById(R.id.ll_match_info_read)
+        llMatchInfo.setOnClickListener {
+            openMatchInfoDialog()
+        }
+
         llTeamA = findViewById(R.id.ll_team_a)
         tvTeamA = llTeamA.findViewById(R.id.tv_team) as TextView
         ivTeamA = llTeamA.findViewById(R.id.iv_team) as ImageView
@@ -69,26 +83,17 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
             openTeamSelectionDialog(getString(R.string.default_team_name_a))
         }
 
-        rlCompetition = findViewById(R.id.rl_competition)
-        rlCompetition.setOnClickListener {
+        rlCompetition = findViewById(R.id.rl_competition_read)
+        tvCompetitionTitle = rlCompetition.findViewById(R.id.tv_match_info_title_read) as TextView
+        tvCompetitionName = rlCompetition.findViewById(R.id.tv_match_info_name_read) as TextView
 
-        }
-        tvCompetitionTitle = rlCompetition.findViewById(R.id.tv_match_info_title) as TextView
-        tvCompetitionName = rlCompetition.findViewById(R.id.tv_match_info_name) as TextView
+        rlVenue = findViewById(R.id.rl_venue_write_read)
+        tvVenueTitle = rlVenue.findViewById(R.id.tv_match_info_title_read) as TextView
+        tvVenueName = rlVenue.findViewById(R.id.tv_match_info_name_read) as TextView
 
-        rlVenue = findViewById(R.id.rl_venue)
-        rlVenue.setOnClickListener {
-
-        }
-        tvVenueTitle = rlVenue.findViewById(R.id.tv_match_info_title) as TextView
-        tvVenueName = rlVenue.findViewById(R.id.tv_match_info_name) as TextView
-
-        rlTime = findViewById(R.id.rl_time)
-        rlTime.setOnClickListener {
-
-        }
-        tvTimeTitle = rlTime.findViewById(R.id.tv_match_info_title) as TextView
-        tvTimeName = rlTime.findViewById(R.id.tv_match_info_name) as TextView
+        rlTime = findViewById(R.id.rl_time_write_read)
+        tvTimeTitle = rlTime.findViewById(R.id.tv_match_info_title_read) as TextView
+        tvTimeName = rlTime.findViewById(R.id.tv_match_info_name_read) as TextView
 
         llTeamB = findViewById(R.id.ll_team_b)
         ivTeamB = llTeamB.findViewById(R.id.iv_team) as ImageView
@@ -115,6 +120,52 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
         mapOfTeams[resources.getString(R.string.st_croans)] = Team(resources.getString(R.string.st_croans), getDrawable(R.drawable.crest_st_croans), R.drawable.jersey_default, R.drawable.jersey_default)
         mapOfTeams[resources.getString(R.string.st_faithleachs)] = Team(resources.getString(R.string.st_faithleachs), getDrawable(R.drawable.crest_st_faithleachs), R.drawable.jersey_default, R.drawable.jersey_default)
         mapOfTeams[resources.getString(R.string.western_gaels)] = Team(resources.getString(R.string.western_gaels), getDrawable(R.drawable.crest_western_gaels), R.drawable.jersey_default, R.drawable.jersey_default)
+    }
+
+    private fun openMatchInfoDialog(){
+        val view = View.inflate(this, R.layout.dialog_edit_match_info, null)
+
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle(R.string.set_match_details)
+        builder.setView(view)
+        builder.apply {
+            setPositiveButton(R.string.ok) { _, _ ->
+                if(!etCompetitionName.text.toString().isNullOrEmpty()){
+                    tvCompetitionName.text = etCompetitionName.text.toString()
+                }
+                if(!etVenueName.text.toString().isNullOrEmpty()){
+                    tvVenueName.text = etVenueName.text.toString()
+                }
+                if(!etTimeName.text.toString().isNullOrEmpty()){
+                    tvTimeName.text = etTimeName.text.toString()
+                }
+            }
+            setNegativeButton(R.string.cancel) { _, _ ->
+                // User cancelled the dialog
+            }
+        }
+        builder.show()
+
+        rlCompetitionWrite = view.findViewById(R.id.rl_competition_write)
+        tvCompetitionTitle = rlCompetitionWrite.findViewById(R.id.tv_match_info_title_write)
+        tvCompetitionTitle.setText(R.string.default_match_info_competition_title)
+        etCompetitionName = rlCompetitionWrite.findViewById(R.id.et_match_info_name_write)
+        if(tvCompetitionName.text == getString(R.string.default_match_info_competition_name)) etCompetitionName.setHint(R.string.default_match_info_competition_name)
+        else etCompetitionName.setText(tvCompetitionName.text.toString())
+
+        rlVenueWrite = view.findViewById(R.id.rl_venue_write)
+        tvVenueTitle = rlVenueWrite.findViewById(R.id.tv_match_info_title_write)
+        tvVenueTitle.setText(R.string.default_match_info_venue_title)
+        etVenueName = rlVenueWrite.findViewById(R.id.et_match_info_name_write)
+        if(tvVenueName.text == getString(R.string.default_match_info_venue_name)) etVenueName.setHint(R.string.default_match_info_venue_name)
+        else etVenueName.setText(tvVenueName.text.toString())
+
+        rlTimeWrite = view.findViewById(R.id.rl_time_write)
+        tvTimeTitle = rlTimeWrite.findViewById(R.id.tv_match_info_title_write)
+        tvTimeTitle.setText(R.string.default_match_info_time_title)
+        etTimeName = rlTimeWrite.findViewById(R.id.et_match_info_name_write)
+        if(tvTimeName.text == getString(R.string.default_match_info_time_name)) etTimeName.setHint(R.string.default_match_info_time_name)
+        else etTimeName.setText(tvTimeName.text.toString())
     }
 
     private fun openTeamSelectionDialog(title: String){
