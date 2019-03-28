@@ -4,10 +4,10 @@
       tools:context="com.example.first15.MainActivity">
 
     <item
-        android:id="@+id/menu_item_share"
-        android:title="Share"
-        android:icon="@android:drawable/ic_menu_share"
-        app:showAsAction="ifRoom"/>
+            android:id="@+id/menu_item_share"
+            android:title="@string/share"
+            android:icon="@android:drawable/ic_menu_share"
+            app:showAsAction="ifRoom"/>
 
     <item
         android:id="@+id/menu_item_reset"

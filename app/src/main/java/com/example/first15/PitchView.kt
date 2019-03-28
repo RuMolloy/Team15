@@ -19,7 +19,6 @@ class PitchView : View  {
     private val line50m = 50.0
     private val line70m = 70.0
     private val line87m = 87.0
-    private val line105m = 105.0
     private val pitchWidthInMetres = 90.0
     private val pitchLengthInMetres = 145.0
     private val borderX = 40
@@ -37,19 +36,14 @@ class PitchView : View  {
 
     private val pitchWidthInPixels = rectPitchPerimeter.right - rectPitchPerimeter.left
     private var pixelsPerMetre = pitchWidthInPixels / pitchWidthInMetres
-    private var metresPerPixel = pitchWidthInMetres / pitchWidthInPixels
     private val screenResolutionWidthInPixels = this.resources.displayMetrics.widthPixels.toFloat()
-    private val screenResolutionHeightInPixels = this.resources.displayMetrics.heightPixels.toFloat()
     private val halfScreenResolutionWidthInPixels = screenResolutionWidthInPixels / 2
-    private val halfScreenResolutionHeightInPixels = screenResolutionHeightInPixels / 2
     private val textOffsetY = 150
 
     private var bitmapJerseyGoalkeeper: Bitmap? = null
     private var bitmapJerseyOutfield: Bitmap? = null
 
-    private lateinit var dialogSelectPlayer: AlertDialog
-
-    public lateinit var mapOfPlayers: TreeMap<Int, Player>
+    lateinit var mapOfPlayers: TreeMap<Int, Player>
 
     private lateinit var etPlayerNumber: EditText
     private lateinit var etPlayerName: EditText
@@ -89,6 +83,7 @@ class PitchView : View  {
         paintTranslucent.style = Paint.Style.STROKE
         paintTranslucent.isAntiAlias = true
 
+        bitmapJerseyGoalkeeper = BitmapFactory.decodeResource(this.resources, R.drawable.jersey_default)
         bitmapJerseyOutfield = BitmapFactory.decodeResource(this.resources, R.drawable.jersey_default)
 
         mapOfPlayers = TreeMap()

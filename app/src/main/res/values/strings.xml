@@ -9,8 +9,8 @@
     <string name="default_match_info_competition_name">Enter Competition</string>
     <string name="default_match_info_venue_title">Venue</string>
     <string name="default_match_info_venue_name">Enter Venue</string>
-    <string name="default_match_info_time_title">Time</string>
-    <string name="default_match_info_time_name">Enter Time</string>
+    <string name="default_match_info_time_title">Date/Time</string>
+    <string name="default_match_info_time_name">Enter Date/Time</string>
     <string name="default_edit_player_title">Edit Player</string>
     <string name="reset_title">Reset?</string>
     <string name="reset_message">All team, player and venue information will be cleared</string>
