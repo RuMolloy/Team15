@@ -1,5 +1,6 @@
 package com.example.first15
 
+import android.Manifest
 import android.os.Build
 import android.os.Bundle
 import android.support.annotation.RequiresApi
@@ -15,8 +16,27 @@ import android.widget.*
 import kotlinx.android.synthetic.main.activity_main.*
 import android.widget.TextView
 import java.util.*
+import android.graphics.Bitmap
+import android.os.Environment
+import java.io.File
+import java.io.FileOutputStream
+import android.content.Intent
+import android.content.pm.ActivityInfo
+import android.content.pm.PackageManager
+import android.support.constraint.ConstraintLayout
+import android.support.v4.app.ActivityCompat
+import android.support.v4.content.ContextCompat
+import android.support.v4.content.FileProvider
+import android.util.Log
+import java.io.FileNotFoundException
+import java.io.IOException
+
 
 class MainActivity : OnTeamClickListener, AppCompatActivity(){
+
+    companion object {
+        const val MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 1
+    }
 
     private lateinit var llMatchInfo: LinearLayout
 
@@ -64,6 +84,7 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 
         loadVars()
         loadTeams()
@@ -122,6 +143,30 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
         mapOfTeams[resources.getString(R.string.western_gaels)] = Team(resources.getString(R.string.western_gaels), getDrawable(R.drawable.crest_western_gaels), R.drawable.jersey_default, R.drawable.jersey_default)
     }
 
+    private fun initVars(){
+        ivTeamA.setImageResource(R.drawable.add_team)
+        tvTeamA.setText(R.string.default_team_name_a)
+
+        tvCompetitionTitle.setText(R.string.default_match_info_competition_title)
+        tvCompetitionName.setText(R.string.default_match_info_competition_name)
+
+        tvVenueTitle.setText(R.string.default_match_info_venue_title)
+        tvVenueName.setText(R.string.default_match_info_venue_name)
+
+        tvTimeTitle.setText(R.string.default_match_info_time_title)
+        tvTimeName.setText(R.string.default_match_info_time_name)
+
+        ivTeamB.setImageResource(R.drawable.add_team)
+        tvTeamB.setText(R.string.default_team_name_b)
+
+        pitchView.setJerseyBitmaps(R.drawable.jersey_default, R.drawable.jersey_default)
+        pitchView.invalidate()
+
+        for(item in pitchView.mapOfPlayers){
+            item.value.setCustomName("")
+        }
+    }
+
     private fun openMatchInfoDialog(){
         val view = View.inflate(this, R.layout.dialog_edit_match_info, null)
 
@@ -130,13 +175,13 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
         builder.setView(view)
         builder.apply {
             setPositiveButton(R.string.ok) { _, _ ->
-                if(!etCompetitionName.text.toString().isNullOrEmpty()){
+                if(!etCompetitionName.text.toString().isEmpty()){
                     tvCompetitionName.text = etCompetitionName.text.toString()
                 }
-                if(!etVenueName.text.toString().isNullOrEmpty()){
+                if(!etVenueName.text.toString().isEmpty()){
                     tvVenueName.text = etVenueName.text.toString()
                 }
-                if(!etTimeName.text.toString().isNullOrEmpty()){
+                if(!etTimeName.text.toString().isEmpty()){
                     tvTimeName.text = etTimeName.text.toString()
                 }
             }
@@ -222,6 +267,7 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.menu_main, menu)
+
         return true
     }
 
@@ -230,7 +276,7 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         return when (item.itemId) {
-            R.id.action_settings -> {
+            R.id.menu_item_reset -> {
                 val builder = AlertDialog.Builder(this)
                 builder.setTitle(R.string.reset_title)
                 builder.setMessage(R.string.reset_message)
@@ -246,34 +292,81 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
 
                 true
             }
+            R.id.menu_item_share -> {
+                checkPermissions()
+                true
+            }
             else -> {
                 super.onOptionsItemSelected(item)
             }
-
         }
     }
 
-    private fun initVars(){
-        ivTeamA.setImageResource(R.drawable.add_team)
-        tvTeamA.setText(R.string.default_team_name_a)
-
-        tvCompetitionTitle.setText(R.string.default_match_info_competition_title)
-        tvCompetitionName.setText(R.string.default_match_info_competition_name)
-
-        tvVenueTitle.setText(R.string.default_match_info_venue_title)
-        tvVenueName.setText(R.string.default_match_info_venue_name)
-
-        tvTimeTitle.setText(R.string.default_match_info_time_title)
-        tvTimeName.setText(R.string.default_match_info_time_name)
-
-        ivTeamB.setImageResource(R.drawable.add_team)
-        tvTeamB.setText(R.string.default_team_name_b)
-
-        pitchView.setJerseyBitmaps(R.drawable.jersey_default, R.drawable.jersey_default)
-        pitchView.invalidate()
-
-        for(item in pitchView.mapOfPlayers){
-            item.value.setCustomName("")
+    private fun checkPermissions(){
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            != PackageManager.PERMISSION_GRANTED) {
+            // Request the permission the 'write external storage' permission as this is required to store and share the screenshot
+            ActivityCompat.requestPermissions(this,
+                arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE)
+        } else {
+            // Permission has already been granted
+            storeAndShareImage(getScreenShot())
         }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int,
+                                            permissions: Array<String>, grantResults: IntArray) {
+        when (requestCode) {
+            MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE -> {
+                // If request is cancelled, the result arrays are empty.
+                if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+                    // permission was granted, proceed to store and then share the screenshot
+                    storeAndShareImage(getScreenShot())
+                } else {
+                    // permission denied, don't proceed to store and share screenshot
+                    Toast.makeText(this, R.string.share_permission_error_msg, Toast.LENGTH_SHORT).show()
+                }
+                return
+            }
+        }
+    }
+
+    private fun getScreenShot(): Bitmap {
+        val rootView = findViewById<ConstraintLayout>(R.id.cl_main) // we don't want the action bar in the screenshot so using the app's main layout
+        rootView.isDrawingCacheEnabled = true
+        val bitmap = rootView.drawingCache.copy(Bitmap.Config.RGB_565, false)
+        rootView.isDrawingCacheEnabled = false
+        return bitmap
+    }
+
+    private fun storeAndShareImage(bitmap: Bitmap) {
+        val imagePath = File(Environment.getExternalStorageDirectory().toString() + "/screenshot.png")
+        try {
+            val fos = FileOutputStream(imagePath)
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos)
+            fos.flush()
+            fos.close()
+        } catch (e: FileNotFoundException) {
+            Log.e("GREC", e.message, e)
+        } catch (e: IOException) {
+            Log.e("GREC", e.message, e)
+        }
+
+        shareImage(imagePath)
+    }
+
+    private fun shareImage(imagePath: File) {
+        val uri = FileProvider.getUriForFile(this, "com.codepath.fileprovider", imagePath)
+
+        val sharingIntent = Intent(android.content.Intent.ACTION_SEND)
+        sharingIntent.type = "image/*"
+        val shareBody = "#" + getString(R.string.app_name)
+        sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, getString(R.string.app_name))
+        sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody)
+        sharingIntent.putExtra(Intent.EXTRA_STREAM, uri)
+
+        startActivity(Intent.createChooser(sharingIntent, getString(R.string.share)))
     }
 }
