@@ -10,7 +10,8 @@ class Player(name: String, number: String){
     private var number: String = number
     private var pointBitmap: Point? = null
     private var pointText: Point? = null
-    private var rect: Rect? = null
+    private var rectBitmap: Rect? = null
+    private var rectText: Rect? = null
 
     fun setCustomName(name: String) {
         this.nameCustom = name
@@ -57,11 +58,19 @@ class Player(name: String, number: String){
         return pointText
     }
 
-    fun setRect(rectangle: Rect){
-        rect = rectangle
+    fun setBitmapRect(rectangle: Rect){
+        rectBitmap = rectangle
     }
 
-    fun getRect(): Rect?{
-        return rect
+    fun getBitmapRect(): Rect?{
+        return rectBitmap
+    }
+
+    fun setTextRect(rectangle: Rect){
+        rectText = rectangle
+    }
+
+    fun getTextRect(): Rect?{
+        return rectText
     }
 }

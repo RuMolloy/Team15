@@ -12,6 +12,9 @@
     <string name="default_match_info_time_title">Date/Time</string>
     <string name="default_match_info_time_name">Enter Date/Time</string>
     <string name="default_edit_player_title">Edit Player</string>
+    <string name="default_hashtag_one">#First15</string>
+    <string name="default_hashtag_two">#GAA</string>
+    <string name="default_hashtag_three">#OneLifeOneClub</string>
     <string name="reset_title">Reset?</string>
     <string name="reset_message">All team, player and venue information will be cleared</string>
     <string name="set_match_details">Edit Match Info</string>

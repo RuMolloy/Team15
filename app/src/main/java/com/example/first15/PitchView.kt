@@ -26,6 +26,7 @@ class PitchView : View  {
     private var paintPitchPerimeter: Paint = Paint()
     private var paintPitchText: Paint = Paint()
     private var paintTranslucent: Paint = Paint()
+    private var paintTextRect: Paint = Paint()
 
     private var rectPitchPerimeter = Rect(
         borderX,
@@ -83,6 +84,11 @@ class PitchView : View  {
         paintTranslucent.style = Paint.Style.STROKE
         paintTranslucent.isAntiAlias = true
 
+        paintTextRect = Paint()
+        paintTextRect.style = Style.FILL
+        paintTextRect.color = ContextCompat.getColor(context, R.color.colorBorders)
+        paintTextRect.alpha = 50
+
         bitmapJerseyGoalkeeper = BitmapFactory.decodeResource(this.resources, R.drawable.jersey_default)
         bitmapJerseyOutfield = BitmapFactory.decodeResource(this.resources, R.drawable.jersey_default)
 
@@ -110,8 +116,10 @@ class PitchView : View  {
             val player = Item.value
 
             canvas.drawBitmap(getJersey(player), player.getBitmapPoint()!!.x.toFloat(), player.getBitmapPoint()!!.y.toFloat(), Paint())
+            canvas.drawRect(player.getBitmapRect(), paintTranslucent)
+
+            canvas.drawRect(player.getTextRect(), paintTextRect)
             canvas.drawText(player.getNumberAndName(), player.getTextPoint()!!.x.toFloat(), player.getTextPoint()!!.y.toFloat(), paintPitchText)
-            canvas.drawRect(player.getRect(), paintTranslucent)
         }
     }
 
@@ -197,8 +205,9 @@ class PitchView : View  {
         player.setBitmapPoint(p)
         player.setTextPoint(r)
 
-        val rect = Rect(player.getBitmapPoint()!!.x, player.getBitmapPoint()!!.y, player.getBitmapPoint()!!.x + bitmapJerseyOutfield!!.width, player.getBitmapPoint()!!.y + bitmapJerseyOutfield!!.height)
-        player.setRect(rect)
+        val rectBitmap = Rect(player.getBitmapPoint()!!.x, player.getBitmapPoint()!!.y, player.getBitmapPoint()!!.x + bitmapJerseyOutfield!!.width, player.getBitmapPoint()!!.y + bitmapJerseyOutfield!!.height)
+        player.setBitmapRect(rectBitmap)
+        setTextRect(player)
     }
 
     private fun getXmLine(xLineInMetres: Double): Int {
@@ -225,6 +234,7 @@ class PitchView : View  {
                         setPositiveButton(R.string.ok) { _, _ ->
                             if(!etPlayerNumber.text.toString().isEmpty()) player.setNumber(etPlayerNumber.text.toString())
                             player.setCustomName(etPlayerName.text.toString())
+                            setTextRect(player)
 
                             invalidate() //this will call the onDraw() method so the player's name gets updated
                         }
@@ -247,10 +257,20 @@ class PitchView : View  {
         return true
     }
 
+    private fun setTextRect(player: Player){
+        val padding = 10
+        val textWidth = (paintPitchText.measureText(player.getNumberAndName()) / 2).toInt() + padding
+        val textSize = paintPitchText.textSize.toInt()
+        val rectText = Rect(player.getTextPoint()!!.x - textWidth, player.getTextPoint()!!.y - textSize, player.getTextPoint()!!.x + textWidth, player.getTextPoint()!!.y + padding)
+
+        player.setTextRect(rectText)
+    }
+
     private fun isMouseEventOnThePlayer(eventX: Int, eventY: Int): Player? {
         for(Item in mapOfPlayers) {
             val player = Item.value
-            if(player.getRect()!!.contains(eventX, eventY)){
+            if(player.getBitmapRect()!!.contains(eventX, eventY) ||
+                    player.getTextRect()!!.contains(eventX, eventY)){
                 return player
             }
         }
