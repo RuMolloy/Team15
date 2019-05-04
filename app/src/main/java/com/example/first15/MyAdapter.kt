@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 
-class MyAdapter(private val myDataset: Array<String>, private val myOnTeamClickListener: OnTeamClickListener) : RecyclerView.Adapter<MyAdapter.MyViewHolder>() {
+class MyAdapter(private val myDataset: List<String>, private val myOnTeamClickListener: OnTeamClickListener) : RecyclerView.Adapter<MyAdapter.MyViewHolder>() {
 
     private val onTeamClickListener: OnTeamClickListener? = null
     // Provide a reference to the views for each data item

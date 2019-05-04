@@ -72,6 +72,7 @@
         <!--<item>Western Gaels</item>-->
     <!--</string-array>-->
 
+    // Roscommon clubs
     <string name="boyle">Boyle</string>
     <string name="clan_na_gael">Clan na Gael</string>
     <string name="elphin">Elphin</string>
@@ -85,7 +86,7 @@
     <string name="st_faithleachs">St. Faithleachs</string>
     <string name="western_gaels">Western Gaels</string>
 
-    <string-array name="team_names">
+    <string-array name="team_names_clubs">
         <item>@string/boyle</item>
         <item>@string/clan_na_gael</item>
         <item>@string/elphin</item>
@@ -98,6 +99,88 @@
         <item>@string/st_croans</item>
         <item>@string/st_faithleachs</item>
         <item>@string/western_gaels</item>
+    </string-array>
+
+    // Connaught
+    <string name="galway">Galway</string>
+    <string name="leitrim">Leitrim</string>
+    <string name="london">London</string>
+    <string name="mayo">Mayo</string>
+    <string name="new_york">New York</string>
+    <string name="roscommon">Roscommon</string>
+    <string name="sligo">Sligo</string>
+
+    // Ulster
+    <string name="antrim">Antrim</string>
+    <string name="armagh">Armagh</string>
+    <string name="cavan">Cavan</string>
+    <string name="derry">Derry</string>
+    <string name="donegal">Donegal</string>
+    <string name="down">Down</string>
+    <string name="fermanagh">Fermanagh</string>
+    <string name="monaghan">Monaghan</string>
+    <string name="tyrone">Tyrone</string>
+
+    // Munster
+    <string name="clare">Clare</string>
+    <string name="cork">Cork</string>
+    <string name="kerry">Kerry</string>
+    <string name="limerick">Limerick</string>
+    <string name="tipperary">Tipperary</string>
+    <string name="waterford">Waterford</string>
+
+    // Leinster
+    <string name="carlow">Carlow</string>
+    <string name="dublin">Dublin</string>
+    <string name="kildare">Kildare</string>
+    <string name="kilkenny">Kilkenny</string>
+    <string name="laois">Laois</string>
+    <string name="longford">Longford</string>
+    <string name="louth">Louth</string>
+    <string name="meath">Meath</string>
+    <string name="offaly">Offaly</string>
+    <string name="westmeath">Westmeath</string>
+    <string name="wexford">Wexford</string>
+    <string name="wicklow">Wicklow</string>
+
+    <string-array name="team_names_counties">
+        <item>@string/galway</item>
+        <item>@string/leitrim</item>
+        <item>@string/london</item>
+        <item>@string/mayo</item>
+        <item>@string/new_york</item>
+        <item>@string/roscommon</item>
+        <item>@string/sligo</item>
+
+        <item>@string/antrim</item>
+        <item>@string/cavan</item>
+        <item>@string/derry</item>
+        <item>@string/donegal</item>
+        <item>@string/down</item>
+        <item>@string/fermanagh</item>
+        <item>@string/monaghan</item>
+        <item>@string/tyrone</item>
+
+        <item>@string/clare</item>
+        <item>@string/cork</item>
+        <item>@string/kerry</item>
+        <item>@string/limerick</item>
+        <item>@string/tipperary</item>
+        <item>@string/waterford</item>
+
+        <item>@string/carlow</item>
+        <item>@string/dublin</item>
+        <item>@string/kildare</item>
+        <item>@string/kilkenny</item>
+        <item>@string/laois</item>
+        <item>@string/longford</item>
+        <item>@string/louth</item>
+        <item>@string/meath</item>
+        <item>@string/offaly</item>
+        <item>@string/westmeath</item>
+        <item>@string/wexford</item>
+        <item>@string/wicklow</item>
+
     </string-array>
 
 </resources>

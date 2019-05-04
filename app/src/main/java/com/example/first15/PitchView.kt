@@ -27,12 +27,13 @@ class PitchView : View  {
     private var paintPitchText: Paint = Paint()
     private var paintTranslucent: Paint = Paint()
     private var paintTextRect: Paint = Paint()
+    private var paintTemp: Paint = Paint()
 
     private var rectPitchPerimeter = Rect(
         borderX,
         borderY,
         this.resources.displayMetrics.widthPixels - borderX,
-        this.resources.displayMetrics.heightPixels - borderY
+        0
     )
 
     private val pitchWidthInPixels = rectPitchPerimeter.right - rectPitchPerimeter.left
@@ -89,6 +90,10 @@ class PitchView : View  {
         paintTextRect.color = ContextCompat.getColor(context, R.color.colorBorders)
         paintTextRect.alpha = 50
 
+        paintTemp = Paint()
+        paintTemp.style = Style.FILL
+        paintTemp.color = ContextCompat.getColor(context, R.color.colorPitchGrass)
+
         bitmapJerseyGoalkeeper = BitmapFactory.decodeResource(this.resources, R.drawable.jersey_default)
         bitmapJerseyOutfield = BitmapFactory.decodeResource(this.resources, R.drawable.jersey_default)
 
@@ -102,8 +107,29 @@ class PitchView : View  {
         }
     }
 
+    public override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+        super.onSizeChanged(w, h, oldw, oldh)
+        rectPitchPerimeter.bottom = h - borderY
+
+        for(item in resources.getStringArray(R.array.team_positions).indices){
+            val playerPosition = resources.getStringArray(R.array.team_positions)[item]
+            val player = Player(playerPosition, (item+1).toString())
+            setPlayerPositionParameters(player)
+            mapOfPlayers[item] = player
+        }
+    }
+
     public override fun onDraw(canvas: Canvas) {
+        //drawPitchBackground(canvas)
         drawJersey(canvas)
+    }
+
+    private fun drawPitchBackground(canvas: Canvas) {
+        val colorPitchGrass = ContextCompat.getColor(context, R.color.colorBorders)
+        canvas.drawARGB(255, Color.red(colorPitchGrass), Color.green(colorPitchGrass), Color.blue(colorPitchGrass))
+
+        // fill
+        canvas.drawRect(rectPitchPerimeter, paintTemp)
     }
 
     fun setJerseyBitmaps(jerseyGoalkeeper: Int, jerseyOutfield: Int){
@@ -142,63 +168,78 @@ class PitchView : View  {
         when (nameDefault) {
             resources.getStringArray(R.array.team_positions)[0] -> {
                 p = Point(pitchCentre.x, (getXmLine(0.0) - bitmapJerseyOutfield!!.height/4))
-                r = Point(p.x+offset, (getYmLine(0.0) - bitmapJerseyOutfield!!.height/4))
+                p = Point(pitchCentre.x, getLineMinusJerseyOffset(0))
+                r = Point(p.x+offset, getLinePlusJerseyOffset(0))
             }
             resources.getStringArray(R.array.team_positions)[1] -> {
                 p = Point(pitchLeft, getXmLine(line13m))
-                r = Point(p.x+offset, getYmLine(line13m))
+                p = Point(pitchLeft, getLineMinusJerseyOffset(1))
+                r = Point(p.x+offset, getLinePlusJerseyOffset(1))
             }
             resources.getStringArray(R.array.team_positions)[2] -> {
                 p = Point(pitchCentre.x, getXmLine(line13m))
-                r = Point(p.x+offset, getYmLine(line13m))
+                p = Point(pitchCentre.x, getLineMinusJerseyOffset(1))
+                r = Point(p.x+offset, getLinePlusJerseyOffset(1))
             }
             resources.getStringArray(R.array.team_positions)[3] -> {
                 p = Point(pitchRight, getXmLine(line13m))
-                r = Point(p.x+offset, getYmLine(line13m))
+                p = Point(pitchRight, getLineMinusJerseyOffset(1))
+                r = Point(p.x+offset, getLinePlusJerseyOffset(1))
             }
             resources.getStringArray(R.array.team_positions)[4] -> {
                 p = Point(pitchLeft, getXmLine(line30m))
-                r = Point(p.x+offset, getYmLine(line30m))
+                p = Point(pitchLeft, getLineMinusJerseyOffset(2))
+                r = Point(p.x+offset, getLinePlusJerseyOffset(2))
             }
             resources.getStringArray(R.array.team_positions)[5] -> {
                 p = Point(pitchCentre.x, getXmLine(line30m))
-                r = Point(p.x+offset, getYmLine(line30m))
+                p = Point(pitchCentre.x, getLineMinusJerseyOffset(2))
+                r = Point(p.x+offset, getLinePlusJerseyOffset(2))
             }
             resources.getStringArray(R.array.team_positions)[6] -> {
                 p = Point(pitchRight, getXmLine(line30m))
-                r = Point(p.x+offset, getYmLine(line30m))
+                p = Point(pitchRight, getLineMinusJerseyOffset(2))
+                r = Point(p.x+offset, getLinePlusJerseyOffset(2))
             }
             resources.getStringArray(R.array.team_positions)[7] -> {
                 p = Point(pitchCentre.x-100, getXmLine(line50m))
-                r = Point(p.x+offset, getYmLine(line50m))
+                p = Point(pitchCentre.x-100, getLineMinusJerseyOffset(3))
+                r = Point(p.x+offset, getLinePlusJerseyOffset(3))
             }
             resources.getStringArray(R.array.team_positions)[8] -> {
                 p = Point(pitchCentre.x+100, getXmLine(line50m))
-                r = Point(p.x+offset, getYmLine(line50m))
+                p = Point(pitchCentre.x+100, getLineMinusJerseyOffset(3))
+                r = Point(p.x+offset, getLinePlusJerseyOffset(3))
             }
             resources.getStringArray(R.array.team_positions)[9] -> {
                 p = Point(pitchLeft, getXmLine(line70m))
-                r = Point(p.x+offset, getYmLine(line70m))
+                p = Point(pitchLeft, getLineMinusJerseyOffset(4))
+                r = Point(p.x+offset, getLinePlusJerseyOffset(4))
             }
             resources.getStringArray(R.array.team_positions)[10] -> {
                 p = Point(pitchCentre.x, getXmLine(line70m))
-                r = Point(p.x+offset, getYmLine(line70m))
+                p = Point(pitchCentre.x, getLineMinusJerseyOffset(4))
+                r = Point(p.x+offset, getLinePlusJerseyOffset(4))
             }
             resources.getStringArray(R.array.team_positions)[11] -> {
                 p = Point(pitchRight, getXmLine(line70m))
-                r = Point(p.x+offset, getYmLine(line70m))
+                p = Point(pitchRight, getLineMinusJerseyOffset(4))
+                r = Point(p.x+offset, getLinePlusJerseyOffset(4))
             }
             resources.getStringArray(R.array.team_positions)[12] -> {
                 p = Point(pitchLeft, getXmLine(line87m))
-                r = Point(p.x+offset, getYmLine(line87m))
+                p = Point(pitchLeft, getLineMinusJerseyOffset(5))
+                r = Point(p.x+offset, getLinePlusJerseyOffset(5))
             }
             resources.getStringArray(R.array.team_positions)[13] -> {
                 p = Point(pitchCentre.x, getXmLine(line87m))
-                r = Point(p.x+offset, getYmLine(line87m))
+                p = Point(pitchCentre.x, getLineMinusJerseyOffset(5))
+                r = Point(p.x+offset, getLinePlusJerseyOffset(5))
             }
             resources.getStringArray(R.array.team_positions)[14] -> {
                 p = Point(pitchRight, getXmLine(line87m))
-                r = Point(p.x+offset, getYmLine(line87m))
+                p = Point(pitchRight, getLineMinusJerseyOffset(5))
+                r = Point(p.x+offset, getLinePlusJerseyOffset(5))
             }
         }
 
@@ -212,6 +253,20 @@ class PitchView : View  {
 
     private fun getXmLine(xLineInMetres: Double): Int {
         return (rectPitchPerimeter.top + xLineInMetres * pixelsPerMetre).toInt()
+    }
+
+    private fun getLine(line: Int): Int {
+        val numLines = (rectPitchPerimeter.height())/6.0
+        //  - (bitmapJerseyOutfield!!.height)/2).toInt()
+        return (rectPitchPerimeter.top + (numLines*line).toInt())
+    }
+
+    private fun getLineMinusJerseyOffset(line: Int): Int {
+        return getLine(line) - (bitmapJerseyOutfield!!.height)/2
+    }
+
+    private fun getLinePlusJerseyOffset(line: Int): Int {
+        return getLine(line) + (bitmapJerseyOutfield!!.height)/2 + 20
     }
 
     private fun getYmLine(xLineInMetres :Double): Int{

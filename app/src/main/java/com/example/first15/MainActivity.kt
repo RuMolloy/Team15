@@ -75,7 +75,8 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
 
     private lateinit var dialogSelectTeam: AlertDialog
 
-    private lateinit var mapOfTeams: TreeMap<String, Team>
+    private lateinit var mapOfTeamsClub: TreeMap<String, Team>
+    private lateinit var mapOfTeamsCounty: TreeMap<String, Team>
 
     private lateinit var pitchView: PitchView
 
@@ -128,19 +129,63 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
 
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     private fun loadTeams(){
-        mapOfTeams = TreeMap()
-        mapOfTeams[resources.getString(R.string.boyle)] = Team(resources.getString(R.string.boyle), getDrawable(R.drawable.crest_boyle), R.drawable.jersey_boyle_goalkeeper, R.drawable.jersey_boyle_outfield)
-        mapOfTeams[resources.getString(R.string.clan_na_gael)] = Team(resources.getString(R.string.clan_na_gael), getDrawable(R.drawable.crest_clan_na_gael_ros), R.drawable.jersey_default, R.drawable.jersey_default)
-        mapOfTeams[resources.getString(R.string.elphin)] = Team(resources.getString(R.string.elphin), getDrawable(R.drawable.crest_elphin), R.drawable.jersey_default, R.drawable.jersey_default)
-        mapOfTeams[resources.getString(R.string.fuerty)] = Team(resources.getString(R.string.fuerty), getDrawable(R.drawable.crest_fuerty), R.drawable.jersey_default, R.drawable.jersey_default)
-        mapOfTeams[resources.getString(R.string.micheal_glaveys)] = Team(resources.getString(R.string.micheal_glaveys), getDrawable(R.drawable.crest_michael_glaveys), R.drawable.jersey_default, R.drawable.jersey_default)
-        mapOfTeams[resources.getString(R.string.padraig_pearses)] = Team(resources.getString(R.string.padraig_pearses), getDrawable(R.drawable.crest_padraig_pearses_ros), R.drawable.jersey_default, R.drawable.jersey_default)
-        mapOfTeams[resources.getString(R.string.roscommon_gaels)] = Team(resources.getString(R.string.roscommon_gaels), getDrawable(R.drawable.crest_roscommon_gaels), R.drawable.jersey_default, R.drawable.jersey_default)
-        mapOfTeams[resources.getString(R.string.strokestown)] = Team(resources.getString(R.string.strokestown), getDrawable(R.drawable.crest_strokestown), R.drawable.jersey_strokestown_goalkeeper, R.drawable.jersey_strokestown_outfield)
-        mapOfTeams[resources.getString(R.string.st_brigids)] = Team(resources.getString(R.string.st_brigids), getDrawable(R.drawable.crest_st_brigids_ros), R.drawable.jersey_default, R.drawable.jersey_default)
-        mapOfTeams[resources.getString(R.string.st_croans)] = Team(resources.getString(R.string.st_croans), getDrawable(R.drawable.crest_st_croans), R.drawable.jersey_default, R.drawable.jersey_default)
-        mapOfTeams[resources.getString(R.string.st_faithleachs)] = Team(resources.getString(R.string.st_faithleachs), getDrawable(R.drawable.crest_st_faithleachs), R.drawable.jersey_default, R.drawable.jersey_default)
-        mapOfTeams[resources.getString(R.string.western_gaels)] = Team(resources.getString(R.string.western_gaels), getDrawable(R.drawable.crest_western_gaels), R.drawable.jersey_default, R.drawable.jersey_default)
+        mapOfTeamsClub = TreeMap()
+        mapOfTeamsClub[resources.getString(R.string.boyle)] = Team(resources.getString(R.string.boyle), getDrawable(R.drawable.crest_boyle), R.drawable.jersey_boyle_goalkeeper, R.drawable.jersey_boyle_outfield)
+        mapOfTeamsClub[resources.getString(R.string.clan_na_gael)] = Team(resources.getString(R.string.clan_na_gael), getDrawable(R.drawable.crest_clan_na_gael_ros), R.drawable.jersey_clan_na_gael_ros_goalkeeper, R.drawable.jersey_clan_na_gael_ros_outfield)
+        mapOfTeamsClub[resources.getString(R.string.elphin)] = Team(resources.getString(R.string.elphin), getDrawable(R.drawable.crest_elphin), R.drawable.jersey_elphin_goalkeeper, R.drawable.jersey_elphin_outfield)
+        mapOfTeamsClub[resources.getString(R.string.fuerty)] = Team(resources.getString(R.string.fuerty), getDrawable(R.drawable.crest_fuerty), R.drawable.jersey_fuerty_goalkeeper, R.drawable.jersey_fuerty_outfield)
+        mapOfTeamsClub[resources.getString(R.string.micheal_glaveys)] = Team(resources.getString(R.string.micheal_glaveys), getDrawable(R.drawable.crest_michael_glaveys), R.drawable.jersey_michael_glaveys_goalkeeper, R.drawable.jersey_michael_glaveys_outfield)
+        mapOfTeamsClub[resources.getString(R.string.padraig_pearses)] = Team(resources.getString(R.string.padraig_pearses), getDrawable(R.drawable.crest_padraig_pearses_ros), R.drawable.jersey_padraig_pearses_ros_goalkeeper, R.drawable.jersey_padraig_pearses_ros_outfield)
+        mapOfTeamsClub[resources.getString(R.string.roscommon_gaels)] = Team(resources.getString(R.string.roscommon_gaels), getDrawable(R.drawable.crest_roscommon_gaels), R.drawable.jersey_ros_gaels_goalkeeper, R.drawable.jersey_ros_gaels_outfield)
+        mapOfTeamsClub[resources.getString(R.string.strokestown)] = Team(resources.getString(R.string.strokestown), getDrawable(R.drawable.crest_strokestown), R.drawable.jersey_strokestown_goalkeeper, R.drawable.jersey_strokestown_outfield)
+        mapOfTeamsClub[resources.getString(R.string.st_brigids)] = Team(resources.getString(R.string.st_brigids), getDrawable(R.drawable.crest_st_brigids_ros), R.drawable.jersey_st_brigids_ros_goalkeeper, R.drawable.jersey_st_brigids_ros_outfield)
+        mapOfTeamsClub[resources.getString(R.string.st_croans)] = Team(resources.getString(R.string.st_croans), getDrawable(R.drawable.crest_st_croans), R.drawable.jersey_st_croans_goalkeeper, R.drawable.jersey_st_croans_outfield)
+        mapOfTeamsClub[resources.getString(R.string.st_faithleachs)] = Team(resources.getString(R.string.st_faithleachs), getDrawable(R.drawable.crest_st_faithleachs), R.drawable.jersey_st_faithleachs_goalkeeper, R.drawable.jersey_st_faithleachs_outfield)
+        mapOfTeamsClub[resources.getString(R.string.western_gaels)] = Team(resources.getString(R.string.western_gaels), getDrawable(R.drawable.crest_western_gaels), R.drawable.jersey_western_gaels_goalkeeper, R.drawable.jersey_western_gaels_outfield)
+
+        mapOfTeamsCounty = TreeMap()
+
+        // connaught counties
+        mapOfTeamsCounty[resources.getString(R.string.galway)] = Team(resources.getString(R.string.galway), getDrawable(R.drawable.crest_galway), R.drawable.jersey_galway_goalkeeper, R.drawable.jersey_galway_outfield)
+        mapOfTeamsCounty[resources.getString(R.string.leitrim)] = Team(resources.getString(R.string.leitrim), getDrawable(R.drawable.crest_leitrim), R.drawable.jersey_leitrim_goalkeeper, R.drawable.jersey_leitrim_outfield)
+        mapOfTeamsCounty[resources.getString(R.string.london)] = Team(resources.getString(R.string.london), getDrawable(R.drawable.crest_london), R.drawable.jersey_london_goalkeeper, R.drawable.jersey_london_outfield)
+        mapOfTeamsCounty[resources.getString(R.string.mayo)] = Team(resources.getString(R.string.mayo), getDrawable(R.drawable.crest_mayo), R.drawable.jersey_mayo_goalkeeper, R.drawable.jersey_mayo_outfield)
+        mapOfTeamsCounty[resources.getString(R.string.new_york)] = Team(resources.getString(R.string.new_york), getDrawable(R.drawable.crest_new_york), R.drawable.jersey_new_york_goalkeeper, R.drawable.jersey_new_york_outfield)
+        mapOfTeamsCounty[resources.getString(R.string.roscommon)] = Team(resources.getString(R.string.roscommon), getDrawable(R.drawable.crest_roscommon), R.drawable.jersey_roscommon_goalkeeper, R.drawable.jersey_roscommon_outfield)
+        mapOfTeamsCounty[resources.getString(R.string.sligo)] = Team(resources.getString(R.string.sligo), getDrawable(R.drawable.crest_sligo), R.drawable.jersey_sligo_goalkeeper, R.drawable.jersey_sligo_outfield)
+
+        // ulster counties
+        mapOfTeamsCounty[resources.getString(R.string.antrim)] = Team(resources.getString(R.string.antrim), getDrawable(R.drawable.crest_antrim), R.drawable.jersey_antrim_goalkeeper, R.drawable.jersey_antrim_outfield)
+        mapOfTeamsCounty[resources.getString(R.string.armagh)] = Team(resources.getString(R.string.armagh), getDrawable(R.drawable.crest_armagh), R.drawable.jersey_armagh_goalkeeper, R.drawable.jersey_armagh_outfield)
+        mapOfTeamsCounty[resources.getString(R.string.cavan)] = Team(resources.getString(R.string.cavan), getDrawable(R.drawable.crest_cavan), R.drawable.jersey_cavan_goalkeeper, R.drawable.jersey_cavan_outfield)
+        mapOfTeamsCounty[resources.getString(R.string.derry)] = Team(resources.getString(R.string.derry), getDrawable(R.drawable.crest_derry), R.drawable.jersey_derry_goalkeeper, R.drawable.jersey_derry_outfield)
+        mapOfTeamsCounty[resources.getString(R.string.donegal)] = Team(resources.getString(R.string.donegal), getDrawable(R.drawable.crest_donegal), R.drawable.jersey_donegal_goalkeeper, R.drawable.jersey_donegal_outfield)
+        mapOfTeamsCounty[resources.getString(R.string.down)] = Team(resources.getString(R.string.down), getDrawable(R.drawable.crest_down), R.drawable.jersey_down_goalkeeper, R.drawable.jersey_down_outfield)
+        mapOfTeamsCounty[resources.getString(R.string.fermanagh)] = Team(resources.getString(R.string.fermanagh), getDrawable(R.drawable.crest_fermanagh), R.drawable.jersey_fermanagh_goalkeeper, R.drawable.jersey_fermanagh_outfield)
+        mapOfTeamsCounty[resources.getString(R.string.monaghan)] = Team(resources.getString(R.string.monaghan), getDrawable(R.drawable.crest_monaghan), R.drawable.jersey_monaghan_goalkeeper, R.drawable.jersey_monaghan_outfield)
+        mapOfTeamsCounty[resources.getString(R.string.tyrone)] = Team(resources.getString(R.string.tyrone), getDrawable(R.drawable.crest_tyrone), R.drawable.jersey_tyrone_goalkeeper, R.drawable.jersey_tyrone_outfield)
+
+        // munster counties
+        mapOfTeamsCounty[resources.getString(R.string.clare)] = Team(resources.getString(R.string.clare), getDrawable(R.drawable.crest_clare), R.drawable.jersey_clare_goalkeeper, R.drawable.jersey_clare_outfield)
+        mapOfTeamsCounty[resources.getString(R.string.cork)] = Team(resources.getString(R.string.cork), getDrawable(R.drawable.crest_cork), R.drawable.jersey_cork_goalkeeper, R.drawable.jersey_cork_outfield)
+        mapOfTeamsCounty[resources.getString(R.string.kerry)] = Team(resources.getString(R.string.kerry), getDrawable(R.drawable.crest_kerry), R.drawable.jersey_kerry_goalkeeper, R.drawable.jersey_kerry_outfield)
+        mapOfTeamsCounty[resources.getString(R.string.limerick)] = Team(resources.getString(R.string.limerick), getDrawable(R.drawable.crest_limerick), R.drawable.jersey_limerick_goalkeeper, R.drawable.jersey_limerick_outfield)
+        mapOfTeamsCounty[resources.getString(R.string.tipperary)] = Team(resources.getString(R.string.tipperary), getDrawable(R.drawable.crest_tipperary), R.drawable.jersey_tipperary_goalkeeper, R.drawable.jersey_tipperary_outfield)
+        mapOfTeamsCounty[resources.getString(R.string.waterford)] = Team(resources.getString(R.string.waterford), getDrawable(R.drawable.crest_waterford), R.drawable.jersey_waterford_goalkeeper, R.drawable.jersey_waterford_outfield)
+
+        // leinster counties
+        mapOfTeamsCounty[resources.getString(R.string.carlow)] = Team(resources.getString(R.string.clare), getDrawable(R.drawable.crest_carlow), R.drawable.jersey_carlow_goalkeeper, R.drawable.jersey_carlow_outfield)
+        mapOfTeamsCounty[resources.getString(R.string.dublin)] = Team(resources.getString(R.string.dublin), getDrawable(R.drawable.crest_dublin), R.drawable.jersey_dublin_goalkeeper, R.drawable.jersey_dublin_outfield)
+        mapOfTeamsCounty[resources.getString(R.string.kildare)] = Team(resources.getString(R.string.kildare), getDrawable(R.drawable.crest_kildare), R.drawable.jersey_kildare_goalkeeper, R.drawable.jersey_kildare_outfield)
+        mapOfTeamsCounty[resources.getString(R.string.kilkenny)] = Team(resources.getString(R.string.kilkenny), getDrawable(R.drawable.crest_kilkenny), R.drawable.jersey_kilkenny_goalkeeper, R.drawable.jersey_kilkenny_outfield)
+        mapOfTeamsCounty[resources.getString(R.string.laois)] = Team(resources.getString(R.string.laois), getDrawable(R.drawable.crest_laois), R.drawable.jersey_laois_goalkeeper, R.drawable.jersey_laois_outfield)
+        mapOfTeamsCounty[resources.getString(R.string.longford)] = Team(resources.getString(R.string.longford), getDrawable(R.drawable.crest_longford), R.drawable.jersey_longford_goalkeeper, R.drawable.jersey_longford_outfield)
+        mapOfTeamsCounty[resources.getString(R.string.louth)] = Team(resources.getString(R.string.louth), getDrawable(R.drawable.crest_louth), R.drawable.jersey_louth_goalkeeper, R.drawable.jersey_louth_outfield)
+        mapOfTeamsCounty[resources.getString(R.string.meath)] = Team(resources.getString(R.string.meath), getDrawable(R.drawable.crest_meath), R.drawable.jersey_meath_goalkeeper, R.drawable.jersey_meath_outfield)
+        mapOfTeamsCounty[resources.getString(R.string.offaly)] = Team(resources.getString(R.string.offaly), getDrawable(R.drawable.crest_offaly), R.drawable.jersey_offaly_goalkeeper, R.drawable.jersey_offaly_outfield)
+        mapOfTeamsCounty[resources.getString(R.string.westmeath)] = Team(resources.getString(R.string.westmeath), getDrawable(R.drawable.crest_westmeath), R.drawable.jersey_westmeath_goalkeeper, R.drawable.jersey_westmeath_outfield)
+        mapOfTeamsCounty[resources.getString(R.string.wexford)] = Team(resources.getString(R.string.waterford), getDrawable(R.drawable.crest_wexford), R.drawable.jersey_wexford_goalkeeper, R.drawable.jersey_wexford_outfield)
+        mapOfTeamsCounty[resources.getString(R.string.wicklow)] = Team(resources.getString(R.string.wicklow), getDrawable(R.drawable.crest_wicklow), R.drawable.jersey_wicklow_goalkeeper, R.drawable.jersey_wicklow_outfield)
     }
 
     private fun initVars(){
@@ -219,8 +264,11 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
 
         val row = layoutInflater.inflate(R.layout.team_name_view, null)
 
+        val list = resources.getStringArray(R.array.team_names_counties).toList()
+        Collections.sort(list)
+
         viewManager = LinearLayoutManager(this)
-        viewAdapter= MyAdapter(resources.getStringArray(R.array.team_names), this)
+        viewAdapter= MyAdapter(list, this)
 
         rvTeams = row.findViewById<RecyclerView>(R.id.rv_team_names).apply {
             // use this setting to improve performance if you know that changes
@@ -252,13 +300,13 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
         if (dialogTitle != null) {
             if(dialogTitle.text == getString(R.string.default_team_name_a)) {
                 tvTeamA.text = team
-                ivTeamA.setImageDrawable(mapOfTeams[team]!!.getCrest())
-                pitchView.setJerseyBitmaps(mapOfTeams[team]!!.getJerseyGoalkeeper(), mapOfTeams[team]!!.getJerseyOutfield())
+                ivTeamA.setImageDrawable(mapOfTeamsCounty[team]!!.getCrest())
+                pitchView.setJerseyBitmaps(mapOfTeamsCounty[team]!!.getJerseyGoalkeeper(), mapOfTeamsCounty[team]!!.getJerseyOutfield())
                 pitchView.invalidate()
             }
             else{
                 tvTeamB.text = team
-                ivTeamB.setImageDrawable(mapOfTeams[team]!!.getCrest())
+                ivTeamB.setImageDrawable(mapOfTeamsCounty[team]!!.getCrest())
             }
         }
         dialogSelectTeam.dismiss()

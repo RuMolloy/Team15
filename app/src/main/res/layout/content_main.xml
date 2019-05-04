@@ -88,6 +88,8 @@
             app:layout_constraintVertical_weight="7.65"
             android:background="@drawable/pitch">
 
+        <!--android:background="@drawable/pitch"-->
+
         <view
                 android:id="@+id/view_pitch"
                 class="com.example.first15.PitchView"

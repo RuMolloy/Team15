@@ -10,7 +10,7 @@
 
     <EditText
             android:id="@+id/et_edit_player_number"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:inputType="number"
             android:layout_weight="0.2"/>
@@ -19,6 +19,7 @@
             android:id="@+id/et_edit_player_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:inputType="text"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             android:layout_weight="0.8"/>
