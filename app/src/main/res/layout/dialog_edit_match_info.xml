@@ -15,22 +15,9 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent">
 
-        <include android:id="@+id/rl_competition_write"
+        <include android:id="@+id/rl_match_info_write"
                  layout="@layout/match_info_write"/>
 
-        <android.support.v4.widget.Space
-                android:layout_width="wrap_content"
-                android:layout_height="10dp"/>
-
-        <include android:id="@+id/rl_venue_write"
-                 layout="@layout/match_info_write"/>
-
-        <android.support.v4.widget.Space
-                android:layout_width="wrap_content"
-                android:layout_height="10dp"/>
-
-        <include android:id="@+id/rl_time_write"
-                 layout="@layout/match_info_write"/>
     </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>

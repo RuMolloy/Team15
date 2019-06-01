@@ -6,5 +6,5 @@
     <color name="colorPitchGrass"> #6CAB36</color>
     <color name="colorPitchLinesAndText">#FFFFFF</color>
     <color name="colorBorders">#000000</color>
-    <color name="colorBackground">#DCDCDC</color>
+    <color name="colorBackground">#F0F0F0</color>
 </resources>

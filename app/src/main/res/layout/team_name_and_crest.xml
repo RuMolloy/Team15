@@ -14,14 +14,14 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:layout_marginBottom="8dp"
-            android:src="@drawable/add_team"/>
+            android:src="@drawable/crest_default"/>
 
     <TextView
             android:id="@+id/tv_team"
-            android:text="@string/default_team_name_a"
+            android:text="@string/default_team_name"
             android:textSize="@dimen/font_size_large"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
             android:gravity="center"/>
 
 </LinearLayout>

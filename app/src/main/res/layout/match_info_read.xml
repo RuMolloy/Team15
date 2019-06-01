@@ -4,24 +4,35 @@
         android:id="@+id/rl_match_info_read"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center">
+        android:layout_gravity="top">
 
     <TextView
             android:id="@+id/tv_match_info_title_read"
-            android:text="@string/default_match_info_competition_title"
-            android:textAllCaps="true"
-            android:textSize="@dimen/font_size_small"
+            android:text="@string/default_team_name_primary"
+            android:textSize="@dimen/font_team_name_primary"
+            android:textStyle="bold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"/>
 
     <TextView
-            android:id="@+id/tv_match_info_name_read"
-            android:text="@string/default_match_info_competition_name"
-            android:textSize="@dimen/font_size_medium"
+            android:id="@+id/tv_match_info_opposition_read"
+            android:text="@string/default_team_name_secondary"
+            android:textSize="@dimen/font_team_name_secondary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/tv_match_info_title_read"
             android:layout_centerHorizontal="true"/>
+
+    <TextView
+            android:id="@+id/tv_match_info_name_read"
+            android:text="@string/default_match_info"
+            android:textSize="@dimen/font_match_info"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tv_match_info_opposition_read"
+            android:layout_centerHorizontal="true"
+            android:gravity="center_horizontal"
+            android:layout_gravity="center_horizontal"/>
 
 </RelativeLayout>

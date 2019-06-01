@@ -2,9 +2,10 @@
     <string name="app_name">First15</string>
     <string name="action_reset">Reset</string>
     <string name="title_select_team_name">Select Team</string>
-    <string name="default_team_name">Team</string>
-    <string name="default_team_name_a">Select Team A</string>
-    <string name="default_team_name_b">Select Team B</string>
+    <string name="default_team_name_primary">Team Name</string>
+    <string name="default_team_name_secondary">vs. Team Name</string>
+    <string name="default_match_info">Competition name and stage, time and date, venue etc.</string>
+    <string name="default_team_name">Select Team</string>
     <string name="default_match_info_competition_title">Competition</string>
     <string name="default_match_info_competition_name">Enter Competition</string>
     <string name="default_match_info_venue_title">Venue</string>
@@ -14,7 +15,7 @@
     <string name="default_edit_player_title">Edit Player</string>
     <string name="default_hashtag_one">#First15</string>
     <string name="default_hashtag_two">#GAA</string>
-    <string name="default_hashtag_three">#OneLifeOneClub</string>
+    <string name="default_hashtag_three">#OneLifeOneCounty</string>
     <string name="reset_title">Reset?</string>
     <string name="reset_message">All team, player and venue information will be cleared</string>
     <string name="set_match_details">Edit Match Info</string>
@@ -153,6 +154,7 @@
         <item>@string/sligo</item>
 
         <item>@string/antrim</item>
+        <item>@string/armagh</item>
         <item>@string/cavan</item>
         <item>@string/derry</item>
         <item>@string/donegal</item>

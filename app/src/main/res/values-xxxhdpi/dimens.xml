@@ -1,0 +1,8 @@
+<resources>
+    <dimen name="player_jersey_offset">15dp</dimen>
+    <dimen name="player_name_offset">15dp</dimen>
+    <dimen name="font_team_name_primary">22sp</dimen>
+    <dimen name="font_team_name_secondary">18sp</dimen>
+    <dimen name="font_match_info">13sp</dimen>
+    <dimen name="font_player_name">11sp</dimen>
+</resources>

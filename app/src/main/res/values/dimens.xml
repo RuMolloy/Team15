@@ -1,6 +1,13 @@
 <resources>
+    <dimen name="util_margin">5dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
+    <dimen name="player_jersey_offset">5dp</dimen>
+    <dimen name="player_name_offset">5dp</dimen>
+    <dimen name="font_team_name_primary">8sp</dimen>
+    <dimen name="font_team_name_secondary">6sp</dimen>
+    <dimen name="font_match_info">5sp</dimen>
     <dimen name="font_size_small">10sp</dimen>
     <dimen name="font_size_medium">15sp</dimen>
     <dimen name="font_size_large">16sp</dimen>
+    <dimen name="font_player_name">30sp</dimen>
 </resources>

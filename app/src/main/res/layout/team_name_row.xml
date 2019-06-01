@@ -10,7 +10,7 @@
 
     <TextView
             android:id="@+id/tv_team_name"
-            android:text="@string/default_team_name"
+            android:text="@string/default_team_name_primary"
             android:textSize="@dimen/font_size_large"
             android:gravity="start"
             android:layout_width="match_parent"
