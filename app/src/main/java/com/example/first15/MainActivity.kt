@@ -452,7 +452,7 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
     private fun openAboutDialog(){
         val builder = AlertDialog.Builder(this)
         builder.setTitle(getString(R.string.action_about) + " " + getString(R.string.app_name))
-        builder.setMessage(R.string.app_version)
+        builder.setMessage(BuildConfig.VERSION_NAME)
         builder.show()
     }
 }
