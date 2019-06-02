@@ -337,11 +337,14 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
                     }
                 }
                 builder.show()
-
                 true
             }
             R.id.menu_item_share -> {
                 checkWritePermission()
+                true
+            }
+            R.id.menu_item_about -> {
+                openAboutDialog()
                 true
             }
             else -> {
@@ -360,7 +363,7 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
                 MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE)
         } else {
             // Permission has already been granted
-            storeAndShareImage(getScreenShot())
+            storeAndShareImage(getScreenImage())
         }
     }
 
@@ -371,7 +374,7 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
                 // If request is cancelled, the result arrays are empty.
                 if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
                     // permission was granted, proceed to store and then share the screenshot
-                    storeAndShareImage(getScreenShot())
+                    storeAndShareImage(getScreenImage())
                 } else {
                     // permission denied, don't proceed to store and share screenshot
                     Toast.makeText(this, R.string.share_permission_error_msg, Toast.LENGTH_SHORT).show()
@@ -392,7 +395,7 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
         }
     }
 
-    private fun getScreenShot(): Bitmap {
+    private fun getScreenImage(): Bitmap {
         val rootView = findViewById<ConstraintLayout>(R.id.cl_main) // we don't want the action bar in the screenshot so using the app's main layout
         rootView.isDrawingCacheEnabled = true
         val bitmap = rootView.drawingCache.copy(Bitmap.Config.RGB_565, false)
@@ -444,5 +447,12 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
                 file.delete()
             }
         }
+    }
+
+    private fun openAboutDialog(){
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle(getString(R.string.action_about) + " " + getString(R.string.app_name))
+        builder.setMessage(R.string.app_version)
+        builder.show()
     }
 }

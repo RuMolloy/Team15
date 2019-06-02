@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">First15</string>
+    <string name="app_version">Version 0.0.01</string>
     <string name="action_reset">Reset</string>
+    <string name="action_about">About</string>
     <string name="title_select_team_name">Select Team</string>
     <string name="default_team_name_primary">Team Name</string>
     <string name="default_team_name_secondary">vs. Team Name</string>
