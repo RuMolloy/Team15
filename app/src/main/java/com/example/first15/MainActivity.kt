@@ -27,16 +27,17 @@ import android.support.constraint.ConstraintLayout
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v4.content.FileProvider
-import android.util.DisplayMetrics
 import android.util.Log
 import java.io.FileNotFoundException
 import java.io.IOException
+import java.text.SimpleDateFormat
 
 
 class MainActivity : OnTeamClickListener, AppCompatActivity(){
 
     companion object {
         const val MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 1
+        const val MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 2
     }
 
     private lateinit var llMatchInfo: LinearLayout
@@ -78,6 +79,7 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
         loadVars()
         loadTeams()
         initVars()
+        deleteImagesIfHasPermission()
 
         val d = resources.displayMetrics.density
         val metrics = resources.displayMetrics;
@@ -197,6 +199,16 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
 
         for(item in pitchView.mapOfPlayers){
             item.value.setCustomName("")
+        }
+    }
+
+    private fun deleteImagesIfHasPermission(){
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            != PackageManager.PERMISSION_GRANTED) {
+        } else {
+            // Permission has been granted
+            deleteImages()
         }
     }
 
@@ -329,7 +341,7 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
                 true
             }
             R.id.menu_item_share -> {
-                checkPermissions()
+                checkWritePermission()
                 true
             }
             else -> {
@@ -338,7 +350,7 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
         }
     }
 
-    private fun checkPermissions(){
+    private fun checkWritePermission(){
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE)
             != PackageManager.PERMISSION_GRANTED) {
@@ -366,6 +378,17 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
                 }
                 return
             }
+            MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE -> {
+                // If request is cancelled, the result arrays are empty.
+                if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+                    // permission was granted, proceed to store and then share the screenshot
+                    deleteImages()
+                } else {
+                    // permission denied, don't proceed to store and share screenshot
+                    Toast.makeText(this, R.string.delete_permission_error_msg, Toast.LENGTH_SHORT).show()
+                }
+                return
+            }
         }
     }
 
@@ -378,9 +401,16 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
     }
 
     private fun storeAndShareImage(bitmap: Bitmap) {
-        val imagePath = File(Environment.getExternalStorageDirectory().toString() + "/screenshot.png")
+        val imageDir = File(Environment.getExternalStorageDirectory().toString() + "/" + getString(R.string.app_name))
+        imageDir.mkdirs()
+
+        val formatter = SimpleDateFormat("yyyyMMdd")
+        val dateString = formatter.format(Date(System.currentTimeMillis()))
+
+        val imageFile = File(imageDir, dateString + "_" +tvTeamA.text.toString() +".jpg")
+
         try {
-            val fos = FileOutputStream(imagePath)
+            val fos = FileOutputStream(imageFile)
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos)
             fos.flush()
             fos.close()
@@ -390,19 +420,29 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
             Log.e("GREC", e.message, e)
         }
 
-        shareImage(imagePath)
+        shareImage(imageFile)
     }
 
     private fun shareImage(imagePath: File) {
         val uri = FileProvider.getUriForFile(this, "com.codepath.fileprovider", imagePath)
 
-        val sharingIntent = Intent(android.content.Intent.ACTION_SEND)
+        val sharingIntent = Intent(Intent.ACTION_SEND)
         sharingIntent.type = "image/*"
         val shareBody = "#" + getString(R.string.app_name)
-        sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, getString(R.string.app_name))
-        sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody)
+        sharingIntent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.app_name))
+        sharingIntent.putExtra(Intent.EXTRA_TEXT, shareBody)
         sharingIntent.putExtra(Intent.EXTRA_STREAM, uri)
 
         startActivity(Intent.createChooser(sharingIntent, getString(R.string.share)))
+    }
+
+    private fun deleteImages(){
+        val imageDir = File(Environment.getExternalStorageDirectory().toString() + "/" + getString(R.string.app_name))
+        if(imageDir.exists()){
+            val files = imageDir.listFiles()
+            for(file in files.iterator()){
+                file.delete()
+            }
+        }
     }
 }

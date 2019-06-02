@@ -23,6 +23,7 @@
     <string name="cancel">cancel</string>
     <string name="share">Share Via</string>
     <string name="share_permission_error_msg">Not able to share screenshot</string>
+    <string name="delete_permission_error_msg">Not able to delete screenshot(s)</string>
 
     <string-array name="team_positions">
         <item>Goalkeeper</item>
