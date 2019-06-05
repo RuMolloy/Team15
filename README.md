@@ -1,4 +1,4 @@
-# First15
+# Team15
 Android app to allow GAA teams (gaelic football and hurling) to publish their starting 15 players for any given game along with fixture info to their social media accounts.
 
 1. Inspiration from similar apps for other sports, websites, tv shows, social media etc. collated [here](https://projects.invisionapp.com/boards/FH3SJMFPAC5/) by creating a 'board' on [invision](https://www.invisionapp.com/)
