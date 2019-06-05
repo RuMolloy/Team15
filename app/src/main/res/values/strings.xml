@@ -1,10 +1,10 @@
 <resources>
-    <string name="app_name">First15</string>
+    <string name="app_name">Team15</string>
     <string name="action_reset">Reset</string>
     <string name="action_about">About</string>
-    <string name="title_select_team_name">Select Team</string>
-    <string name="default_team_name_primary">Team Name</string>
-    <string name="default_team_name_secondary">vs. Team Name</string>
+    <string name="title_select_team_name">Select Team A</string>
+    <string name="default_team_name_a">Team Name A</string>
+    <string name="default_team_name_b">vs. Team Name B</string>
     <string name="default_match_info">Competition name and stage, time and date, venue etc.</string>
     <string name="default_team_name">Select Team</string>
     <string name="default_match_info_competition_title">Competition</string>
@@ -44,63 +44,62 @@
         <item>Right corner forward</item>
     </string-array>
 
-    <!--<string name="default_goalkeeper_name">Goalkeeper</string>-->
-    <!--<string name="default_left_corner_back_name">Left corner back</string>-->
-    <!--<string name="default_full_back_name">Full back</string>-->
-    <!--<string name="default_right_corner_back_name">Right corner back</string>-->
-    <!--<string name="default_left_half_back_name">Left half back</string>-->
-    <!--<string name="default_center_back_name">Center back</string>-->
-    <!--<string name="default_right_half_back_name">Right half back</string>-->
-    <!--<string name="default_midfielder_a_name">Midfield A</string>-->
-    <!--<string name="default_midfielder_b_name">Midfield B</string>-->
-    <!--<string name="default_left_half_forward_name">Left half forward</string>-->
-    <!--<string name="default_centre_forward_name">Center forward</string>-->
-    <!--<string name="default_right_half_forward_name">Right half forward</string>-->
-    <!--<string name="default_left_corner_forward_name">Left corner forward</string>-->
-    <!--<string name="default_full_forward_name">Full forward</string>-->
-    <!--<string name="default_right_corner_forward_name">Right corner forward</string>-->
-
-    <!--<string-array name="team_names">-->
-        <!--<item>Boyle</item>-->
-        <!--<item>Clan na Gael</item>-->
-        <!--<item>Elphin</item>-->
-        <!--<item>Fuerty</item>-->
-        <!--<item>Michael Glaveys</item>-->
-        <!--<item>Padraig Pearses</item>-->
-        <!--<item>Roscommon Gaels</item>-->
-        <!--<item>Strokestown</item>-->
-        <!--<item>St.Brigids</item>-->
-        <!--<item>St.Croans</item>-->
-        <!--<item>St. Faithleachs</item>-->
-        <!--<item>Western Gaels</item>-->
-    <!--</string-array>-->
-
     // Roscommon clubs
+    <string name="ballinameen">Ballinameen</string>
     <string name="boyle">Boyle</string>
+    <string name="castlerea">Castlerea</string>
     <string name="clan_na_gael">Clan na Gael</string>
+    <string name="creggs">Creggs</string>
+    <string name="eire_og">Eire Og</string>
     <string name="elphin">Elphin</string>
     <string name="fuerty">Fuerty</string>
+    <string name="kilbride">Kilbride</string>
+    <string name="kilglass_gaels">Kilglass Gaels</string>
+    <string name="kilmore">Kilmore</string>
     <string name="micheal_glaveys">Michael Glaveys</string>
+    <string name="oran">Oran</string>
     <string name="padraig_pearses">Padraig Pearses</string>
     <string name="roscommon_gaels">Roscommon Gaels</string>
+    <string name="shannon_gaels">Shannon Gaels</string>
     <string name="strokestown">Strokestown</string>
-    <string name="st_brigids">St.Brigids</string>
-    <string name="st_croans">St.Croans</string>
-    <string name="st_faithleachs">St. Faithleachs</string>
+    <string name="st_aidans">St Aidans</string>
+    <string name="st_barrys">St Barrys</string>
+    <string name="st_brigids">St Brigids</string>
+    <string name="st_croans">St Croans</string>
+    <string name="st_dominics">St Dominics</string>
+    <string name="st_faithleachs">St Faithleachs</string>
+    <string name="st_josephs">St Josephs</string>
+    <string name="st_michaels">St Michaels</string>
+    <string name="tulsk">Tulsk</string>
     <string name="western_gaels">Western Gaels</string>
 
     <string-array name="team_names_clubs">
+        <item>@string/ballinameen</item>
         <item>@string/boyle</item>
+        <item>@string/castlerea</item>
         <item>@string/clan_na_gael</item>
+        <item>@string/creggs</item>
+        <item>@string/eire_og</item>
         <item>@string/elphin</item>
         <item>@string/fuerty</item>
+        <item>@string/kilbride</item>
+        <item>@string/kilglass_gaels</item>
+        <item>@string/kilmore</item>
         <item>@string/micheal_glaveys</item>
+        <item>@string/oran</item>
         <item>@string/padraig_pearses</item>
         <item>@string/roscommon_gaels</item>
+        <item>@string/shannon_gaels</item>
         <item>@string/strokestown</item>
+        <item>@string/st_aidans</item>
+        <item>@string/st_barrys</item>
         <item>@string/st_brigids</item>
         <item>@string/st_croans</item>
+        <item>@string/st_dominics</item>
         <item>@string/st_faithleachs</item>
+        <item>@string/st_josephs</item>
+        <item>@string/st_michaels</item>
+        <item>@string/tulsk</item>
         <item>@string/western_gaels</item>
     </string-array>
 

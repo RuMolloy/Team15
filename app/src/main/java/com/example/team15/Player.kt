@@ -1,4 +1,4 @@
-package com.example.first15
+package com.example.team15
 
 import android.graphics.Point
 import android.graphics.Rect
@@ -8,10 +8,10 @@ class Player(name: String, number: String){
     private var nameDefault: String = name
     private var nameCustom: String = name
     private var number: String = number
-    private var pointBitmap: Point? = null
-    private var pointText: Point? = null
-    private var rectBitmap: Rect? = null
-    private var rectText: Rect? = null
+    private var pointJersey: Point? = null
+    private var pointNumberAndName: Point? = null
+    private var rectJersey: Rect? = null
+    private var rectNumberAndName: Rect? = null
 
     fun setCustomName(name: String) {
         this.nameCustom = name
@@ -42,35 +42,35 @@ class Player(name: String, number: String){
         return number + ". " + getName()
     }
 
-    fun setBitmapPoint(bitmapPoint: Point){
-        pointBitmap = bitmapPoint
+    fun setJerseyPoint(pointJersey: Point){
+        this.pointJersey = pointJersey
     }
 
-    fun getBitmapPoint(): Point?{
-        return pointBitmap
+    fun getJerseyPoint(): Point?{
+        return pointJersey
     }
 
-    fun setTextPoint(textPoint: Point){
-        pointText = textPoint
+    fun setNumberAndNamePoint(pointNumberAndName: Point){
+        this.pointNumberAndName = pointNumberAndName
     }
 
-    fun getTextPoint(): Point?{
-        return pointText
+    fun getNumberAndNamePoint(): Point?{
+        return pointNumberAndName
     }
 
-    fun setBitmapRect(rectangle: Rect){
-        rectBitmap = rectangle
+    fun setJerseyRect(rectJersey: Rect){
+        this.rectJersey = rectJersey
     }
 
-    fun getBitmapRect(): Rect?{
-        return rectBitmap
+    fun getJerseyRect(): Rect?{
+        return rectJersey
     }
 
-    fun setTextRect(rectangle: Rect){
-        rectText = rectangle
+    fun setNumberAndNameRect(rectNumberAndName: Rect){
+        this.rectNumberAndName = rectNumberAndName
     }
 
-    fun getTextRect(): Rect?{
-        return rectText
+    fun getNumberAndNameRect(): Rect?{
+        return rectNumberAndName
     }
 }

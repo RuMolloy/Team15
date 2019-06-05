@@ -1,4 +1,4 @@
-package com.example.first15
+package com.example.team15
 
 import android.Manifest
 import android.os.Build
@@ -28,6 +28,7 @@ import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v4.content.FileProvider
 import android.util.Log
+import com.example.team15.Team
 import java.io.FileNotFoundException
 import java.io.IOException
 import java.text.SimpleDateFormat
@@ -40,22 +41,18 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
         const val MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 2
     }
 
-    private lateinit var llMatchInfo: LinearLayout
-
     private lateinit var llTeamA: LinearLayout
-    private lateinit var tvTeamA: TextView
     private lateinit var ivTeamA: ImageView
 
     private lateinit var rlTeamNames: RelativeLayout
-    private lateinit var tvTeamNamePrimary: TextView
-    private lateinit var tvTeamNameSecondary: TextView
+    private lateinit var tvTeamNameA: TextView
+    private lateinit var tvTeamNameB: TextView
     private lateinit var tvMatchInfo: TextView
 
     private lateinit var rlMatchInfo: RelativeLayout
     private lateinit var etMatchInfo: EditText
 
     private lateinit var llTeamB: LinearLayout
-    private lateinit var tvTeamB: TextView
     private lateinit var ivTeamB: ImageView
 
     private lateinit var viewAdapter: RecyclerView.Adapter<*>
@@ -74,37 +71,27 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
-        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT //UI only designed for portrait, so disable landscape
 
         loadVars()
         loadTeams()
         initVars()
         deleteImagesIfHasPermission()
-
-        val d = resources.displayMetrics.density
-        val metrics = resources.displayMetrics;
-        Log.d("Density", d.toString())
     }
 
     private fun loadVars(){
-        llMatchInfo = findViewById(R.id.ll_match_info_read)
-        llMatchInfo.setOnClickListener {
-            openMatchInfoDialog()
-        }
-
         llTeamA = findViewById(R.id.ll_team_a)
-        tvTeamA = llTeamA.findViewById(R.id.tv_team) as TextView
-        ivTeamA = llTeamA.findViewById(R.id.iv_team) as ImageView
+        ivTeamA = llTeamA.findViewById(R.id.iv_team_crest) as ImageView
         ivTeamA.setOnClickListener{
             openTeamSelectionDialog(getString(R.string.default_team_name))
         }
 
         rlTeamNames = findViewById(R.id.rl_team_names)
-        tvTeamNamePrimary = rlTeamNames.findViewById(R.id.tv_match_info_title_read)
+        tvTeamNameA = rlTeamNames.findViewById(R.id.tv_match_info_team_a)
 
-        tvTeamNameSecondary = rlTeamNames.findViewById(R.id.tv_match_info_opposition_read)
-        tvTeamNameSecondary.setOnClickListener{
-            openTeamSelectionDialog(getString(R.string.default_team_name_secondary))
+        tvTeamNameB = rlTeamNames.findViewById(R.id.tv_match_info_team_b)
+        tvTeamNameB.setOnClickListener{
+            openTeamSelectionDialog(getString(R.string.default_team_name_b))
         }
 
         tvMatchInfo = rlTeamNames.findViewById(R.id.tv_match_info_name_read)
@@ -113,11 +100,10 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
         }
 
         llTeamB = findViewById(R.id.ll_team_b)
-        ivTeamB = llTeamB.findViewById(R.id.iv_team) as ImageView
+        ivTeamB = llTeamB.findViewById(R.id.iv_team_crest) as ImageView
         ivTeamB.setOnClickListener{
-            openTeamSelectionDialog(getString(R.string.default_team_name_secondary))
+            openTeamSelectionDialog(getString(R.string.default_team_name_b))
         }
-        tvTeamB = llTeamB.findViewById(R.id.tv_team) as TextView
 
         pitchView = findViewById(R.id.view_pitch)
     }
@@ -125,17 +111,32 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     private fun loadTeams(){
         mapOfTeamsClub = TreeMap()
+        mapOfTeamsClub[resources.getString(R.string.ballinameen)] = Team(resources.getString(R.string.ballinameen), getDrawable(R.drawable.crest_ballinameen), R.drawable.jersey_ballinameen_goalkeeper, R.drawable.jersey_ballinameen_outfield)
         mapOfTeamsClub[resources.getString(R.string.boyle)] = Team(resources.getString(R.string.boyle), getDrawable(R.drawable.crest_boyle), R.drawable.jersey_boyle_goalkeeper, R.drawable.jersey_boyle_outfield)
+        mapOfTeamsClub[resources.getString(R.string.castlerea)] = Team(resources.getString(R.string.castlerea), getDrawable(R.drawable.crest_castlerea), R.drawable.jersey_castlerea_goalkeeper, R.drawable.jersey_castlerea_outfield)
         mapOfTeamsClub[resources.getString(R.string.clan_na_gael)] = Team(resources.getString(R.string.clan_na_gael), getDrawable(R.drawable.crest_clan_na_gael_ros), R.drawable.jersey_clan_na_gael_ros_goalkeeper, R.drawable.jersey_clan_na_gael_ros_outfield)
+        mapOfTeamsClub[resources.getString(R.string.creggs)] = Team(resources.getString(R.string.creggs), getDrawable(R.drawable.crest_creggs), R.drawable.jersey_creggs_goalkeeper, R.drawable.jersey_creggs_outfield)
+        mapOfTeamsClub[resources.getString(R.string.eire_og)] = Team(resources.getString(R.string.eire_og), getDrawable(R.drawable.crest_eire_og_ros), R.drawable.jersey_eire_og_ros_goalkeeper, R.drawable.jersey_eire_og_ros_outfield)
         mapOfTeamsClub[resources.getString(R.string.elphin)] = Team(resources.getString(R.string.elphin), getDrawable(R.drawable.crest_elphin), R.drawable.jersey_elphin_goalkeeper, R.drawable.jersey_elphin_outfield)
         mapOfTeamsClub[resources.getString(R.string.fuerty)] = Team(resources.getString(R.string.fuerty), getDrawable(R.drawable.crest_fuerty), R.drawable.jersey_fuerty_goalkeeper, R.drawable.jersey_fuerty_outfield)
+        mapOfTeamsClub[resources.getString(R.string.kilbride)] = Team(resources.getString(R.string.kilbride), getDrawable(R.drawable.crest_kilbride_ros), R.drawable.jersey_kilbride_ros_goalkeeper, R.drawable.jersey_kilbride_ros_outfield)
+        mapOfTeamsClub[resources.getString(R.string.kilglass_gaels)] = Team(resources.getString(R.string.kilglass_gaels), getDrawable(R.drawable.crest_kilglass_gaels), R.drawable.jersey_kilglass_gaels_goalkeeper, R.drawable.jersey_kilglass_gaels_outfield)
+        mapOfTeamsClub[resources.getString(R.string.kilmore)] = Team(resources.getString(R.string.kilmore), getDrawable(R.drawable.crest_kilmore_ros), R.drawable.jersey_kilmore_ros_goalkeeper, R.drawable.jersey_kilmore_ros_outfield)
         mapOfTeamsClub[resources.getString(R.string.micheal_glaveys)] = Team(resources.getString(R.string.micheal_glaveys), getDrawable(R.drawable.crest_michael_glaveys), R.drawable.jersey_michael_glaveys_goalkeeper, R.drawable.jersey_michael_glaveys_outfield)
+        mapOfTeamsClub[resources.getString(R.string.oran)] = Team(resources.getString(R.string.oran), getDrawable(R.drawable.crest_oran), R.drawable.jersey_oran_goalkeeper, R.drawable.jersey_oran_outfield)
         mapOfTeamsClub[resources.getString(R.string.padraig_pearses)] = Team(resources.getString(R.string.padraig_pearses), getDrawable(R.drawable.crest_padraig_pearses_ros), R.drawable.jersey_padraig_pearses_ros_goalkeeper, R.drawable.jersey_padraig_pearses_ros_outfield)
         mapOfTeamsClub[resources.getString(R.string.roscommon_gaels)] = Team(resources.getString(R.string.roscommon_gaels), getDrawable(R.drawable.crest_roscommon_gaels), R.drawable.jersey_ros_gaels_goalkeeper, R.drawable.jersey_ros_gaels_outfield)
+        mapOfTeamsClub[resources.getString(R.string.shannon_gaels)] = Team(resources.getString(R.string.shannon_gaels), getDrawable(R.drawable.crest_shannon_gaels), R.drawable.jersey_shannon_gaels_goalkeeper, R.drawable.jersey_shannon_gaels_outfield)
         mapOfTeamsClub[resources.getString(R.string.strokestown)] = Team(resources.getString(R.string.strokestown), getDrawable(R.drawable.crest_strokestown), R.drawable.jersey_strokestown_goalkeeper, R.drawable.jersey_strokestown_outfield)
+        mapOfTeamsClub[resources.getString(R.string.st_aidans)] = Team(resources.getString(R.string.st_aidans), getDrawable(R.drawable.crest_st_aidans_ros), R.drawable.jersey_st_aidans_ros_goalkeeper, R.drawable.jersey_st_aidans_ros_outfield)
+        mapOfTeamsClub[resources.getString(R.string.st_barrys)] = Team(resources.getString(R.string.st_barrys), getDrawable(R.drawable.crest_st_barrys), R.drawable.jersey_st_barrys_goalkeeper, R.drawable.jersey_st_barrys_outfield)
         mapOfTeamsClub[resources.getString(R.string.st_brigids)] = Team(resources.getString(R.string.st_brigids), getDrawable(R.drawable.crest_st_brigids_ros), R.drawable.jersey_st_brigids_ros_goalkeeper, R.drawable.jersey_st_brigids_ros_outfield)
         mapOfTeamsClub[resources.getString(R.string.st_croans)] = Team(resources.getString(R.string.st_croans), getDrawable(R.drawable.crest_st_croans), R.drawable.jersey_st_croans_goalkeeper, R.drawable.jersey_st_croans_outfield)
+        mapOfTeamsClub[resources.getString(R.string.st_dominics)] = Team(resources.getString(R.string.st_dominics), getDrawable(R.drawable.crest_st_dominics), R.drawable.jersey_st_dominics_goalkeeper, R.drawable.jersey_st_dominics_outfield)
         mapOfTeamsClub[resources.getString(R.string.st_faithleachs)] = Team(resources.getString(R.string.st_faithleachs), getDrawable(R.drawable.crest_st_faithleachs), R.drawable.jersey_st_faithleachs_goalkeeper, R.drawable.jersey_st_faithleachs_outfield)
+        mapOfTeamsClub[resources.getString(R.string.st_josephs)] = Team(resources.getString(R.string.st_josephs), getDrawable(R.drawable.crest_st_josephs_ros), R.drawable.jersey_st_josephs_ros_goalkeeper, R.drawable.jersey_st_josephs_ros_outfield)
+        mapOfTeamsClub[resources.getString(R.string.st_michaels)] = Team(resources.getString(R.string.st_michaels), getDrawable(R.drawable.crest_st_michaels), R.drawable.jersey_st_michaels_goalkeeper, R.drawable.jersey_st_michaels_outfield)
+        mapOfTeamsClub[resources.getString(R.string.tulsk)] = Team(resources.getString(R.string.tulsk), getDrawable(R.drawable.crest_tulsk), R.drawable.jersey_tulsk_goalkeeper, R.drawable.jersey_tulsk_outfield)
         mapOfTeamsClub[resources.getString(R.string.western_gaels)] = Team(resources.getString(R.string.western_gaels), getDrawable(R.drawable.crest_western_gaels), R.drawable.jersey_western_gaels_goalkeeper, R.drawable.jersey_western_gaels_outfield)
 
         mapOfTeamsCounty = TreeMap()
@@ -185,14 +186,12 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
 
     private fun initVars(){
         ivTeamA.setImageResource(R.drawable.crest_default)
-        tvTeamA.setText(R.string.default_team_name)
 
-        tvTeamNamePrimary.setText(R.string.default_team_name_primary)
-        tvTeamNameSecondary.setText(R.string.default_team_name_secondary)
+        tvTeamNameA.setText(R.string.default_team_name_a)
+        tvTeamNameB.setText(R.string.default_team_name_b)
         tvMatchInfo.setText(R.string.default_match_info)
 
         ivTeamB.setImageResource(R.drawable.crest_default)
-        tvTeamB.setText(R.string.default_team_name)
 
         pitchView.setJerseyBitmaps(R.drawable.jersey_default, R.drawable.jersey_default)
         pitchView.invalidate()
@@ -224,9 +223,6 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
                     tvMatchInfo.text = etMatchInfo.text.toString()
                 }
             }
-            setNegativeButton(R.string.cancel) { _, _ ->
-                // User cancelled the dialog
-            }
         }
         builder.show()
 
@@ -247,19 +243,16 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
         var listOfTeams: ArrayList<String> = ArrayList(list)
         listOfTeams.sort()
 
-//        var myLists = mutableListOf(list)
-//        myLists.removeAll{it == tvTeamA.text}
-
         if(title == getString(R.string.default_team_name)) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                Log.d("team", tvTeamB.text.toString())
-                listOfTeams.removeAll {it == tvTeamB.text.toString()}
+                Log.d("team", tvTeamNameB.text.toString())
+                listOfTeams.removeAll {it == tvTeamNameB.text.toString()}
             }
         }
         else{
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                Log.d("team", tvTeamA.text.toString())
-                listOfTeams.removeAll {it == tvTeamA.text.toString()}
+                Log.d("team", tvTeamNameA.text.toString())
+                listOfTeams.removeAll {it == tvTeamNameA.text.toString()}
             }
         }
 
@@ -295,18 +288,14 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
         val dialogTitle = dialogSelectTeam.findViewById<TextView>(android.support.v7.appcompat.R.id.alertTitle)
         if (dialogTitle != null) {
             if(dialogTitle.text == getString(R.string.default_team_name)) {
-                tvTeamA.text = team
                 ivTeamA.setImageDrawable(mapOfTeamsCounty[team]!!.getCrest())
-                //ivTeamB.setImageResource(mapOfTeamsCounty[team]!!.getJerseyOutfield())
-                tvTeamNamePrimary.text = team
-                //tvMatchInfo.text = team
+                tvTeamNameA.text = team
                 pitchView.setJerseyBitmaps(mapOfTeamsCounty[team]!!.getJerseyGoalkeeper(), mapOfTeamsCounty[team]!!.getJerseyOutfield())
                 pitchView.invalidate()
             }
             else{
-                tvTeamB.text = team
-                tvTeamNameSecondary.text = "vs. " +team
                 ivTeamB.setImageDrawable(mapOfTeamsCounty[team]!!.getCrest())
+                tvTeamNameB.text = "vs. " +team
             }
         }
         dialogSelectTeam.dismiss()
@@ -331,9 +320,6 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
                 builder.apply {
                     setPositiveButton(R.string.ok) { _, _ ->
                         initVars()
-                    }
-                    setNegativeButton(R.string.cancel) { _, _ ->
-                        // User cancelled the dialog
                     }
                 }
                 builder.show()
@@ -407,10 +393,8 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
         val imageDir = File(Environment.getExternalStorageDirectory().toString() + "/" + getString(R.string.app_name))
         imageDir.mkdirs()
 
-        val formatter = SimpleDateFormat("yyyyMMdd")
-        val dateString = formatter.format(Date(System.currentTimeMillis()))
-
-        val imageFile = File(imageDir, dateString + "_" +tvTeamA.text.toString() +".jpg")
+        val dateAndTimeStamp = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+        val imageFile = File(imageDir, dateAndTimeStamp + "_" +tvTeamNameA.text.toString() +".jpg")
 
         try {
             val fos = FileOutputStream(imageFile)

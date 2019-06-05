@@ -1,8 +1,7 @@
-package com.example.first15
+package com.example.team15
 
 import android.content.Context
 import android.graphics.*
-import android.graphics.Paint.Style
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AlertDialog
 import android.util.AttributeSet
@@ -15,19 +14,14 @@ import android.widget.EditText
 class PitchView : View  {
 
     private val line13m = 13.0
-    private val line30m = 30.0
-    private val line50m = 50.0
-    private val line70m = 70.0
-    private val line87m = 87.0
     private val pitchWidthInMetres = 90.0
     private val pitchLengthInMetres = 145.0
     private val borderX = 0
     private val borderY = 40
-    private var paintPitchPerimeter: Paint = Paint()
+    private var paintPitchHashtag: Paint = Paint()
     private var paintPitchText: Paint = Paint()
     private var paintTranslucent: Paint = Paint()
-    private var paintTextRect: Paint = Paint()
-    private var paintTemp: Paint = Paint()
+    private var paintPlayerNumberAndNameRect: Paint = Paint()
 
     private var rectPitchPerimeter = Rect(
         borderX,
@@ -69,32 +63,25 @@ class PitchView : View  {
     }
 
     private fun initUIResources() {
-        paintPitchPerimeter = Paint()
-        paintPitchPerimeter.isAntiAlias = true
-        paintPitchPerimeter.style = Paint.Style.STROKE
-        paintPitchPerimeter.strokeWidth = 3f
-        paintPitchPerimeter.color = ContextCompat.getColor(context, R.color.colorBorders)
-
         paintPitchText = Paint()
-        paintPitchText.style = Style.FILL
         paintPitchText.color = ContextCompat.getColor(context, R.color.colorPitchLinesAndText)
-        paintPitchText.strokeWidth = 3f
         paintPitchText.textSize = resources.getDimension(R.dimen.font_player_name)
         paintPitchText.textAlign = Paint.Align.CENTER
 
+        paintPitchHashtag = Paint()
+        paintPitchHashtag.color = ContextCompat.getColor(context, R.color.colorPitchLinesAndText)
+        paintPitchHashtag.textSize = resources.getDimension(R.dimen.font_team_name_secondary)
+        paintPitchHashtag.textAlign = Paint.Align.CENTER
+        paintPitchHashtag.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+        paintPitchHashtag.alpha = 125
+
         paintTranslucent = Paint()
         paintTranslucent.color = Color.TRANSPARENT
-        paintTranslucent.style = Paint.Style.STROKE
         paintTranslucent.isAntiAlias = true
 
-        paintTextRect = Paint()
-        paintTextRect.style = Style.FILL
-        paintTextRect.color = ContextCompat.getColor(context, R.color.colorBorders)
-        paintTextRect.alpha = 50
-
-        paintTemp = Paint()
-        paintTemp.style = Style.FILL
-        paintTemp.color = ContextCompat.getColor(context, R.color.colorPitchGrass)
+        paintPlayerNumberAndNameRect = Paint()
+        paintPlayerNumberAndNameRect.color = ContextCompat.getColor(context, R.color.colorBorders)
+        paintPlayerNumberAndNameRect.alpha = 50
 
         bitmapJerseyGoalkeeper = BitmapFactory.decodeResource(this.resources, R.drawable.jersey_default)
         bitmapJerseyOutfield = BitmapFactory.decodeResource(this.resources, R.drawable.jersey_default)
@@ -104,7 +91,7 @@ class PitchView : View  {
         for(item in resources.getStringArray(R.array.team_positions).indices){
             val playerPosition = resources.getStringArray(R.array.team_positions)[item]
             val player = Player(playerPosition, (item+1).toString())
-            setPlayerPositionParameters(player)
+            setPlayerLocationParameters(player)
             mapOfPlayers[item] = player
         }
     }
@@ -116,13 +103,14 @@ class PitchView : View  {
         for(item in resources.getStringArray(R.array.team_positions).indices){
             val playerPosition = resources.getStringArray(R.array.team_positions)[item]
             val player = Player(playerPosition, (item+1).toString())
-            setPlayerPositionParameters(player)
+            setPlayerLocationParameters(player)
             mapOfPlayers[item] = player
         }
     }
 
     public override fun onDraw(canvas: Canvas) {
         //drawPitchBackground(canvas)
+        drawHashtag(canvas)
         drawJersey(canvas)
     }
 
@@ -131,7 +119,19 @@ class PitchView : View  {
         canvas.drawARGB(255, Color.red(colorPitchGrass), Color.green(colorPitchGrass), Color.blue(colorPitchGrass))
 
         // fill
-        canvas.drawRect(rectPitchPerimeter, paintTemp)
+        canvas.drawRect(rectPitchPerimeter, paintPlayerNumberAndNameRect)
+    }
+
+    private fun drawHashtag(canvas: Canvas){
+        val centreX = halfScreenResolutionWidthInPixels - bitmapJerseyOutfield!!.width/2
+        val pitchRight = (centreX + centreX/1.6).toInt()
+        val offsetPlayerJersey = (resources.getDimension(R.dimen.player_jersey_offset).toInt())
+
+        //canvas.drawBitmap(bitmapJerseyOutfield, pitchRight.toFloat(), (getLineMinusJerseyOffset(0) + offsetPlayerJersey).toFloat(), Paint())
+        canvas.drawText("#" + resources.getString(R.string.app_name),
+            pitchRight.toFloat() + bitmapJerseyOutfield!!.width/2,
+            (getLineMinusJerseyOffset(0) + offsetPlayerJersey).toFloat() + bitmapJerseyOutfield!!.height/2 + paintPitchHashtag.textSize.toInt(),
+            paintPitchHashtag)
     }
 
     fun setJerseyBitmaps(jerseyGoalkeeper: Int, jerseyOutfield: Int){
@@ -143,14 +143,14 @@ class PitchView : View  {
         for(Item in mapOfPlayers) {
             val player = Item.value
 
-            canvas.drawBitmap(getJersey(player), player.getBitmapPoint()!!.x.toFloat(), player.getBitmapPoint()!!.y.toFloat(), Paint())
-            canvas.drawRect(player.getBitmapRect(), paintTranslucent)
+            canvas.drawBitmap(getJersey(player), player.getJerseyPoint()!!.x.toFloat(), player.getJerseyPoint()!!.y.toFloat(), Paint())
+            canvas.drawRect(player.getJerseyRect(), paintTranslucent)
 
-            canvas.drawRect(player.getTextRect(), paintTextRect)
-            canvas.drawText(player.getNumberAndName(), player.getTextPoint()!!.x.toFloat(), player.getTextPoint()!!.y.toFloat(), paintPitchText)
+            canvas.drawRect(player.getNumberAndNameRect(), paintPlayerNumberAndNameRect)
+            canvas.drawText(player.getNumberAndName(), player.getNumberAndNamePoint()!!.x.toFloat(), player.getNumberAndNamePoint()!!.y.toFloat(), paintPitchText)
 
             if(isDrawingPitchDebugLines){
-                //canvas.drawRect(rectPitchPerimeter, paintTextRect)
+                //canvas.drawRect(rectPitchPerimeter, paintPlayerNumberAndNameRect)
                 canvas.drawLine(rectPitchPerimeter.left.toFloat(), getLine(0).toFloat(), rectPitchPerimeter.right.toFloat(), getLine(0).toFloat(), paintPitchText)
                 canvas.drawLine(rectPitchPerimeter.left.toFloat(), getLine(1).toFloat(), rectPitchPerimeter.right.toFloat(), getLine(1).toFloat(), paintPitchText)
                 canvas.drawLine(rectPitchPerimeter.left.toFloat(), getLine(2).toFloat(), rectPitchPerimeter.right.toFloat(), getLine(2).toFloat(), paintPitchText)
@@ -166,107 +166,94 @@ class PitchView : View  {
         return if(player.getDefaultName() == resources.getStringArray(R.array.team_positions)[0]) bitmapJerseyGoalkeeper else bitmapJerseyOutfield
     }
 
-    private fun setPlayerPositionParameters(player: Player){
+    private fun setPlayerLocationParameters(player: Player){
         val centreX = halfScreenResolutionWidthInPixels - bitmapJerseyOutfield!!.width/2
         val centreY = rectPitchPerimeter.bottom/2 - bitmapJerseyOutfield!!.height/2
         val pitchCentre = Point(centreX.toInt(), centreY)
         val pitchLeft = (centreX - centreX/1.6).toInt()
         val pitchRight = (centreX + centreX/1.6).toInt()
-        val offset = bitmapJerseyOutfield!!.width/2
+        val offsetPlayerText = bitmapJerseyOutfield!!.width/2
+        val offsetPlayerJersey = (resources.getDimension(R.dimen.player_jersey_offset).toInt())
 
-        val midOne = (centreX - centreX/3.75).toInt()
-        val midTwo = (centreX + centreX/3.75).toInt()
+        val midfielderLeft = (centreX - centreX/3.75).toInt()
+        val midfielderRight = (centreX + centreX/3.75).toInt()
 
         var p = Point(pitchLeft, getXmLine(line13m))
-        var r = Point(p.x+offset, getYmLine(line13m))
-        val nameDefault: String = player.getDefaultName()
+        var r = Point(p.x+offsetPlayerText, getYmLine(line13m))
 
-        var offset1 = (resources.getDimension(R.dimen.player_jersey_offset).toInt())
-
-        when (nameDefault) {
+        when (player.getDefaultName()) {
             resources.getStringArray(R.array.team_positions)[0] -> {
-                p = Point(pitchCentre.x, (getXmLine(0.0) - bitmapJerseyOutfield!!.height/4))
-                p = Point(pitchCentre.x, getLineMinusJerseyOffset(0) + offset1)
-                r = Point(p.x+offset, getLinePlusJerseyOffset(0) + offset1)
+                p = Point(pitchCentre.x, getLineMinusJerseyOffset(0) + offsetPlayerJersey)
+                r = Point(p.x+offsetPlayerText, getLinePlusJerseyOffset(0) + offsetPlayerJersey)
             }
             resources.getStringArray(R.array.team_positions)[1] -> {
-                p = Point(pitchLeft, getXmLine(line13m))
-                p = Point(pitchLeft, getLineMinusJerseyOffset(1) + offset1)
-                r = Point(p.x+offset, getLinePlusJerseyOffset(1) + offset1)
+                p = Point(pitchLeft, getLineMinusJerseyOffset(1) + offsetPlayerJersey)
+                r = Point(p.x+offsetPlayerText, getLinePlusJerseyOffset(1) + offsetPlayerJersey)
             }
             resources.getStringArray(R.array.team_positions)[2] -> {
-                p = Point(pitchCentre.x, getXmLine(line13m))
-                p = Point(pitchCentre.x, getLineMinusJerseyOffset(1) + offset1)
-                r = Point(p.x+offset, getLinePlusJerseyOffset(1) + offset1)
+                p = Point(pitchCentre.x, getLineMinusJerseyOffset(1) + offsetPlayerJersey)
+                r = Point(p.x+offsetPlayerText, getLinePlusJerseyOffset(1) + offsetPlayerJersey)
             }
             resources.getStringArray(R.array.team_positions)[3] -> {
-                p = Point(pitchRight, getXmLine(line13m))
-                p = Point(pitchRight, getLineMinusJerseyOffset(1) + offset1)
-                r = Point(p.x+offset, getLinePlusJerseyOffset(1) + offset1)
+                p = Point(pitchRight, getLineMinusJerseyOffset(1) + offsetPlayerJersey)
+                r = Point(p.x+offsetPlayerText, getLinePlusJerseyOffset(1) + offsetPlayerJersey)
             }
             resources.getStringArray(R.array.team_positions)[4] -> {
-                p = Point(pitchLeft, getXmLine(line30m))
-                p = Point(pitchLeft, getLineMinusJerseyOffset(2) + offset1)
-                r = Point(p.x+offset, getLinePlusJerseyOffset(2) + offset1)
+                p = Point(pitchLeft, getLineMinusJerseyOffset(2) + offsetPlayerJersey)
+                r = Point(p.x+offsetPlayerText, getLinePlusJerseyOffset(2) + offsetPlayerJersey)
             }
             resources.getStringArray(R.array.team_positions)[5] -> {
-                p = Point(pitchCentre.x, getXmLine(line30m))
-                p = Point(pitchCentre.x, getLineMinusJerseyOffset(2) + offset1)
-                r = Point(p.x+offset, getLinePlusJerseyOffset(2) + offset1)
+                p = Point(pitchCentre.x, getLineMinusJerseyOffset(2) + offsetPlayerJersey)
+                r = Point(p.x+offsetPlayerText, getLinePlusJerseyOffset(2) + offsetPlayerJersey)
             }
             resources.getStringArray(R.array.team_positions)[6] -> {
-                p = Point(pitchRight, getXmLine(line30m))
-                p = Point(pitchRight, getLineMinusJerseyOffset(2) + offset1)
-                r = Point(p.x+offset, getLinePlusJerseyOffset(2) + offset1)
+                p = Point(pitchRight, getLineMinusJerseyOffset(2) + offsetPlayerJersey)
+                r = Point(p.x+offsetPlayerText, getLinePlusJerseyOffset(2) + offsetPlayerJersey)
             }
             resources.getStringArray(R.array.team_positions)[7] -> {
-                p = Point(midOne, getXmLine(line50m))
-                p = Point(midOne, getLineMinusJerseyOffset(3) + offset1)
-                r = Point(p.x+offset, getLinePlusJerseyOffset(3) + offset1)
+                p = Point(midfielderLeft, getLineMinusJerseyOffset(3) + offsetPlayerJersey)
+                r = Point(p.x+offsetPlayerText, getLinePlusJerseyOffset(3) + offsetPlayerJersey)
             }
             resources.getStringArray(R.array.team_positions)[8] -> {
-                p = Point(midTwo, getXmLine(line50m))
-                p = Point(midTwo, getLineMinusJerseyOffset(3) + offset1)
-                r = Point(p.x+offset, getLinePlusJerseyOffset(3) + offset1)
+                p = Point(midfielderRight, getLineMinusJerseyOffset(3) + offsetPlayerJersey)
+                r = Point(p.x+offsetPlayerText, getLinePlusJerseyOffset(3) + offsetPlayerJersey)
             }
             resources.getStringArray(R.array.team_positions)[9] -> {
-                p = Point(pitchLeft, getXmLine(line70m))
-                p = Point(pitchLeft, getLineMinusJerseyOffset(4) + offset1)
-                r = Point(p.x+offset, getLinePlusJerseyOffset(4) + offset1)
+                p = Point(pitchLeft, getLineMinusJerseyOffset(4) + offsetPlayerJersey)
+                r = Point(p.x+offsetPlayerText, getLinePlusJerseyOffset(4) + offsetPlayerJersey)
             }
             resources.getStringArray(R.array.team_positions)[10] -> {
-                p = Point(pitchCentre.x, getXmLine(line70m))
-                p = Point(pitchCentre.x, getLineMinusJerseyOffset(4) + offset1)
-                r = Point(p.x+offset, getLinePlusJerseyOffset(4) + offset1)
+                p = Point(pitchCentre.x, getLineMinusJerseyOffset(4) + offsetPlayerJersey)
+                r = Point(p.x+offsetPlayerText, getLinePlusJerseyOffset(4) + offsetPlayerJersey)
             }
             resources.getStringArray(R.array.team_positions)[11] -> {
-                p = Point(pitchRight, getXmLine(line70m))
-                p = Point(pitchRight, getLineMinusJerseyOffset(4) + offset1)
-                r = Point(p.x+offset, getLinePlusJerseyOffset(4) + offset1)
+                p = Point(pitchRight, getLineMinusJerseyOffset(4) + offsetPlayerJersey)
+                r = Point(p.x+offsetPlayerText, getLinePlusJerseyOffset(4) + offsetPlayerJersey)
             }
             resources.getStringArray(R.array.team_positions)[12] -> {
-                p = Point(pitchLeft, getXmLine(line87m))
-                p = Point(pitchLeft, getLineMinusJerseyOffset(5) + offset1)
-                r = Point(p.x+offset, getLinePlusJerseyOffset(5) + offset1)
+                p = Point(pitchLeft, getLineMinusJerseyOffset(5) + offsetPlayerJersey)
+                r = Point(p.x+offsetPlayerText, getLinePlusJerseyOffset(5) + offsetPlayerJersey)
             }
             resources.getStringArray(R.array.team_positions)[13] -> {
-                p = Point(pitchCentre.x, getXmLine(line87m))
-                p = Point(pitchCentre.x, getLineMinusJerseyOffset(5) + offset1)
-                r = Point(p.x+offset, getLinePlusJerseyOffset(5) + offset1)
+                p = Point(pitchCentre.x, getLineMinusJerseyOffset(5) + offsetPlayerJersey)
+                r = Point(p.x+offsetPlayerText, getLinePlusJerseyOffset(5) + offsetPlayerJersey)
             }
             resources.getStringArray(R.array.team_positions)[14] -> {
-                p = Point(pitchRight, getXmLine(line87m))
-                p = Point(pitchRight, getLineMinusJerseyOffset(5) + offset1)
-                r = Point(p.x+offset, getLinePlusJerseyOffset(5) + offset1)
+                p = Point(pitchRight, getLineMinusJerseyOffset(5) + offsetPlayerJersey)
+                r = Point(p.x+offsetPlayerText, getLinePlusJerseyOffset(5) + offsetPlayerJersey)
             }
         }
 
-        player.setBitmapPoint(p)
-        player.setTextPoint(r)
+        player.setJerseyPoint(p)
+        player.setNumberAndNamePoint(r)
 
-        val rectBitmap = Rect(player.getBitmapPoint()!!.x, player.getBitmapPoint()!!.y, player.getBitmapPoint()!!.x + bitmapJerseyOutfield!!.width, player.getBitmapPoint()!!.y + bitmapJerseyOutfield!!.height)
-        player.setBitmapRect(rectBitmap)
-        setTextRect(player)
+        val rectJersey = Rect(player.getJerseyPoint()!!.x,
+            player.getJerseyPoint()!!.y,
+            player.getJerseyPoint()!!.x + bitmapJerseyOutfield!!.width,
+            player.getJerseyPoint()!!.y + bitmapJerseyOutfield!!.height)
+
+        player.setJerseyRect(rectJersey)
+        setPlayerNumberAndNameRect(player)
     }
 
     private fun getXmLine(xLineInMetres: Double): Int {
@@ -299,20 +286,17 @@ class PitchView : View  {
             MotionEvent.ACTION_DOWN -> {
                 val player = isMouseEventOnThePlayer(eventX, eventY)
                 if(player != null){
-                    val view = View.inflate(context, R.layout.dialog_edit_player, null)
+                    val view = inflate(context, R.layout.dialog_edit_player, null)
                     val builder = AlertDialog.Builder(context)
                     builder.setTitle(R.string.default_edit_player_title)
                     builder.setView(view)
                     builder.apply {
                         setPositiveButton(R.string.ok) { _, _ ->
-                            if(!etPlayerNumber.text.toString().isEmpty()) player.setNumber(etPlayerNumber.text.toString())
+                            if(etPlayerNumber.text.toString().isNotEmpty()) player.setNumber(etPlayerNumber.text.toString())
                             player.setCustomName(etPlayerName.text.toString())
-                            setTextRect(player)
+                            setPlayerNumberAndNameRect(player)
 
                             invalidate() //this will call the onDraw() method so the player's name gets updated
-                        }
-                        setNegativeButton(R.string.cancel) { _, _ ->
-                            // User cancelled the dialog
                         }
                     }
                     builder.show()
@@ -330,20 +314,20 @@ class PitchView : View  {
         return true
     }
 
-    private fun setTextRect(player: Player){
+    private fun setPlayerNumberAndNameRect(player: Player){
         val padding = 10
         val textWidth = (paintPitchText.measureText(player.getNumberAndName()) / 2).toInt() + padding
         val textSize = paintPitchText.textSize.toInt()
-        val rectText = Rect(player.getTextPoint()!!.x - textWidth, player.getTextPoint()!!.y - textSize, player.getTextPoint()!!.x + textWidth, player.getTextPoint()!!.y + padding)
+        val rectText = Rect(player.getNumberAndNamePoint()!!.x - textWidth, player.getNumberAndNamePoint()!!.y - textSize, player.getNumberAndNamePoint()!!.x + textWidth, player.getNumberAndNamePoint()!!.y + padding)
 
-        player.setTextRect(rectText)
+        player.setNumberAndNameRect(rectText)
     }
 
     private fun isMouseEventOnThePlayer(eventX: Int, eventY: Int): Player? {
         for(Item in mapOfPlayers) {
             val player = Item.value
-            if(player.getBitmapRect()!!.contains(eventX, eventY) ||
-                    player.getTextRect()!!.contains(eventX, eventY)){
+            if(player.getJerseyRect()!!.contains(eventX, eventY) ||
+                    player.getNumberAndNameRect()!!.contains(eventX, eventY)){
                 return player
             }
         }

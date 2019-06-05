@@ -1,4 +1,4 @@
-package com.example.first15
+package com.example.team15
 
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
@@ -8,7 +8,6 @@ import android.widget.TextView
 
 class MyAdapter(private val myDataset: List<String>, private val myOnTeamClickListener: OnTeamClickListener) : RecyclerView.Adapter<MyAdapter.MyViewHolder>() {
 
-    private val onTeamClickListener: OnTeamClickListener? = null
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
     // you provide access to all the views for a data item in a view holder.
@@ -19,7 +18,7 @@ class MyAdapter(private val myDataset: List<String>, private val myOnTeamClickLi
 
     // Create new views (invoked by the layout manager)
     override fun onCreateViewHolder(parent: ViewGroup,
-                                    viewType: Int): MyAdapter.MyViewHolder {
+                                    viewType: Int): MyViewHolder {
         // create a new view
         val textView = LayoutInflater.from(parent.context)
             .inflate(R.layout.team_name_row, parent, false) as View

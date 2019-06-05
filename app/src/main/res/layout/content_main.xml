@@ -31,7 +31,7 @@
                  android:layout_height="wrap_content"
                  android:layout_width="wrap_content"
                  android:layout_alignParentStart="true"
-                 layout="@layout/team_name_and_crest"/>
+                 layout="@layout/team_crest"/>
 
         <include android:id="@+id/rl_team_names"
                  android:layout_height="wrap_content"
@@ -71,7 +71,7 @@
                  android:layout_height="wrap_content"
                  android:layout_width="wrap_content"
                  android:layout_alignParentEnd="true"
-                 layout="@layout/team_name_and_crest"/>
+                 layout="@layout/team_crest"/>
     </RelativeLayout>
 
     <!--<View-->
@@ -101,7 +101,7 @@
 
         <view
                 android:id="@+id/view_pitch"
-                class="com.example.first15.PitchView"
+                class="com.example.team15.PitchView"
                 android:paddingTop="100dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>

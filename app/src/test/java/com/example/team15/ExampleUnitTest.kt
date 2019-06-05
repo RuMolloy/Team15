@@ -1,4 +1,4 @@
-package com.example.first15
+package com.example.team15
 
 import org.junit.Test
 
