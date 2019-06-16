@@ -28,7 +28,6 @@ import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v4.content.FileProvider
 import android.util.Log
-import com.example.team15.Team
 import java.io.FileNotFoundException
 import java.io.IOException
 import java.text.SimpleDateFormat
@@ -194,11 +193,12 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
         ivTeamB.setImageResource(R.drawable.crest_default)
 
         pitchView.setJerseyBitmaps(R.drawable.jersey_default, R.drawable.jersey_default)
-        pitchView.invalidate()
-
         for(item in pitchView.mapOfPlayers){
             item.value.setCustomName("")
+            pitchView.setPlayerNumberAndNameRect(item.value)
         }
+
+        pitchView.invalidate()
     }
 
     private fun deleteImagesIfHasPermission(){
@@ -222,6 +222,8 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
                 if(etMatchInfo.text.toString().isNotEmpty()){
                     tvMatchInfo.text = etMatchInfo.text.toString()
                 }
+            }
+            setNegativeButton(R.string.cancel) { _, _ ->
             }
         }
         builder.show()
@@ -320,6 +322,8 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
                 builder.apply {
                     setPositiveButton(R.string.ok) { _, _ ->
                         initVars()
+                    }
+                    setNegativeButton(R.string.cancel) { _, _ ->
                     }
                 }
                 builder.show()

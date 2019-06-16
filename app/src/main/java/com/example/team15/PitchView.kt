@@ -298,6 +298,8 @@ class PitchView : View  {
 
                             invalidate() //this will call the onDraw() method so the player's name gets updated
                         }
+                        setNegativeButton(R.string.cancel) { _, _ ->
+                        }
                     }
                     builder.show()
 
@@ -314,7 +316,7 @@ class PitchView : View  {
         return true
     }
 
-    private fun setPlayerNumberAndNameRect(player: Player){
+    public fun setPlayerNumberAndNameRect(player: Player){
         val padding = 10
         val textWidth = (paintPitchText.measureText(player.getNumberAndName()) / 2).toInt() + padding
         val textSize = paintPitchText.textSize.toInt()
