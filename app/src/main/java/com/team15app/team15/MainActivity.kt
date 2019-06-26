@@ -1,4 +1,4 @@
-package com.molloyruaidhri.team15
+package com.team15app.team15
 
 import android.Manifest
 import android.os.Build
@@ -222,6 +222,9 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
                 if(etMatchInfo.text.toString().isNotEmpty()){
                     tvMatchInfo.text = etMatchInfo.text.toString()
                 }
+                else{
+                    tvMatchInfo.setText(R.string.default_match_info)
+                }
             }
             setNegativeButton(R.string.cancel) { _, _ ->
             }
@@ -230,7 +233,7 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
 
         rlMatchInfo = view.findViewById(R.id.rl_match_info_write)
         etMatchInfo = rlMatchInfo.findViewById(R.id.et_match_info_name_write)
-        if(tvMatchInfo.text == getString(R.string.default_match_info)) etMatchInfo.setHint(R.string.default_match_info)
+        if(tvMatchInfo.text.isEmpty() || tvMatchInfo.text == getString(R.string.default_match_info)) etMatchInfo.setHint(R.string.default_match_info)
         else etMatchInfo.setText(tvMatchInfo.text.toString())
     }
 

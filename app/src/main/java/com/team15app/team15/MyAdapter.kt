@@ -1,4 +1,4 @@
-package com.molloyruaidhri.team15
+package com.team15app.team15
 
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater

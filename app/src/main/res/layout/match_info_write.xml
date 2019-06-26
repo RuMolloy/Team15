@@ -8,7 +8,7 @@
 
     <EditText
             android:id="@+id/et_match_info_name_write"
-            android:hint="@string/default_match_info_competition_name"
+            android:hint="@string/default_match_info"
             android:textSize="@dimen/font_size_large"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

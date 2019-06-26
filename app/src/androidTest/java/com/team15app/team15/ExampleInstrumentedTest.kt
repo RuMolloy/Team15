@@ -1,4 +1,4 @@
-package com.molloyruaidhri.team15
+package com.team15app.team15
 
 import android.support.test.InstrumentationRegistry
 import android.support.test.runner.AndroidJUnit4

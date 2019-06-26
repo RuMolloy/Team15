@@ -101,7 +101,7 @@
 
         <view
                 android:id="@+id/view_pitch"
-                class="com.molloyruaidhri.team15.PitchView"
+                class="com.team15app.team15.PitchView"
                 android:paddingTop="100dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
