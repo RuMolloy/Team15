@@ -18,8 +18,6 @@ import android.widget.TextView
 import java.util.*
 import android.graphics.Bitmap
 import android.os.Environment
-import java.io.File
-import java.io.FileOutputStream
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
@@ -28,8 +26,7 @@ import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v4.content.FileProvider
 import android.util.Log
-import java.io.FileNotFoundException
-import java.io.IOException
+import java.io.*
 import java.text.SimpleDateFormat
 
 
@@ -54,9 +51,10 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
     private lateinit var llTeamB: LinearLayout
     private lateinit var ivTeamB: ImageView
 
-    private lateinit var viewAdapter: RecyclerView.Adapter<*>
+    private lateinit var viewAdapter: MyAdapter
     private lateinit var viewManager: RecyclerView.LayoutManager
     private lateinit var rvTeams: RecyclerView
+    private lateinit var ivDeleteFile: ImageView
 
     private lateinit var dialogSelectTeam: AlertDialog
 
@@ -64,6 +62,8 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
     private lateinit var mapOfTeamsCounty: TreeMap<String, Team>
 
     private lateinit var pitchView: PitchView
+
+    private var loadedFileName: String? = ""
 
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -169,7 +169,7 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
         mapOfTeamsCounty[resources.getString(R.string.waterford)] = Team(resources.getString(R.string.waterford), getDrawable(R.drawable.crest_waterford), R.drawable.jersey_waterford_goalkeeper, R.drawable.jersey_waterford_outfield)
 
         // leinster counties
-        mapOfTeamsCounty[resources.getString(R.string.carlow)] = Team(resources.getString(R.string.clare), getDrawable(R.drawable.crest_carlow), R.drawable.jersey_carlow_goalkeeper, R.drawable.jersey_carlow_outfield)
+        mapOfTeamsCounty[resources.getString(R.string.carlow)] = Team(resources.getString(R.string.carlow), getDrawable(R.drawable.crest_carlow), R.drawable.jersey_carlow_goalkeeper, R.drawable.jersey_carlow_outfield)
         mapOfTeamsCounty[resources.getString(R.string.dublin)] = Team(resources.getString(R.string.dublin), getDrawable(R.drawable.crest_dublin), R.drawable.jersey_dublin_goalkeeper, R.drawable.jersey_dublin_outfield)
         mapOfTeamsCounty[resources.getString(R.string.kildare)] = Team(resources.getString(R.string.kildare), getDrawable(R.drawable.crest_kildare), R.drawable.jersey_kildare_goalkeeper, R.drawable.jersey_kildare_outfield)
         mapOfTeamsCounty[resources.getString(R.string.kilkenny)] = Team(resources.getString(R.string.kilkenny), getDrawable(R.drawable.crest_kilkenny), R.drawable.jersey_kilkenny_goalkeeper, R.drawable.jersey_kilkenny_outfield)
@@ -179,26 +179,16 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
         mapOfTeamsCounty[resources.getString(R.string.meath)] = Team(resources.getString(R.string.meath), getDrawable(R.drawable.crest_meath), R.drawable.jersey_meath_goalkeeper, R.drawable.jersey_meath_outfield)
         mapOfTeamsCounty[resources.getString(R.string.offaly)] = Team(resources.getString(R.string.offaly), getDrawable(R.drawable.crest_offaly), R.drawable.jersey_offaly_goalkeeper, R.drawable.jersey_offaly_outfield)
         mapOfTeamsCounty[resources.getString(R.string.westmeath)] = Team(resources.getString(R.string.westmeath), getDrawable(R.drawable.crest_westmeath), R.drawable.jersey_westmeath_goalkeeper, R.drawable.jersey_westmeath_outfield)
-        mapOfTeamsCounty[resources.getString(R.string.wexford)] = Team(resources.getString(R.string.waterford), getDrawable(R.drawable.crest_wexford), R.drawable.jersey_wexford_goalkeeper, R.drawable.jersey_wexford_outfield)
+        mapOfTeamsCounty[resources.getString(R.string.wexford)] = Team(resources.getString(R.string.wexford), getDrawable(R.drawable.crest_wexford), R.drawable.jersey_wexford_goalkeeper, R.drawable.jersey_wexford_outfield)
         mapOfTeamsCounty[resources.getString(R.string.wicklow)] = Team(resources.getString(R.string.wicklow), getDrawable(R.drawable.crest_wicklow), R.drawable.jersey_wicklow_goalkeeper, R.drawable.jersey_wicklow_outfield)
     }
 
     private fun initVars(){
-        ivTeamA.setImageResource(R.drawable.crest_default)
+        setDefaultTeamANameAndCrest()
+        setDefaultTeamBNameAndCrest()
 
-        tvTeamNameA.setText(R.string.default_team_name_a)
-        tvTeamNameB.setText(R.string.default_team_name_b)
         tvMatchInfo.setText(R.string.default_match_info)
-
-        ivTeamB.setImageResource(R.drawable.crest_default)
-
-        pitchView.setJerseyBitmaps(R.drawable.jersey_default, R.drawable.jersey_default)
-        for(item in pitchView.mapOfPlayers){
-            item.value.setCustomName("")
-            pitchView.setPlayerNumberAndNameRect(item.value)
-        }
-
-        pitchView.invalidate()
+        loadedFileName = ""
     }
 
     private fun deleteImagesIfHasPermission(){
@@ -229,6 +219,7 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
             setNegativeButton(R.string.cancel) { _, _ ->
             }
         }
+
         builder.show()
 
         rlMatchInfo = view.findViewById(R.id.rl_match_info_write)
@@ -238,31 +229,23 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
     }
 
     private fun openTeamSelectionDialog(title: String){
-        val builder = AlertDialog.Builder(this)
+        val builder = AlertDialog.Builder(this, R.style.DialogWindowTitle_Holo)
         builder.setTitle(title)
 
         val row = layoutInflater.inflate(R.layout.team_name_view, null)
-
-        var list= resources.getStringArray(R.array.team_names_counties).toList()
-
-        var listOfTeams: ArrayList<String> = ArrayList(list)
+        val list= resources.getStringArray(R.array.team_names_counties).toList()
+        val listOfTeams: ArrayList<String> = ArrayList(list)
         listOfTeams.sort()
 
         if(title == getString(R.string.default_team_name)) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                Log.d("team", tvTeamNameB.text.toString())
-                listOfTeams.removeAll {it == tvTeamNameB.text.toString()}
-            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) listOfTeams.removeAll {it == tvTeamNameB.text.toString()}
         }
         else{
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                Log.d("team", tvTeamNameA.text.toString())
-                listOfTeams.removeAll {it == tvTeamNameA.text.toString()}
-            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) listOfTeams.removeAll {it == tvTeamNameA.text.toString()}
         }
 
         viewManager = LinearLayoutManager(this)
-        viewAdapter= MyAdapter(listOfTeams, this)
+        viewAdapter = MyAdapter(listOfTeams,false,this)
 
         rvTeams = row.findViewById<RecyclerView>(R.id.rv_team_names).apply {
             // use this setting to improve performance if you know that changes
@@ -285,25 +268,70 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
 
         val width = (resources.displayMetrics.widthPixels * 0.75).toInt()
         val height = (resources.displayMetrics.heightPixels * 0.75).toInt()
-
         dialogSelectTeam.window.setLayout(width, height)
     }
 
-    override fun onTeamClick(team: String?) {
+    override fun onTeamClick(teamName: String?) {
         val dialogTitle = dialogSelectTeam.findViewById<TextView>(android.support.v7.appcompat.R.id.alertTitle)
-        if (dialogTitle != null) {
-            if(dialogTitle.text == getString(R.string.default_team_name)) {
-                ivTeamA.setImageDrawable(mapOfTeamsCounty[team]!!.getCrest())
-                tvTeamNameA.text = team
-                pitchView.setJerseyBitmaps(mapOfTeamsCounty[team]!!.getJerseyGoalkeeper(), mapOfTeamsCounty[team]!!.getJerseyOutfield())
-                pitchView.invalidate()
-            }
-            else{
-                ivTeamB.setImageDrawable(mapOfTeamsCounty[team]!!.getCrest())
-                tvTeamNameB.text = "vs. " +team
+        if (dialogTitle != null) when {
+            dialogTitle.text == getString(R.string.default_team_name) -> updateTeamASelection(teamName)
+            dialogTitle.text == getString(R.string.default_team_name_b) -> updateTeamBSelection(teamName)
+            else -> {
+                loadTeamFromFile(teamName)
             }
         }
         dialogSelectTeam.dismiss()
+    }
+
+    override fun onTeamLongClick(isOn: Boolean){
+        if(isOn){
+            ivDeleteFile.visibility = View.VISIBLE
+        }
+        else{
+            ivDeleteFile.visibility = View.INVISIBLE
+        }
+    }
+
+    private fun updateTeamASelection(teamName: String?){
+        val team = mapOfTeamsCounty[teamName]
+        if(team != null){
+            ivTeamA.setImageDrawable(team.getCrest())
+            tvTeamNameA.text = team.getName()
+            pitchView.setJerseyBitmaps(team.getJerseyGoalkeeper(), team.getJerseyOutfield())
+            pitchView.invalidate()
+        }
+        else{
+            setDefaultTeamANameAndCrest()
+        }
+    }
+
+    private fun updateTeamBSelection(teamName: String?){
+        val team = mapOfTeamsCounty[teamName]
+        if(team != null){
+            ivTeamB.setImageDrawable(team.getCrest())
+            tvTeamNameB.text = "vs. $teamName"
+        }
+        else{
+            setDefaultTeamBNameAndCrest()
+        }
+    }
+
+    private fun setDefaultTeamANameAndCrest(){
+        ivTeamA.setImageResource(R.drawable.crest_default)
+        tvTeamNameA.setText(R.string.default_team_name_a)
+
+        pitchView.setJerseyBitmaps(R.drawable.jersey_default, R.drawable.jersey_default)
+        for(item in pitchView.mapOfPlayers){
+            item.value.setCustomName("")
+            pitchView.setPlayerNumberAndNameRect(item.value)
+        }
+
+        pitchView.invalidate()
+    }
+
+    private fun setDefaultTeamBNameAndCrest(){
+        ivTeamB.setImageResource(R.drawable.crest_default)
+        tvTeamNameB.setText(R.string.default_team_name_b)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -319,21 +347,19 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
         // as you specify a parent activity in AndroidManifest.xml.
         return when (item.itemId) {
             R.id.menu_item_reset -> {
-                val builder = AlertDialog.Builder(this)
-                builder.setTitle(R.string.reset_title)
-                builder.setMessage(R.string.reset_message)
-                builder.apply {
-                    setPositiveButton(R.string.ok) { _, _ ->
-                        initVars()
-                    }
-                    setNegativeButton(R.string.cancel) { _, _ ->
-                    }
-                }
-                builder.show()
+                openResetDialog()
                 true
             }
             R.id.menu_item_share -> {
                 checkWritePermission()
+                true
+            }
+            R.id.menu_item_save -> {
+                openSaveDialog()
+                true
+            }
+            R.id.menu_item_load -> {
+                openLoadDialog()
                 true
             }
             R.id.menu_item_about -> {
@@ -344,6 +370,20 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
                 super.onOptionsItemSelected(item)
             }
         }
+    }
+
+    private fun openResetDialog(){
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle(R.string.reset_title)
+        builder.setMessage(R.string.reset_message)
+        builder.apply {
+            setPositiveButton(R.string.ok) { _, _ ->
+                initVars()
+            }
+            setNegativeButton(R.string.cancel) { _, _ ->
+            }
+        }
+        builder.show()
     }
 
     private fun checkWritePermission(){
@@ -370,7 +410,7 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
                     storeAndShareImage(getScreenImage())
                 } else {
                     // permission denied, don't proceed to store and share screenshot
-                    Toast.makeText(this, R.string.share_permission_error_msg, Toast.LENGTH_SHORT).show()
+                    showToast(getString(R.string.share_permission_error_msg))
                 }
                 return
             }
@@ -381,7 +421,7 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
                     deleteImages()
                 } else {
                     // permission denied, don't proceed to store and share screenshot
-                    Toast.makeText(this, R.string.delete_permission_error_msg, Toast.LENGTH_SHORT).show()
+                    showToast(getString(R.string.delete_permission_error_msg))
                 }
                 return
             }
@@ -435,9 +475,248 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
         if(imageDir.exists()){
             val files = imageDir.listFiles()
             for(file in files.iterator()){
-                file.delete()
+                if(file.extension == "jpg"){
+                    file.delete()
+                }
             }
         }
+    }
+
+    private fun openSaveDialog(){
+        val view = View.inflate(this, R.layout.dialog_save_team, null)
+        val cbxOverwriteFile = view.findViewById<CheckBox>(R.id.cbx_overwrite_file)
+
+        val builder : AlertDialog = AlertDialog.Builder(this)
+        .setTitle(R.string.action_save)
+        .setView(view)
+        .setPositiveButton(R.string.ok, null)
+        .setNegativeButton(R.string.cancel, null)
+        .create()
+
+        builder.setOnShowListener {
+            val button = builder.getButton(AlertDialog.BUTTON_POSITIVE)
+            button.setOnClickListener {
+                var fileName = etMatchInfo.text.toString()
+                fileName = fileName.replace("/", "")
+                val errorMsg = isFileNameValid(fileName, cbxOverwriteFile.isChecked)
+                if(errorMsg.isNotEmpty()){
+                    etMatchInfo.requestFocus()
+                    etMatchInfo.error = errorMsg
+                }
+                else{
+                    writeTeamToFile(fileName)
+                    showToast("Team saved as $fileName.csv")
+                    builder.dismiss()
+                }
+            }
+        }
+        builder.show()
+
+        rlMatchInfo = view.findViewById(R.id.rl_save_team)
+        etMatchInfo = rlMatchInfo.findViewById(R.id.et_match_info_name_write)
+
+        val dateAndTimeStamp = SimpleDateFormat("dd-MMM-yyyy").format(Date())
+        var defaultFileName = (tvTeamNameA.text.toString() + " " + tvTeamNameB.text.toString())
+        etMatchInfo.hint = defaultFileName
+        when {
+            loadedFileName?.isEmpty()!! -> etMatchInfo.setText(defaultFileName)
+            else -> etMatchInfo.setText(loadedFileName)
+        }
+    }
+
+    private fun isFileNameValid(fileName: String, isAllowedToOverwriteFile: Boolean):String{
+        if(fileName.isEmpty()){
+            return getString(R.string.file_name_empty)
+        }
+        else if(isFileExisting(fileName)){
+            if(!isAllowedToOverwriteFile){
+                return getString(R.string.file_name_exists)
+            }
+        }
+        return ""
+    }
+
+    private fun isFileExisting(fileName: String): Boolean{
+        val csvDir = File(Environment.getExternalStorageDirectory().toString() + "/" + getString(R.string.app_name))
+        val csvFile = File(csvDir, "$fileName.csv")
+
+        return csvFile.exists()
+    }
+
+    private fun writeTeamToFile(fileName: String){
+        val csvDir = File(Environment.getExternalStorageDirectory().toString() + "/" + getString(R.string.app_name))
+        csvDir.mkdirs()
+
+        val csvFile = File(csvDir, "$fileName.csv")
+
+        val fileWriter = FileWriter(csvFile, false)
+        val bufferedWriter = BufferedWriter(fileWriter)
+
+        bufferedWriter.write(tvTeamNameA.text.toString())
+        bufferedWriter.write("\n")
+        bufferedWriter.write(tvMatchInfo.text.toString())
+        bufferedWriter.write("\n")
+        bufferedWriter.write(tvTeamNameB.text.toString().substringAfter("vs. "))
+        bufferedWriter.write("\n")
+        for(item in pitchView.mapOfPlayers){
+            bufferedWriter.write(item.value.getName())
+            if(item != pitchView.mapOfPlayers.lastEntry()){
+                bufferedWriter.write("\n")
+            }
+        }
+
+        bufferedWriter.close()
+        fileWriter.close()
+    }
+
+    private fun openLoadDialog(){
+        val listOfTeamFilesToLoad = ArrayList<String>()
+
+        val csvDir = File(Environment.getExternalStorageDirectory().toString() + "/" + getString(R.string.app_name))
+        if(csvDir.exists()){
+            val files = csvDir.listFiles()
+            for(file in files.iterator()){
+                if(file.extension == "csv"){
+                    listOfTeamFilesToLoad.add(file.name)
+                }
+            }
+        }
+
+        if(listOfTeamFilesToLoad.isNotEmpty()){
+            val view = View.inflate(this, R.layout.dialog_custom_title, null)
+
+            val builder = AlertDialog.Builder(this, R.style.DialogWindowTitle_Holo)
+            builder.setCustomTitle(view)
+            builder.setTitle(R.string.action_load)
+
+            val row = layoutInflater.inflate(R.layout.team_name_view, null)
+
+            listOfTeamFilesToLoad.sort()
+            viewManager = LinearLayoutManager(this)
+            viewAdapter = MyAdapter(listOfTeamFilesToLoad, true, this)
+
+            rvTeams = row.findViewById<RecyclerView>(R.id.rv_team_names).apply {
+                // use this setting to improve performance if you know that changes
+                // in content do not change the layout size of the RecyclerView
+                setHasFixedSize(true)
+
+                // use a linear layout manager
+                layoutManager = viewManager
+
+                // specify an viewAdapter (see also next example)
+                adapter = viewAdapter
+
+                // adds a line between each recyclerview item
+                addItemDecoration(DividerItemDecoration(context, LinearLayoutManager.VERTICAL))
+            }
+            builder.setView(row)
+
+            dialogSelectTeam = builder.create()
+            dialogSelectTeam.show()
+
+            val width = (resources.displayMetrics.widthPixels * 0.85).toInt()
+            val height = (resources.displayMetrics.heightPixels * 0.85).toInt()
+
+            dialogSelectTeam.window.setLayout(width, height)
+
+            ivDeleteFile = view.findViewById(R.id.iv_delete_team)
+            ivDeleteFile.setOnClickListener {
+                val listOfFiles = viewAdapter.getSelectedItems()
+                if(listOfFiles.isNotEmpty()){
+                    val builder = AlertDialog.Builder(this)
+                    var msgPre = listOfFiles.size.toString()
+                    var msgPost = listOfFiles.size.toString()
+                    msgPre += when {
+                        listOfFiles.size == 1 -> " team?"
+                        else -> " teams?"
+                    }
+                    msgPost += when {
+                        listOfFiles.size == 1 -> " team has"
+                        else -> " teams have"
+                    }
+                    builder.setTitle(getString(R.string.delete_title) + " " + msgPre)
+                    builder.setMessage(R.string.delete_message)
+                    builder.apply {
+                        setPositiveButton(R.string.ok) { _, _ ->
+                            val csvDir = File(Environment.getExternalStorageDirectory().toString() + "/" + getString(R.string.app_name))
+                            if(csvDir.exists()) {
+                                val files = csvDir.listFiles()
+                                for (file in files.iterator()) {
+                                    if(listOfFiles.contains(file.name)){
+                                        file.delete()
+                                        viewAdapter.removeItem(file.name)
+                                    }
+                                }
+                                viewAdapter.notifyDataSetChanged()
+                                if(viewAdapter.itemCount == 0){
+                                    dialogSelectTeam.dismiss()
+                                    showToast(getString(R.string.delete_all_success))
+                                }
+                                else{
+                                    showToast("$msgPost been deleted!")
+                                }
+                            }
+                        }
+                        setNegativeButton(R.string.cancel) { _, _ ->
+                        }
+                    }
+                    builder.show()
+                }
+                else{
+                    showToast(getString(R.string.delete_not_available))
+                }
+            }
+        }
+        else{
+            showToast(getString(R.string.load_not_available))
+        }
+    }
+
+    private fun loadTeamFromFile(team: String?){
+        val filePath = Environment.getExternalStorageDirectory().toString() + "/" + getString(R.string.app_name) + "/" + team
+        val bufferedReader = File(filePath).bufferedReader()
+        try {
+            val lineList = mutableListOf<String>()
+            bufferedReader.useLines { lines -> lines.forEach { lineList.add(it) } }
+            var lineNum = 0
+            var playerIndex = 0
+            lineList.forEach {
+                when (lineNum) {
+                    0 -> updateTeamASelection(it)
+                    1 -> tvMatchInfo.text = it
+                    2 -> updateTeamBSelection(it)
+                    else -> {
+                        val player = pitchView.mapOfPlayers[playerIndex]
+                        player!!.setCustomName(it)
+                        pitchView.setPlayerNumberAndNameRect(player)
+                        playerIndex++
+                    }
+                }
+                lineNum++
+            }
+
+            loadedFileName = removeExtensionFromFileName(team)
+            pitchView.invalidate()
+
+        } catch (e : IOException) {
+            e.printStackTrace()
+        } finally {
+            try {
+                bufferedReader.close()
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    private fun removeExtensionFromFileName(team :String?) :String?{
+        var fileNameWithoutExtension = team
+        when {
+            team != null -> when {
+                team.indexOf(".") > 0 -> fileNameWithoutExtension = team.substring(0, team.lastIndexOf("."))
+            }
+        }
+        return fileNameWithoutExtension
     }
 
     private fun openAboutDialog(){
@@ -445,5 +724,9 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
         builder.setTitle(getString(R.string.action_about) + " " + getString(R.string.app_name))
         builder.setMessage(BuildConfig.VERSION_NAME)
         builder.show()
+    }
+
+    private fun showToast(msg: String){
+        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
     }
 }

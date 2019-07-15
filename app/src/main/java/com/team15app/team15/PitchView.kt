@@ -175,8 +175,8 @@ class PitchView : View  {
         val offsetPlayerText = bitmapJerseyOutfield!!.width/2
         val offsetPlayerJersey = (resources.getDimension(R.dimen.player_jersey_offset).toInt())
 
-        val midfielderLeft = (centreX - centreX/3.75).toInt()
-        val midfielderRight = (centreX + centreX/3.75).toInt()
+        val midfielderLeft = (centreX - centreX/3.5).toInt()
+        val midfielderRight = (centreX + centreX/3.5).toInt()
 
         var p = Point(pitchLeft, getXmLine(line13m))
         var r = Point(p.x+offsetPlayerText, getYmLine(line13m))
@@ -316,7 +316,7 @@ class PitchView : View  {
         return true
     }
 
-    public fun setPlayerNumberAndNameRect(player: Player){
+    fun setPlayerNumberAndNameRect(player: Player){
         val padding = 10
         val textWidth = (paintPitchText.measureText(player.getNumberAndName()) / 2).toInt() + padding
         val textSize = paintPitchText.textSize.toInt()
