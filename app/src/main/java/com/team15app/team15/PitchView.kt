@@ -80,7 +80,7 @@ class PitchView : View  {
         paintTranslucent.isAntiAlias = true
 
         paintPlayerNumberAndNameRect = Paint()
-        paintPlayerNumberAndNameRect.color = ContextCompat.getColor(context, R.color.colorBorders)
+        paintPlayerNumberAndNameRect.color = ContextCompat.getColor(context, R.color.colorPlayerNameBackground)
         paintPlayerNumberAndNameRect.alpha = 50
 
         bitmapJerseyGoalkeeper = BitmapFactory.decodeResource(this.resources, R.drawable.jersey_default)
@@ -114,21 +114,19 @@ class PitchView : View  {
         drawJersey(canvas)
     }
 
-    private fun drawPitchBackground(canvas: Canvas) {
-        val colorPitchGrass = ContextCompat.getColor(context, R.color.colorBorders)
-        canvas.drawARGB(255, Color.red(colorPitchGrass), Color.green(colorPitchGrass), Color.blue(colorPitchGrass))
-
-        // fill
-        canvas.drawRect(rectPitchPerimeter, paintPlayerNumberAndNameRect)
-    }
-
     private fun drawHashtag(canvas: Canvas){
         val centreX = halfScreenResolutionWidthInPixels - bitmapJerseyOutfield!!.width/2
+        val pitchLeft = (centreX - centreX/1.75).toInt()
         val pitchRight = (centreX + centreX/1.6).toInt()
         val offsetPlayerJersey = (resources.getDimension(R.dimen.player_jersey_offset).toInt())
 
+        canvas.drawText(resources.getString(R.string.app_handle),
+            pitchLeft.toFloat() + bitmapJerseyOutfield!!.width/2,
+            (getLineMinusJerseyOffset(0) + offsetPlayerJersey).toFloat() + bitmapJerseyOutfield!!.height/2 + paintPitchHashtag.textSize.toInt(),
+            paintPitchHashtag)
+
         //canvas.drawBitmap(bitmapJerseyOutfield, pitchRight.toFloat(), (getLineMinusJerseyOffset(0) + offsetPlayerJersey).toFloat(), Paint())
-        canvas.drawText("#" + resources.getString(R.string.app_name),
+        canvas.drawText(resources.getString(R.string.app_hashtag),
             pitchRight.toFloat() + bitmapJerseyOutfield!!.width/2,
             (getLineMinusJerseyOffset(0) + offsetPlayerJersey).toFloat() + bitmapJerseyOutfield!!.height/2 + paintPitchHashtag.textSize.toInt(),
             paintPitchHashtag)

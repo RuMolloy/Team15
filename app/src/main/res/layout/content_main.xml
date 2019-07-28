@@ -9,7 +9,7 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         tools:showIn="@layout/activity_main"
         tools:context=".MainActivity"
-        android:background="@color/colorBackground">
+        android:background="@color/colorAppBackground">
 
     <RelativeLayout
             android:id="@+id/ll_team_and_match_info"
@@ -92,7 +92,6 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/ll_team_and_match_info"
-            app:layout_constraintBottom_toTopOf="@id/ll_hashtags"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintVertical_weight="7.25"
             android:background="@drawable/pitch">
@@ -103,45 +102,6 @@
                 android:id="@+id/view_pitch"
                 class="com.team15app.team15.PitchView"
                 android:paddingTop="100dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
-
-    </LinearLayout>
-
-    <LinearLayout
-            android:id="@+id/ll_hashtags"
-            android:orientation="horizontal"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:gravity="right"
-            android:layout_marginLeft="12dp"
-            android:layout_marginRight="16dp"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/ll_pitch"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintVertical_weight="0">
-
-        <TextView
-                android:id="@+id/tv_hashtag_one"
-                android:text="@string/default_hashtag_one"
-                android:textSize="@dimen/font_size_large"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="5dp"/>
-
-        <TextView
-                android:id="@+id/tv_hashtag_two"
-                android:text="@string/default_hashtag_two"
-                android:textSize="@dimen/font_size_large"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="5dp"/>
-
-        <TextView
-                android:id="@+id/tv_hashtag_three"
-                android:text="@string/default_hashtag_three"
-                android:textSize="@dimen/font_size_large"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
 

@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.TextView
 
-class MyAdapter(private val myDataset: ArrayList<String>,
+class MyAdapter(private var myDataset: ArrayList<String>,
                 private val isDeleteSupportedOnLongPress: Boolean,
                 private val myOnTeamClickListener: OnTeamClickListener) : RecyclerView.Adapter<MyAdapter.MyViewHolder>(){
 
@@ -95,6 +95,11 @@ class MyAdapter(private val myDataset: ArrayList<String>,
             listOfSelectedItems.remove(item)
         }
     }
+
+    fun updateItems(dataset: ArrayList<String>){
+        myDataset = dataset
+    }
+
 
     // Return the size of your dataset (invoked by the layout manager)
     override fun getItemCount() = myDataset.size

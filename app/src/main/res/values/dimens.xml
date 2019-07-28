@@ -1,5 +1,5 @@
 <resources>
-    <dimen name="util_margin">5dp</dimen>
+    <dimen name="util_margin">8dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="player_jersey_offset">5dp</dimen>
     <dimen name="player_name_offset">5dp</dimen>

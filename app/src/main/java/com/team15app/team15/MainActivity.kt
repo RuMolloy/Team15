@@ -22,9 +22,11 @@ import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.support.constraint.ConstraintLayout
+import android.support.design.widget.TabLayout
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v4.content.FileProvider
+import android.support.v4.view.ViewPager
 import android.util.Log
 import java.io.*
 import java.text.SimpleDateFormat
@@ -33,8 +35,9 @@ import java.text.SimpleDateFormat
 class MainActivity : OnTeamClickListener, AppCompatActivity(){
 
     companion object {
-        const val MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 1
-        const val MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 2
+        const val PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE_SHARE = 1
+        const val PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE_SAVE = 2
+        const val PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE_LOAD = 3
     }
 
     private lateinit var llTeamA: LinearLayout
@@ -58,12 +61,16 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
 
     private lateinit var dialogSelectTeam: AlertDialog
 
+    private var tabPosition = 0
+    private lateinit var tvClubDisclaimer: TextView
+
     private lateinit var mapOfTeamsClub: TreeMap<String, Team>
     private lateinit var mapOfTeamsCounty: TreeMap<String, Team>
+    private lateinit var mapOfTeams: TreeMap<String, Team>
 
     private lateinit var pitchView: PitchView
 
-    private var loadedFileName: String? = ""
+    private var fileName: String? = ""
 
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -82,7 +89,7 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
         llTeamA = findViewById(R.id.ll_team_a)
         ivTeamA = llTeamA.findViewById(R.id.iv_team_crest) as ImageView
         ivTeamA.setOnClickListener{
-            openTeamSelectionDialog(getString(R.string.default_team_name))
+            openTeamSelectionDialog(getString(R.string.default_team_name_a))
         }
 
         rlTeamNames = findViewById(R.id.rl_team_names)
@@ -181,6 +188,10 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
         mapOfTeamsCounty[resources.getString(R.string.westmeath)] = Team(resources.getString(R.string.westmeath), getDrawable(R.drawable.crest_westmeath), R.drawable.jersey_westmeath_goalkeeper, R.drawable.jersey_westmeath_outfield)
         mapOfTeamsCounty[resources.getString(R.string.wexford)] = Team(resources.getString(R.string.wexford), getDrawable(R.drawable.crest_wexford), R.drawable.jersey_wexford_goalkeeper, R.drawable.jersey_wexford_outfield)
         mapOfTeamsCounty[resources.getString(R.string.wicklow)] = Team(resources.getString(R.string.wicklow), getDrawable(R.drawable.crest_wicklow), R.drawable.jersey_wicklow_goalkeeper, R.drawable.jersey_wicklow_outfield)
+
+        mapOfTeams = TreeMap()
+        mapOfTeams.putAll(mapOfTeamsCounty)
+        mapOfTeams.putAll(mapOfTeamsClub)
     }
 
     private fun initVars(){
@@ -188,17 +199,11 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
         setDefaultTeamBNameAndCrest()
 
         tvMatchInfo.setText(R.string.default_match_info)
-        loadedFileName = ""
+        fileName = ""
     }
 
     private fun deleteImagesIfHasPermission(){
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE)
-            != PackageManager.PERMISSION_GRANTED) {
-        } else {
-            // Permission has been granted
-            deleteImages()
-        }
+        when {isPermissionGranted() -> deleteImages()}
     }
 
     private fun openMatchInfoDialog(){
@@ -232,37 +237,30 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
         val builder = AlertDialog.Builder(this, R.style.DialogWindowTitle_Holo)
         builder.setTitle(title)
 
-        val row = layoutInflater.inflate(R.layout.team_name_view, null)
-        val list= resources.getStringArray(R.array.team_names_counties).toList()
-        val listOfTeams: ArrayList<String> = ArrayList(list)
-        listOfTeams.sort()
+        val row = layoutInflater.inflate(R.layout.dialog_tabs, null)
+        val tab = row.findViewById<TabLayout>(R.id.tab)
+        val pageAdapter = CustomPagerAdapter(applicationContext, this)
+        tvClubDisclaimer = row.findViewById(R.id.tv_club_disclaimer)
+        val viewPager = row.findViewById<ViewPager>(R.id.viewpager)
+        viewPager.adapter = pageAdapter
+        viewPager.currentItem = tabPosition
+        tab.setupWithViewPager(viewPager)
+        tab.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+            override fun onTabSelected(tab: TabLayout.Tab) {
+                tabPosition = tab.position
+                showHideClubDisclaimer(tabPosition)
+                pageAdapter.updateTabContents(tabPosition)
+            }
+            override fun onTabUnselected(tab: TabLayout.Tab) {
 
-        if(title == getString(R.string.default_team_name)) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) listOfTeams.removeAll {it == tvTeamNameB.text.toString()}
-        }
-        else{
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) listOfTeams.removeAll {it == tvTeamNameA.text.toString()}
-        }
+            }
 
-        viewManager = LinearLayoutManager(this)
-        viewAdapter = MyAdapter(listOfTeams,false,this)
+            override fun onTabReselected(tab: TabLayout.Tab) {
 
-        rvTeams = row.findViewById<RecyclerView>(R.id.rv_team_names).apply {
-            // use this setting to improve performance if you know that changes
-            // in content do not change the layout size of the RecyclerView
-            setHasFixedSize(true)
-
-            // use a linear layout manager
-            layoutManager = viewManager
-
-            // specify an viewAdapter (see also next example)
-            adapter = viewAdapter
-
-            // adds a line between each recyclerview item
-            addItemDecoration(DividerItemDecoration(context, LinearLayoutManager.VERTICAL))
-        }
+            }
+        })
         builder.setView(row)
-
+        showHideClubDisclaimer(tabPosition)
         dialogSelectTeam = builder.create()
         dialogSelectTeam.show()
 
@@ -271,10 +269,21 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
         dialogSelectTeam.window.setLayout(width, height)
     }
 
+    fun showHideClubDisclaimer(tabPosition : Int){
+        when (tabPosition) {
+            0 -> {
+                tvClubDisclaimer.visibility = View.GONE
+            }
+            else -> {
+                tvClubDisclaimer.visibility = View.VISIBLE
+            }
+        }
+    }
+
     override fun onTeamClick(teamName: String?) {
         val dialogTitle = dialogSelectTeam.findViewById<TextView>(android.support.v7.appcompat.R.id.alertTitle)
         if (dialogTitle != null) when {
-            dialogTitle.text == getString(R.string.default_team_name) -> updateTeamASelection(teamName)
+            dialogTitle.text == getString(R.string.default_team_name_a) -> updateTeamASelection(teamName)
             dialogTitle.text == getString(R.string.default_team_name_b) -> updateTeamBSelection(teamName)
             else -> {
                 loadTeamFromFile(teamName)
@@ -293,7 +302,7 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
     }
 
     private fun updateTeamASelection(teamName: String?){
-        val team = mapOfTeamsCounty[teamName]
+        val team = mapOfTeams[teamName]
         if(team != null){
             ivTeamA.setImageDrawable(team.getCrest())
             tvTeamNameA.text = team.getName()
@@ -306,7 +315,7 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
     }
 
     private fun updateTeamBSelection(teamName: String?){
-        val team = mapOfTeamsCounty[teamName]
+        val team = mapOfTeams[teamName]
         if(team != null){
             ivTeamB.setImageDrawable(team.getCrest())
             tvTeamNameB.text = "vs. $teamName"
@@ -351,15 +360,15 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
                 true
             }
             R.id.menu_item_share -> {
-                checkWritePermission()
+                checkPermission(PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE_SHARE)
                 true
             }
             R.id.menu_item_save -> {
-                openSaveDialog()
+                checkPermission(PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE_SAVE)
                 true
             }
             R.id.menu_item_load -> {
-                openLoadDialog()
+                checkPermission(PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE_LOAD)
                 true
             }
             R.id.menu_item_about -> {
@@ -386,42 +395,60 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
         builder.show()
     }
 
-    private fun checkWritePermission(){
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE)
-            != PackageManager.PERMISSION_GRANTED) {
-            // Request the permission the 'write external storage' permission as this is required to store and share the screenshot
-            ActivityCompat.requestPermissions(this,
-                arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
-                MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE)
+    private fun checkPermission(requestCode: Int){
+        if (!isPermissionGranted()) {
+            requestPermission(requestCode)
         } else {
             // Permission has already been granted
-            storeAndShareImage(getScreenImage())
+            when (requestCode) {
+                PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE_SHARE -> storeAndShareImage(getScreenImage())
+                PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE_SAVE -> openSaveDialog()
+                PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE_LOAD -> openLoadDialog()
+            }
         }
+    }
+
+    private fun isPermissionGranted(): Boolean{
+        return (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            == PackageManager.PERMISSION_GRANTED)
+    }
+
+    private fun requestPermission(requestCode: Int){
+        // Request the permission the 'write external storage' permission as this is required to store and share the screenshot
+        ActivityCompat.requestPermissions(this,
+            arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+            requestCode)
     }
 
     override fun onRequestPermissionsResult(requestCode: Int,
                                             permissions: Array<String>, grantResults: IntArray) {
+
+        // If request is cancelled, the result arrays are empty.
+        if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+            // permission was granted, proceed to operation
+            when (requestCode) {
+                PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE_SHARE -> storeAndShareImage(getScreenImage())
+                PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE_SAVE -> openSaveDialog()
+                PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE_LOAD -> openLoadDialog()
+            }
+        }
+        else {
+            // permission denied, don't proceed to store and share screenshot
+            showToast(getString(R.string.permission_error_msg_external_storage))
+        }
+
+
+
         when (requestCode) {
-            MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE -> {
+            PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE_SHARE -> {
                 // If request is cancelled, the result arrays are empty.
                 if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
                     // permission was granted, proceed to store and then share the screenshot
                     storeAndShareImage(getScreenImage())
                 } else {
                     // permission denied, don't proceed to store and share screenshot
-                    showToast(getString(R.string.share_permission_error_msg))
-                }
-                return
-            }
-            MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE -> {
-                // If request is cancelled, the result arrays are empty.
-                if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-                    // permission was granted, proceed to store and then share the screenshot
-                    deleteImages()
-                } else {
-                    // permission denied, don't proceed to store and share screenshot
-                    showToast(getString(R.string.delete_permission_error_msg))
+                    showToast(getString(R.string.permission_error_msg_external_storage))
                 }
                 return
             }
@@ -463,7 +490,7 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
         val sharingIntent = Intent(Intent.ACTION_SEND)
         sharingIntent.type = "image/*"
         val shareBody = "#" + getString(R.string.app_name)
-        sharingIntent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.app_name))
+        sharingIntent.putExtra(Intent.EXTRA_SUBJECT, fileName)
         sharingIntent.putExtra(Intent.EXTRA_TEXT, shareBody)
         sharingIntent.putExtra(Intent.EXTRA_STREAM, uri)
 
@@ -519,8 +546,8 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
         var defaultFileName = (tvTeamNameA.text.toString() + " " + tvTeamNameB.text.toString())
         etMatchInfo.hint = defaultFileName
         when {
-            loadedFileName?.isEmpty()!! -> etMatchInfo.setText(defaultFileName)
-            else -> etMatchInfo.setText(loadedFileName)
+            fileName?.isEmpty()!! -> etMatchInfo.setText(defaultFileName)
+            else -> etMatchInfo.setText(fileName)
         }
     }
 
@@ -544,6 +571,8 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
     }
 
     private fun writeTeamToFile(fileName: String){
+        this.fileName = fileName
+
         val csvDir = File(Environment.getExternalStorageDirectory().toString() + "/" + getString(R.string.app_name))
         csvDir.mkdirs()
 
@@ -695,7 +724,7 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
                 lineNum++
             }
 
-            loadedFileName = removeExtensionFromFileName(team)
+            fileName = removeExtensionFromFileName(team)
             pitchView.invalidate()
 
         } catch (e : IOException) {

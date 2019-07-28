@@ -3,8 +3,7 @@
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
-    <color name="colorPitchGrass"> #6CAB36</color>
     <color name="colorPitchLinesAndText">#FFFFFF</color>
-    <color name="colorBorders">#000000</color>
-    <color name="colorBackground">#F0F0F0</color>
+    <color name="colorPlayerNameBackground">#000000</color>
+    <color name="colorAppBackground">#F0F0F0</color>
 </resources>

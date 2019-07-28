@@ -1,11 +1,13 @@
 <resources>
     <string name="app_name">Team15</string>
+    <string name="app_handle">\@Team15App</string>
+    <string name="app_hashtag">#Team15</string>
     <string name="action_reset">Reset</string>
     <string name="action_about">About</string>
     <string name="action_save">Save</string>
     <string name="action_load">Load</string>
     <string name="title_select_team_name">Select Team A</string>
-    <string name="default_team_name_a">Team Name A</string>
+    <string name="default_team_name_a">Team A</string>
     <string name="default_team_name_b">vs. Team Name B</string>
     <string name="default_match_info">Competition name and stage, time and date, venue etc.</string>
     <string name="default_team_name">Select Team</string>
@@ -16,9 +18,6 @@
     <string name="default_match_info_time_title">Date/Time</string>
     <string name="default_match_info_time_name">Enter Date/Time</string>
     <string name="default_edit_player_title">Edit Player</string>
-    <string name="default_hashtag_one">#First15</string>
-    <string name="default_hashtag_two">#GAA</string>
-    <string name="default_hashtag_three">#OneLifeOneCounty</string>
     <string name="reset_title">Reset?</string>
     <string name="reset_message">All team, player and venue information will be cleared</string>
     <string name="delete_title">Delete</string>
@@ -29,12 +28,15 @@
     <string name="share">Share Via</string>
     <string name="file_name_empty">Filename cannot be empty!</string>
     <string name="file_name_exists">Filename already exists!</string>
-    <string name="share_permission_error_msg">Not able to share screenshot</string>
+    <string name="permission_error_msg_external_storage">Not able to perform operation, external storage permission required</string>
     <string name="delete_permission_error_msg">Not able to delete screenshot(s)</string>
     <string name="delete_not_available">"No teams selected to delete!"</string>
     <string name="delete_all_success">"All teams have been deleted!"</string>
     <string name="load_not_available">No teams available to load, try saving a team first!</string>
     <string name="overwrite_file">Overwrite file if it exists</string>
+    <string name="tab_county">County</string>
+    <string name="tab_club">Club*</string>
+    <string name="club_support_disclaimer">*Only Roscommon clubs are supported</string>
 
     <string-array name="team_positions">
         <item>Goalkeeper</item>
