@@ -73,7 +73,6 @@
     <string name="padraig_pearses">Padraig Pearses</string>
     <string name="roscommon_gaels">Roscommon Gaels</string>
     <string name="shannon_gaels">Shannon Gaels</string>
-    <string name="strokestown">Strokestown</string>
     <string name="st_aidans">St Aidans</string>
     <string name="st_barrys">St Barrys</string>
     <string name="st_brigids">St Brigids</string>
@@ -82,10 +81,13 @@
     <string name="st_faithleachs">St Faithleachs</string>
     <string name="st_josephs">St Josephs</string>
     <string name="st_michaels">St Michaels</string>
+    <string name="st_ronans">St Ronans</string>
+    <string name="strokestown">Strokestown</string>
     <string name="tulsk">Tulsk</string>
     <string name="western_gaels">Western Gaels</string>
 
     <string-array name="team_names_clubs">
+        //Roscommon clubs
         <item>@string/ballinameen</item>
         <item>@string/boyle</item>
         <item>@string/castlerea</item>
@@ -102,7 +104,6 @@
         <item>@string/padraig_pearses</item>
         <item>@string/roscommon_gaels</item>
         <item>@string/shannon_gaels</item>
-        <item>@string/strokestown</item>
         <item>@string/st_aidans</item>
         <item>@string/st_barrys</item>
         <item>@string/st_brigids</item>
@@ -111,6 +112,8 @@
         <item>@string/st_faithleachs</item>
         <item>@string/st_josephs</item>
         <item>@string/st_michaels</item>
+        <item>@string/st_ronans</item>
+        <item>@string/strokestown</item>
         <item>@string/tulsk</item>
         <item>@string/western_gaels</item>
     </string-array>

@@ -117,6 +117,8 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     private fun loadTeams(){
         mapOfTeamsClub = TreeMap()
+
+        //Roscommon clubs
         mapOfTeamsClub[resources.getString(R.string.ballinameen)] = Team(resources.getString(R.string.ballinameen), getDrawable(R.drawable.crest_ballinameen), R.drawable.jersey_ballinameen_goalkeeper, R.drawable.jersey_ballinameen_outfield)
         mapOfTeamsClub[resources.getString(R.string.boyle)] = Team(resources.getString(R.string.boyle), getDrawable(R.drawable.crest_boyle), R.drawable.jersey_boyle_goalkeeper, R.drawable.jersey_boyle_outfield)
         mapOfTeamsClub[resources.getString(R.string.castlerea)] = Team(resources.getString(R.string.castlerea), getDrawable(R.drawable.crest_castlerea), R.drawable.jersey_castlerea_goalkeeper, R.drawable.jersey_castlerea_outfield)
@@ -133,7 +135,6 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
         mapOfTeamsClub[resources.getString(R.string.padraig_pearses)] = Team(resources.getString(R.string.padraig_pearses), getDrawable(R.drawable.crest_padraig_pearses_ros), R.drawable.jersey_padraig_pearses_ros_goalkeeper, R.drawable.jersey_padraig_pearses_ros_outfield)
         mapOfTeamsClub[resources.getString(R.string.roscommon_gaels)] = Team(resources.getString(R.string.roscommon_gaels), getDrawable(R.drawable.crest_roscommon_gaels), R.drawable.jersey_ros_gaels_goalkeeper, R.drawable.jersey_ros_gaels_outfield)
         mapOfTeamsClub[resources.getString(R.string.shannon_gaels)] = Team(resources.getString(R.string.shannon_gaels), getDrawable(R.drawable.crest_shannon_gaels), R.drawable.jersey_shannon_gaels_goalkeeper, R.drawable.jersey_shannon_gaels_outfield)
-        mapOfTeamsClub[resources.getString(R.string.strokestown)] = Team(resources.getString(R.string.strokestown), getDrawable(R.drawable.crest_strokestown), R.drawable.jersey_strokestown_goalkeeper, R.drawable.jersey_strokestown_outfield)
         mapOfTeamsClub[resources.getString(R.string.st_aidans)] = Team(resources.getString(R.string.st_aidans), getDrawable(R.drawable.crest_st_aidans_ros), R.drawable.jersey_st_aidans_ros_goalkeeper, R.drawable.jersey_st_aidans_ros_outfield)
         mapOfTeamsClub[resources.getString(R.string.st_barrys)] = Team(resources.getString(R.string.st_barrys), getDrawable(R.drawable.crest_st_barrys), R.drawable.jersey_st_barrys_goalkeeper, R.drawable.jersey_st_barrys_outfield)
         mapOfTeamsClub[resources.getString(R.string.st_brigids)] = Team(resources.getString(R.string.st_brigids), getDrawable(R.drawable.crest_st_brigids_ros), R.drawable.jersey_st_brigids_ros_goalkeeper, R.drawable.jersey_st_brigids_ros_outfield)
@@ -142,6 +143,8 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
         mapOfTeamsClub[resources.getString(R.string.st_faithleachs)] = Team(resources.getString(R.string.st_faithleachs), getDrawable(R.drawable.crest_st_faithleachs), R.drawable.jersey_st_faithleachs_goalkeeper, R.drawable.jersey_st_faithleachs_outfield)
         mapOfTeamsClub[resources.getString(R.string.st_josephs)] = Team(resources.getString(R.string.st_josephs), getDrawable(R.drawable.crest_st_josephs_ros), R.drawable.jersey_st_josephs_ros_goalkeeper, R.drawable.jersey_st_josephs_ros_outfield)
         mapOfTeamsClub[resources.getString(R.string.st_michaels)] = Team(resources.getString(R.string.st_michaels), getDrawable(R.drawable.crest_st_michaels), R.drawable.jersey_st_michaels_goalkeeper, R.drawable.jersey_st_michaels_outfield)
+        mapOfTeamsClub[resources.getString(R.string.strokestown)] = Team(resources.getString(R.string.strokestown), getDrawable(R.drawable.crest_strokestown), R.drawable.jersey_strokestown_goalkeeper, R.drawable.jersey_strokestown_outfield)
+        mapOfTeamsClub[resources.getString(R.string.st_ronans)] = Team(resources.getString(R.string.st_ronans), getDrawable(R.drawable.crest_st_ronans), R.drawable.jersey_st_ronans_goalkeeper, R.drawable.jersey_st_ronans_outfield)
         mapOfTeamsClub[resources.getString(R.string.tulsk)] = Team(resources.getString(R.string.tulsk), getDrawable(R.drawable.crest_tulsk), R.drawable.jersey_tulsk_goalkeeper, R.drawable.jersey_tulsk_outfield)
         mapOfTeamsClub[resources.getString(R.string.western_gaels)] = Team(resources.getString(R.string.western_gaels), getDrawable(R.drawable.crest_western_gaels), R.drawable.jersey_western_gaels_goalkeeper, R.drawable.jersey_western_gaels_outfield)
 
