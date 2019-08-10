@@ -60,7 +60,7 @@
     <string name="ballinameen">Ballinameen</string>
     <string name="boyle">Boyle</string>
     <string name="castlerea">Castlerea</string>
-    <string name="clan_na_gael">Clan na Gael</string>
+    <string name="clann_na_ngael">Clann na nGael</string>
     <string name="creggs">Creggs</string>
     <string name="eire_og">Eire Og</string>
     <string name="elphin">Elphin</string>
@@ -91,7 +91,7 @@
         <item>@string/ballinameen</item>
         <item>@string/boyle</item>
         <item>@string/castlerea</item>
-        <item>@string/clan_na_gael</item>
+        <item>@string/clann_na_ngael</item>
         <item>@string/creggs</item>
         <item>@string/eire_og</item>
         <item>@string/elphin</item>
