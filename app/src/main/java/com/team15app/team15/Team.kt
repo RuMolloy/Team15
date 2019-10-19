@@ -1,19 +1,15 @@
 package com.team15app.team15
 
-import android.graphics.drawable.Drawable
-
-class Team(name: String, crest: Drawable, jerseyGoalkeeper: Int, jerseyOutfield: Int){
-
-    private var name: String = name
-    private var crest: Drawable = crest
-    private var jerseyGoalkeeper: Int = jerseyGoalkeeper
-    private var jerseyOutfield: Int = jerseyOutfield
+class Team(private var name: String,
+           private var crest: Int,
+           private var jerseyGoalkeeper: Int,
+           private var jerseyOutfield: Int){
 
     fun getName(): String{
         return name
     }
 
-    fun getCrest(): Drawable{
+    fun getCrest(): Int{
         return crest
     }
 

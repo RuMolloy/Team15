@@ -20,6 +20,8 @@ class PitchView : View  {
     private val borderY = 40
     private var paintPitchHashtag: Paint = Paint()
     private var paintPitchText: Paint = Paint()
+    private var paintJerseyNumberText: Paint = Paint()
+    private var paintJerseyNumberStroke: Paint = Paint()
     private var paintTranslucent: Paint = Paint()
     private var paintPlayerNumberAndNameRect: Paint = Paint()
 
@@ -67,6 +69,22 @@ class PitchView : View  {
         paintPitchText.color = ContextCompat.getColor(context, R.color.colorPitchLinesAndText)
         paintPitchText.textSize = resources.getDimension(R.dimen.font_player_name)
         paintPitchText.textAlign = Paint.Align.CENTER
+
+        paintJerseyNumberText = Paint()
+        paintJerseyNumberText.color = ContextCompat.getColor(context, R.color.colorPitchLinesAndText)
+        paintJerseyNumberText.textSize = resources.getDimension(R.dimen.font_player_number)
+        paintJerseyNumberText.textAlign = Paint.Align.CENTER
+        paintJerseyNumberText.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+        paintJerseyNumberText.isAntiAlias = true
+
+        paintJerseyNumberStroke = Paint()
+        paintJerseyNumberStroke.color = ContextCompat.getColor(context, R.color.colorPlayerNameBackground)
+        paintJerseyNumberStroke.style = Paint.Style.STROKE
+        paintJerseyNumberStroke.strokeWidth = 2f
+        paintJerseyNumberStroke.textSize = resources.getDimension(R.dimen.font_player_number)
+        paintJerseyNumberStroke.textAlign = Paint.Align.CENTER
+        paintJerseyNumberStroke.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+        paintJerseyNumberStroke.isAntiAlias = true
 
         paintPitchHashtag = Paint()
         paintPitchHashtag.color = ContextCompat.getColor(context, R.color.colorPitchLinesAndText)
@@ -125,7 +143,6 @@ class PitchView : View  {
             (getLineMinusJerseyOffset(0) + offsetPlayerJersey).toFloat() + bitmapJerseyOutfield!!.height/2 + paintPitchHashtag.textSize.toInt(),
             paintPitchHashtag)
 
-        //canvas.drawBitmap(bitmapJerseyOutfield, pitchRight.toFloat(), (getLineMinusJerseyOffset(0) + offsetPlayerJersey).toFloat(), Paint())
         canvas.drawText(resources.getString(R.string.app_hashtag),
             pitchRight.toFloat() + bitmapJerseyOutfield!!.width/2,
             (getLineMinusJerseyOffset(0) + offsetPlayerJersey).toFloat() + bitmapJerseyOutfield!!.height/2 + paintPitchHashtag.textSize.toInt(),
@@ -144,8 +161,10 @@ class PitchView : View  {
             canvas.drawBitmap(getJersey(player), player.getJerseyPoint()!!.x.toFloat(), player.getJerseyPoint()!!.y.toFloat(), Paint())
             canvas.drawRect(player.getJerseyRect(), paintTranslucent)
 
-            canvas.drawRect(player.getNumberAndNameRect(), paintPlayerNumberAndNameRect)
-            canvas.drawText(player.getNumberAndName(), player.getNumberAndNamePoint()!!.x.toFloat(), player.getNumberAndNamePoint()!!.y.toFloat(), paintPitchText)
+            canvas.drawRect(player.getNameRect(), paintPlayerNumberAndNameRect)
+            canvas.drawText(player.getName(), player.getNamePoint()!!.x.toFloat(), player.getNamePoint()!!.y.toFloat(), paintPitchText)
+            canvas.drawText(player.getNumber(), player.getJerseyPoint()!!.x.toFloat() + bitmapJerseyOutfield!!.width/2, player.getJerseyPoint()!!.y.toFloat()+ bitmapJerseyOutfield!!.height/2, paintJerseyNumberText)
+            canvas.drawText(player.getNumber(), player.getJerseyPoint()!!.x.toFloat() + bitmapJerseyOutfield!!.width/2, player.getJerseyPoint()!!.y.toFloat()+ bitmapJerseyOutfield!!.height/2, paintJerseyNumberStroke)
 
             if(isDrawingPitchDebugLines){
                 //canvas.drawRect(rectPitchPerimeter, paintPlayerNumberAndNameRect)
@@ -243,7 +262,7 @@ class PitchView : View  {
         }
 
         player.setJerseyPoint(p)
-        player.setNumberAndNamePoint(r)
+        player.setNamePoint(r)
 
         val rectJersey = Rect(player.getJerseyPoint()!!.x,
             player.getJerseyPoint()!!.y,
@@ -316,18 +335,18 @@ class PitchView : View  {
 
     fun setPlayerNumberAndNameRect(player: Player){
         val padding = 10
-        val textWidth = (paintPitchText.measureText(player.getNumberAndName()) / 2).toInt() + padding
+        val textWidth = (paintPitchText.measureText(player.getName()) / 2).toInt() + padding
         val textSize = paintPitchText.textSize.toInt()
-        val rectText = Rect(player.getNumberAndNamePoint()!!.x - textWidth, player.getNumberAndNamePoint()!!.y - textSize, player.getNumberAndNamePoint()!!.x + textWidth, player.getNumberAndNamePoint()!!.y + padding)
+        val rectText = Rect(player.getNamePoint()!!.x - textWidth, player.getNamePoint()!!.y - textSize, player.getNamePoint()!!.x + textWidth, player.getNamePoint()!!.y + padding)
 
-        player.setNumberAndNameRect(rectText)
+        player.setNameRect(rectText)
     }
 
     private fun isMouseEventOnThePlayer(eventX: Int, eventY: Int): Player? {
         for(Item in mapOfPlayers) {
             val player = Item.value
             if(player.getJerseyRect()!!.contains(eventX, eventY) ||
-                    player.getNumberAndNameRect()!!.contains(eventX, eventY)){
+                    player.getNameRect()!!.contains(eventX, eventY)){
                 return player
             }
         }

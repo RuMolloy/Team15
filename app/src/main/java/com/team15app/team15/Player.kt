@@ -9,9 +9,9 @@ class Player(name: String, number: String){
     private var nameCustom: String = name
     private var number: String = number
     private var pointJersey: Point? = null
-    private var pointNumberAndName: Point? = null
+    private var pointName: Point? = null
     private var rectJersey: Rect? = null
-    private var rectNumberAndName: Rect? = null
+    private var rectName: Rect? = null
 
     fun setCustomName(name: String) {
         this.nameCustom = name
@@ -50,12 +50,12 @@ class Player(name: String, number: String){
         return pointJersey
     }
 
-    fun setNumberAndNamePoint(pointNumberAndName: Point){
-        this.pointNumberAndName = pointNumberAndName
+    fun setNamePoint(pointName: Point){
+        this.pointName = pointName
     }
 
-    fun getNumberAndNamePoint(): Point?{
-        return pointNumberAndName
+    fun getNamePoint(): Point?{
+        return pointName
     }
 
     fun setJerseyRect(rectJersey: Rect){
@@ -66,11 +66,11 @@ class Player(name: String, number: String){
         return rectJersey
     }
 
-    fun setNumberAndNameRect(rectNumberAndName: Rect){
-        this.rectNumberAndName = rectNumberAndName
+    fun setNameRect(rectNumberAndName: Rect){
+        this.rectName = rectNumberAndName
     }
 
-    fun getNumberAndNameRect(): Rect?{
-        return rectNumberAndName
+    fun getNameRect(): Rect?{
+        return rectName
     }
 }

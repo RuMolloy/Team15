@@ -5,4 +5,5 @@
     <dimen name="font_team_name_secondary">12sp</dimen>
     <dimen name="font_match_info">10sp</dimen>
     <dimen name="font_player_name">8sp</dimen>
+    <dimen name="font_player_number">20sp</dimen>
 </resources>

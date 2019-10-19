@@ -36,7 +36,7 @@
     <string name="overwrite_file">Overwrite file if it exists</string>
     <string name="tab_county">County</string>
     <string name="tab_club">Club*</string>
-    <string name="club_support_disclaimer">*Only Roscommon clubs are supported</string>
+    <string name="club_support_disclaimer">*Only Galway, Mayo, Roscommon, Sligo and Leitrim clubs are supported</string>
 
     <string-array name="team_positions">
         <item>Goalkeeper</item>
@@ -86,6 +86,192 @@
     <string name="tulsk">Tulsk</string>
     <string name="western_gaels">Western Gaels</string>
 
+    // Leitrim clubs
+    <string name="allen_gaels">Allen Gaels</string>
+    <string name="annaduff">Annaduff</string>
+    <string name="aughavas">Aughavas</string>
+    <string name="aughawillan">Aughawillan</string>
+    <string name="aughnasheelin">Aughnasheelin</string>
+    <string name="ballinaglera">Ballinaglera</string>
+    <string name="bornacoola">Bornacoola</string>
+    <string name="carrigallen">Carrigallen</string>
+    <string name="cloone">Cloone</string>
+    <string name="drumkeerin">Drumkeerin</string>
+    <string name="drumreilly">Drumreilly</string>
+    <string name="eslin">Eslin</string>
+    <string name="glencar_manorhamilton">Glencar-Manorhamilton</string>
+    <string name="glenfarne_kiltyclogher">Glenfarne/Kiltyclogher</string>
+    <string name="gortletteragh">Gortletteragh</string>
+    <string name="kiltubrid">Kiltubrid</string>
+    <string name="leitrim_gaels">Leitrim Gaels</string>
+    <string name="melvin_gaels">Melvin Gaels</string>
+    <string name="mohill">Mohill</string>
+    <string name="sean_o_heslins">Sean O Heslins</string>
+    <string name="fenagh_st_caillins">Fenagh St Caillins</string>
+    <string name="st_marys_kiltoghert">St Marys Kiltoghert</string>
+    <string name="st_osnats">St Osnats</string>
+    <string name="st_patricks_dromahair">St Patricks Dromahair</string>
+
+    // Sligo Clubs
+    <string name="ballymote">Ballymote</string>
+    <string name="bunninadden">Bunninadden</string>
+    <string name="calry_st_josephs">Calry/St Josephs</string>
+    <string name="castleconnor">Castleconnor</string>
+    <string name="cloonacool">Cloonacool</string>
+    <string name="coolaney_mullinabreena">Coolaney/Mullinabreena</string>
+    <string name="coolera_strandhill">Coolera/Strandhill</string>
+    <string name="curry">Curry</string>
+    <string name="drumcliffe_rosses_point">Drumcliffe/Rosses Point</string>
+    <string name="easkey">Easkey</string>
+    <string name="eastern_harps">Eastern Harps</string>
+    <string name="enniscrone_kilglass">Enniscrone/Kilglass</string>
+    <string name="geevagh">Geevagh</string>
+    <string name="owenmore_gaels">Owenmore Gaels</string>
+    <string name="shamrock_gaels">Shamrock Gaels</string>
+    <string name="st_farnans">St Farnans</string>
+    <string name="st_johns">St Johns</string>
+    <string name="st_marys">St Marys</string>
+    <string name="st_michaels_sligo">St Michaels</string>
+    <string name="st_molaise_gaels">St Molaise Gaels</string>
+    <string name="st_patricks">St Patricks</string>
+    <string name="tourlestrane">Tourlestrane</string>
+    <string name="tubbercurry">Tubbercurry</string>
+
+    //Mayo clubs
+    <string name="achill">Achill</string>
+    <string name="aghamore">Aghamore</string>
+    <string name="ardagh">Ardagh</string>
+    <string name="ardnaree">Ardnaree</string>
+    <string name="balla">Balla</string>
+    <string name="ballaghaderreen">Ballaghaderreen</string>
+    <string name="ballina">Ballina</string>
+    <string name="ballinrobe">Ballinrobe</string>
+    <string name="ballintubber">Ballintubber</string>
+    <string name="ballycastle">Ballycastle</string>
+    <string name="ballycroy">Ballycroy</string>
+    <string name="ballyhaunis">Ballyhaunis</string>
+    <string name="belmullet">Belmullet</string> //TODO check if they use an irish name instead
+    <string name="bohola_moy_davitts">Bohola Moy Davitts</string>
+    <string name="bonniconlon">Bonniconlon</string>
+    <string name="breaffy">Breaffy</string>
+    <string name="burrishoole">Burrishoole</string>
+    <string name="caiseal_gaels">Caiseal Gaels</string>
+    <string name="castlebar_mitchels">Castlebar Mitchels</string>
+    <string name="charlestown_sarsfields">Charlestown Sarsfields</string>
+    <string name="cill_chomain">Cill Chomain</string>
+    <string name="claremorris">Claremorris</string>
+    <string name="crossmolina">Crossmolina</string>
+    <string name="davitts">Davitts</string>
+    <string name="eastern_gaels">Eastern Gaels</string>
+    <string name="garrymore">Garrymore</string>
+    <string name="hollymount_carramore">Hollymount Carramore</string>
+    <string name="islandeady">Islandeady</string>
+    <string name="kilfian">Kilfian</string>
+    <string name="killala">Killala</string>
+    <string name="kilmaine">Kilmaine</string>
+    <string name="kilmeena">Kilmeena</string>
+    <string name="kilmovee_shamrocks">Kilmovee Shamrocks</string>
+    <string name="kiltane">Kiltane</string>
+    <string name="kiltimagh">Kiltimagh</string>
+    <string name="knockmore">Knockmore</string>
+    <string name="lacken">Lacken</string>
+    <string name="lahardane">Lahardane</string>
+    <string name="louisburgh">Louisburgh</string>
+    <string name="mayo_gaels">Mayo Gaels</string>
+    <string name="moygownagh">Moygownagh</string>
+    <string name="parke">Parke</string>
+    <string name="shrule_glencorrib">Shrule Glencorrib</string>
+    <string name="swinford">Swinford</string>
+    <string name="the_neale">The Neale</string>
+    <string name="tooreen">Tooreen</string>
+    <string name="tourmakeady">Tourmakeady</string>
+    <string name="westport">Westport</string>
+
+    //Galway clubs
+    <string name="abbeyknockmoy">Abbeyknockmoy</string>
+    <string name="ahascragh_fohenagh">Ahascragh-Fohenagh</string>
+    <string name="an_spideal">An Spideal</string>
+    <string name="annaghdown">Annaghdown</string>
+    <string name="ardrahan">Ardrahan</string>
+    <string name="athenry">Athenry</string>
+    <string name="ballinasloe">Ballinasloe</string>
+    <string name="ballinderreen">Ballinderreen</string>
+    <string name="ballygar">Ballygar</string>
+    <string name="barna">Barna</string>
+    <string name="beagh">Beagh</string>
+    <string name="bearna_na_forbacha">Bearna/Na Forbacha</string> TODO check if these exist or if it's just Bearna
+    <string name="caherlistrane">Caherlistrane</string>
+    <string name="caltra">Caltra</string>
+    <string name="cappataggle">Cappataggle</string>
+    <string name="carna_caiseal">Carna-Caiseal</string>
+    <string name="carnmore">Carnmore</string>
+    <string name="carraroe">Carraroe</string>
+    <string name="castlegar">Castlegar</string>
+    <string name="claregalway">Claregalway</string>
+    <string name="clarinbridge">Clarinbridge</string>
+    <string name="clonbur">Clonbur</string>
+    <string name="corofin">Corofin</string>
+    <string name="cortoon_shamrocks">Cortoon Shamrocks</string>
+    <string name="craughwell">Craughwell</string>
+    <string name="dunmore_mchales">Dunmore McHales</string>
+    <string name="father_griffins_eire_og">Father Griffins Eire Og</string>
+    <string name="gaeil_na_gaillimhe">Gaeil na Gaillimhe</string>
+    <string name="glenamaddy">Glenamaddy</string>
+    <string name="glinsk">Glinsk</string>
+    <string name="gort">Gort</string>
+    <string name="headford">Headford</string>
+    <string name="kilbeacanty">Kilbeacanty</string>
+    <string name="kilconieron">Kilconieron</string>
+    <string name="kilconly">Kilconly</string>
+    <string name="killannin">Kilannin</string>
+    <string name="killererin">Killererin</string>
+    <string name="killimor">Killimor</string>
+    <string name="killimordaly">Killimordaly</string>
+    <string name="kilkerrin_clonberne">Kilkerrin-Clonberne</string>
+    <string name="kilnadeema_leitrim">Kilnadeema-Leitrim</string>
+    <string name="kiltormer">Kiltormer</string>
+    <string name="kinvara">Kinvara</string>
+    <string name="loughrea">Loughrea</string>
+    <string name="liam_mellows">Liam Mellows</string>
+    <string name="meelick_eyrecourt">Meelick/Eyrecourt</string>
+    <string name="menlo_emmetts">Menlo Emmetts</string>
+    <string name="menlough">Menlough</string>
+    <string name="michael_breathnachs">Michael Breathnachs</string>
+    <string name="milltown">Milltown</string>
+    <string name="monivea_abbey">Monivea Abbey</string>
+    <string name="mountbellew_moylough">Mountbellew-Moylough</string>
+    <string name="moycullen">Moycullen</string>
+    <string name="mullagh">Mullagh</string>
+    <string name="na_piarsaigh">Na Piarsaigh</string>
+    <string name="naomh_anna">Naomh Anna</string>
+    <string name="naomh_feichin">Naomh Feichin</string>
+    <string name="oileain_arann">Oileain Arann</string>
+    <string name="oranmore_maree">Oranmore-Maree</string>
+    <string name="oughterard">Oughterard</string>
+    <string name="pádraig_pearses">Padraig Pearses</string>
+    <string name="portumna">Portumna</string>
+    <string name="rahoon_newcastle">Rahoon-Newcastle</string>
+    <string name="renvyle">Renvyle</string>
+    <string name="salthill_knocknacarra">Salthill-Knocknacarra</string>
+    <string name="sarsfields">Sarsfields</string>
+    <string name="skehana">Skehana</string>
+    <string name="sylane">Sylane</string>
+    <string name="st_brendans">St Brendans</string>
+    <string name="st_colmans">St Colmans</string>
+    <string name="st_columbas">St Columbas</string>
+    <string name="st_gabriels">St Gabriels</string>
+    <string name="st_grellans">St Grellans</string>
+    <string name="st_james">St James</string>
+    <string name="st_michaels_galway">St Michaels</string>
+    <string name="st_thomas">St Thomas</string>
+    <string name="tommy_larkins">Tommy Larkins</string>
+    <string name="tuam_hurling">Tuam Hurling</string>
+    <string name="tuam_stars">Tuam Stars</string>
+    <string name="turloughmore">Turloughmore</string>
+    <string name="tynagh_abbey_duniry">Tynagh-Abbey-Duniry</string>
+    <string name="williamstown">Williamstown</string>
+
+
     <string-array name="team_names_clubs">
         //Roscommon clubs
         <item>@string/ballinameen</item>
@@ -116,6 +302,187 @@
         <item>@string/strokestown</item>
         <item>@string/tulsk</item>
         <item>@string/western_gaels</item>
+
+        //Leitrim clubs
+        <item>@string/allen_gaels</item>
+        <item>@string/annaduff</item>
+        <item>@string/aughavas</item>
+        <item>@string/aughawillan</item>
+        <item>@string/aughnasheelin</item>
+        <item>@string/ballinaglera</item>
+        <item>@string/bornacoola</item>
+        <item>@string/carrigallen</item>
+        <item>@string/cloone</item>
+        <item>@string/drumkeerin</item>
+        <item>@string/drumreilly</item>
+        <item>@string/eslin</item>
+        <item>@string/glencar_manorhamilton</item>
+        <item>@string/glenfarne_kiltyclogher</item>
+        <item>@string/gortletteragh</item>
+        <item>@string/kiltubrid</item>
+        <item>@string/leitrim_gaels</item>
+        <item>@string/melvin_gaels</item>
+        <item>@string/mohill</item>
+        <item>@string/sean_o_heslins</item>
+        <item>@string/fenagh_st_caillins</item>
+        <item>@string/st_marys_kiltoghert</item>
+        <item>@string/st_osnats</item>
+        <item>@string/st_patricks_dromahair</item>
+
+        //Sligo Clubs
+        <item>@string/ballymote</item>
+        <item>@string/bunninadden</item>
+        <item>@string/calry_st_josephs</item>
+        <item>@string/castleconnor</item>
+        <item>@string/cloonacool</item>
+        <item>@string/coolaney_mullinabreena</item>
+        <item>@string/coolera_strandhill</item>
+        <item>@string/curry</item>
+        <item>@string/drumcliffe_rosses_point</item>
+        <item>@string/easkey</item>
+        <item>@string/eastern_harps</item>
+        <item>@string/enniscrone_kilglass</item>
+        <item>@string/geevagh</item>
+        <item>@string/owenmore_gaels</item>
+        <item>@string/shamrock_gaels</item>
+        <item>@string/st_farnans</item>
+        <item>@string/st_johns</item>
+        <item>@string/st_marys</item>
+        <item>@string/st_michaels_sligo</item>
+        <item>@string/st_molaise_gaels</item>
+        <item>@string/st_patricks</item>
+        <item>@string/tourlestrane</item>
+        <item>@string/tubbercurry</item>
+
+        //Mayo Clubs
+        <item>@string/balla</item>
+        <item>@string/ballaghaderreen</item>
+        <item>@string/ballina</item>
+        <item>@string/ballinrobe</item>
+        <item>@string/ballintubber</item>
+        <item>@string/ballycastle</item>
+        <item>@string/ballycroy</item>
+        <item>@string/ballyhaunis</item>
+        <item>@string/belmullet</item>
+        <item>@string/bohola_moy_davitts</item>
+        <item>@string/bonniconlon</item>
+        <item>@string/breaffy</item>
+        <item>@string/burrishoole</item>
+        <item>@string/caiseal_gaels</item>
+        <item>@string/castlebar_mitchels</item>
+        <item>@string/charlestown_sarsfields</item>
+        <item>@string/cill_chomain</item>
+        <item>@string/claremorris</item>
+        <item>@string/crossmolina</item>
+        <item>@string/davitts</item>
+        <item>@string/eastern_gaels</item>
+        <item>@string/garrymore</item>
+        <item>@string/hollymount_carramore</item>
+        <item>@string/islandeady</item>
+        <item>@string/kilfian</item>
+        <item>@string/killala</item>
+        <item>@string/kilmaine</item>
+        <item>@string/kilmeena</item>
+        <item>@string/kilmovee_shamrocks</item>
+        <item>@string/kiltane</item>
+        <item>@string/kiltimagh</item>
+        <item>@string/knockmore</item>
+        <item>@string/lacken</item>
+        <item>@string/lahardane</item>
+        <item>@string/louisburgh</item>
+        <item>@string/mayo_gaels</item>
+        <item>@string/moygownagh</item>
+        <item>@string/parke</item>
+        <item>@string/shrule_glencorrib</item>
+        <item>@string/swinford</item>
+        <item>@string/the_neale</item>
+        <item>@string/tooreen</item>
+        <item>@string/tourmakeady</item>
+        <item>@string/westport</item>
+
+        //Galway clubs
+        <item>@string/abbeyknockmoy</item>
+        <item>@string/ahascragh_fohenagh</item>
+        <item>@string/an_spideal</item>
+        <item>@string/annaghdown</item>
+        <item>@string/ardrahan</item>
+        <item>@string/athenry</item>
+        <item>@string/ballinasloe</item>
+        <item>@string/ballinderreen</item>
+        <item>@string/ballygar</item>
+        <item>@string/barna</item>
+        <item>@string/beagh</item>
+        <item>@string/bearna_na_forbacha</item>
+        <item>@string/caherlistrane</item>
+        <item>@string/caltra</item>
+        <item>@string/cappataggle</item>
+        <item>@string/carna_caiseal</item>
+        <item>@string/carnmore</item>
+        <item>@string/carraroe</item>
+        <item>@string/castlegar</item>
+        <item>@string/claregalway</item>
+        <item>@string/clarinbridge</item>
+        <item>@string/clonbur</item>
+        <item>@string/corofin</item>
+        <item>@string/cortoon_shamrocks</item>
+        <item>@string/craughwell</item>
+        <item>@string/dunmore_mchales</item>
+        <item>@string/father_griffins_eire_og</item>
+        <item>@string/gaeil_na_gaillimhe</item>
+        <item>@string/glenamaddy</item>
+        <item>@string/glinsk</item>
+        <item>@string/gort</item>
+        <item>@string/headford</item>
+        <item>@string/kilbeacanty</item>
+        <item>@string/kilconieron</item>
+        <item>@string/kilconly</item>
+        <item>@string/killannin</item>
+        <item>@string/killererin</item>
+        <item>@string/killimor</item>
+        <item>@string/killimordaly</item>
+        <item>@string/kilkerrin_clonberne</item>
+        <item>@string/kilnadeema_leitrim</item>
+        <item>@string/kiltormer</item>
+        <item>@string/kinvara</item>
+        <item>@string/loughrea</item>
+        <item>@string/liam_mellows</item>
+        <item>@string/meelick_eyrecourt</item>
+        <item>@string/menlo_emmetts</item>
+        <item>@string/menlough</item>
+        <item>@string/michael_breathnachs</item>
+        <item>@string/milltown</item>
+        <item>@string/monivea_abbey</item>
+        <item>@string/mountbellew_moylough</item>
+        <item>@string/moycullen</item>
+        <item>@string/mullagh</item>
+        <item>@string/na_piarsaigh</item>
+        <item>@string/naomh_anna</item>
+        <item>@string/naomh_feichin</item>
+        <item>@string/oileain_arann</item>
+        <item>@string/oranmore_maree</item>
+        <item>@string/oughterard</item>
+        <item>@string/pádraig_pearses</item>
+        <item>@string/portumna</item>
+        <item>@string/rahoon_newcastle</item>
+        <item>@string/renvyle</item>
+        <item>@string/salthill_knocknacarra</item>
+        <item>@string/sarsfields</item>
+        <item>@string/skehana</item>
+        <item>@string/sylane</item>
+        <item>@string/st_brendans</item>
+        <item>@string/st_colmans</item>
+        <item>@string/st_columbas</item>
+        <item>@string/st_gabriels</item>
+        <item>@string/st_james</item>
+        <item>@string/st_michaels</item>
+        <item>@string/st_thomas</item>
+        <item>@string/tommy_larkins</item>
+        <item>@string/tuam_hurling</item>
+        <item>@string/tuam_stars</item>
+        <item>@string/turloughmore</item>
+        <item>@string/tynagh_abbey_duniry</item>
+        <item>@string/williamstown</item>
+
     </string-array>
 
     // Connaught
@@ -161,6 +528,7 @@
     <string name="wicklow">Wicklow</string>
 
     <string-array name="team_names_counties">
+
         <item>@string/galway</item>
         <item>@string/leitrim</item>
         <item>@string/london</item>
@@ -199,6 +567,14 @@
         <item>@string/wexford</item>
         <item>@string/wicklow</item>
 
+    </string-array>
+
+    <string-array name="team_names_counties_with_club_support">
+        <item>@string/galway</item>
+        <item>@string/leitrim</item>
+        <item>@string/mayo</item>
+        <item>@string/roscommon</item>
+        <item>@string/sligo</item>
     </string-array>
 
 </resources>
