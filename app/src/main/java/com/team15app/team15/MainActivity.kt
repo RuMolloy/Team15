@@ -116,6 +116,7 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
         // load clubs
         val listOfCountiesWithClubSupport = resources.getStringArray(R.array.team_names_counties_with_club_support).toList()
         val listOfClubs = resources.getStringArray(R.array.team_names_clubs).toList()
+
         mapOfTeamsClub = TreeMap()
         for(club in listOfClubs){
             for(county in listOfCountiesWithClubSupport){

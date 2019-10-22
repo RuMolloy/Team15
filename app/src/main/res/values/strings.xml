@@ -57,7 +57,7 @@
     </string-array>
 
     // Roscommon clubs
-    <string name="ballinameen">Ballinameen</string>
+    <string name="ballinameen_roscommon">Ballinameen</string>
     <string name="boyle">Boyle</string>
     <string name="castlerea">Castlerea</string>
     <string name="clann_na_ngael">Clann na nGael</string>
@@ -199,7 +199,7 @@
     <string name="ballygar">Ballygar</string>
     <string name="barna">Barna</string>
     <string name="beagh">Beagh</string>
-    <string name="bearna_na_forbacha">Bearna/Na Forbacha</string> TODO check if these exist or if it's just Bearna
+    <string name="bearna_na_forbacha">Bearna/Na Forbacha</string>
     <string name="caherlistrane">Caherlistrane</string>
     <string name="caltra">Caltra</string>
     <string name="cappataggle">Cappataggle</string>
@@ -248,7 +248,7 @@
     <string name="oileain_arann">Oileain Arann</string>
     <string name="oranmore_maree">Oranmore-Maree</string>
     <string name="oughterard">Oughterard</string>
-    <string name="pádraig_pearses">Padraig Pearses</string>
+    <!--<string name="pádraig_pearses">Pádraig Pearses</string>-->
     <string name="portumna">Portumna</string>
     <string name="rahoon_newcastle">Rahoon-Newcastle</string>
     <string name="renvyle">Renvyle</string>
@@ -274,7 +274,7 @@
 
     <string-array name="team_names_clubs">
         //Roscommon clubs
-        <item>@string/ballinameen</item>
+        <item>@string/ballinameen_roscommon</item>
         <item>@string/boyle</item>
         <item>@string/castlerea</item>
         <item>@string/clann_na_ngael</item>
@@ -461,7 +461,7 @@
         <item>@string/oileain_arann</item>
         <item>@string/oranmore_maree</item>
         <item>@string/oughterard</item>
-        <item>@string/pádraig_pearses</item>
+        <!--<item>@string/padraig_pearses</item>-->
         <item>@string/portumna</item>
         <item>@string/rahoon_newcastle</item>
         <item>@string/renvyle</item>
