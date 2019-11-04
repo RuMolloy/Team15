@@ -320,7 +320,7 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
         val team = mapOfTeams[teamName]
         if(team != null){
             ivTeamB.setImageResource(team.getCrest())
-            tvTeamNameB.text = "vs. $teamName"
+            tvTeamNameB.text = "vs." +team.getName()
         }
         else{
             setDefaultTeamBNameAndCrest()
