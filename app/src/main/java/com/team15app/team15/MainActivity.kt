@@ -26,6 +26,9 @@ import android.support.v4.content.ContextCompat
 import android.support.v4.content.FileProvider
 import android.support.v4.view.ViewPager
 import android.util.Log
+import com.team15app.team15.adapters.CountyAdapter
+import com.team15app.team15.adapters.CustomPagerAdapter
+import com.team15app.team15.listeners.OnTeamClickListener
 import java.io.*
 import java.text.SimpleDateFormat
 
@@ -52,7 +55,7 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
     private lateinit var llTeamB: LinearLayout
     private lateinit var ivTeamB: ImageView
 
-    private lateinit var viewAdapter: MyAdapter
+    private lateinit var viewAdapter: CountyAdapter
     private lateinit var viewManager: RecyclerView.LayoutManager
     private lateinit var rvTeams: RecyclerView
     private lateinit var ivDeleteFile: ImageView
@@ -62,9 +65,11 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
     private var tabPosition = 0
     private lateinit var tvClubDisclaimer: TextView
 
+    //TODO refactor to just use one map -> mapOfTeamsClubInCounty
     private lateinit var mapOfTeamsClub: TreeMap<String, Team>
     private lateinit var mapOfTeamsCounty: TreeMap<String, Team>
     private lateinit var mapOfTeams: TreeMap<String, Team>
+    private lateinit var mapOfTeamsClubInCounty: TreeMap<String, County>
 
     private lateinit var pitchView: PitchView
 
@@ -117,15 +122,25 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
         val listOfCountiesWithClubSupport = resources.getStringArray(R.array.team_names_counties_with_club_support).toList()
         val listOfClubs = resources.getStringArray(R.array.team_names_clubs).toList()
 
+        mapOfTeamsClubInCounty = TreeMap()
         mapOfTeamsClub = TreeMap()
         for(club in listOfClubs){
             for(county in listOfCountiesWithClubSupport){
                 if(isClubResourceFound(county, club)){
-                    mapOfTeamsClub[club] = getTeam(county, club)
+                    if(mapOfTeamsClubInCounty.containsKey(county)){
+                        mapOfTeamsClubInCounty[county]!!.addClub(Club(club))
+                    } else{
+                        val clubs = ArrayList<Club>()
+                        clubs.add(Club(club))
+                        mapOfTeamsClubInCounty[county] = County(county, clubs)
+                    }
+                    mapOfTeamsClub[club+"_"+county] = getTeam(county, club)
                     break
                 }
             }
         }
+        //sort clubs alphabetically
+        sortClubs()
 
         // load counties
         val listOfCounties = resources.getStringArray(R.array.team_names_counties).toList()
@@ -141,7 +156,7 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
 
     private fun isClubResourceFound(county: String, club: String): Boolean{
         val crest = if(club.isEmpty()) getImageResourceId("crest_$county") else getImageResourceId("crest_" + club + "_" + county)
-        return crest > 0
+        return crest > 0 && !mapOfTeamsClub.containsKey(club+"_"+county)
     }
 
     private fun getTeam(county: String, club: String): Team{
@@ -167,6 +182,16 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
         val validImageName = imageName.toLowerCase().replace(Regex("[ /-]"), "_")
 
         return resources.getIdentifier(validImageName, "drawable", packageName)
+    }
+
+    private fun sortClubs(){
+        //TODO find a better way to sort the clubs rather than creating a new list and clearing the old one
+        for(Item in mapOfTeamsClubInCounty){
+            val county = Item.value
+            val list: ArrayList<Club> = ArrayList(county.getClubs().sortedWith(compareBy { it.name }))
+            county.getClubs().clear()
+            county.getClubs().addAll(list)
+        }
     }
 
     private fun initVars(){
@@ -212,9 +237,11 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
         val builder = AlertDialog.Builder(this, R.style.DialogWindowTitle_Holo)
         builder.setTitle(title)
 
+        val listOfClubs = ArrayList(mapOfTeamsClubInCounty.values)
+
         val row = layoutInflater.inflate(R.layout.dialog_tabs, null)
         val tab = row.findViewById<TabLayout>(R.id.tab)
-        val pageAdapter = CustomPagerAdapter(applicationContext, this)
+        val pageAdapter = CustomPagerAdapter(applicationContext, this, listOfClubs)
         tvClubDisclaimer = row.findViewById(R.id.tv_club_disclaimer)
         val viewPager = row.findViewById<ViewPager>(R.id.viewpager)
         viewPager.adapter = pageAdapter
@@ -267,8 +294,8 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
         dialogSelectTeam.dismiss()
     }
 
-    override fun onTeamLongClick(isOn: Boolean){
-        if(isOn){
+    override fun onTeamLongClick(isSelected: Boolean){
+        if(isSelected){
             ivDeleteFile.visibility = View.VISIBLE
         }
         else{
@@ -597,7 +624,7 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
 
             listOfTeamFilesToLoad.sort()
             viewManager = LinearLayoutManager(this)
-            viewAdapter = MyAdapter(listOfTeamFilesToLoad, true, this)
+            viewAdapter = CountyAdapter(listOfTeamFilesToLoad, true, this)
 
             rvTeams = row.findViewById<RecyclerView>(R.id.rv_team_names).apply {
                 // use this setting to improve performance if you know that changes

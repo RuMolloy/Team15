@@ -1,4 +1,4 @@
-package com.team15app.team15
+package com.team15app.team15.adapters
 
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
@@ -6,10 +6,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.TextView
+import com.team15app.team15.listeners.OnTeamClickListener
+import com.team15app.team15.R
 
-class MyAdapter(private var myDataset: ArrayList<String>,
-                private val isDeleteSupportedOnLongPress: Boolean,
-                private val myOnTeamClickListener: OnTeamClickListener) : RecyclerView.Adapter<MyAdapter.MyViewHolder>(){
+class CountyAdapter(private var myDataset: ArrayList<String>,
+                    private val isDeleteSupportedOnLongPress: Boolean,
+                    private val myOnTeamClickListener: OnTeamClickListener
+) : RecyclerView.Adapter<CountyAdapter.MyViewHolder>(){
 
     var showCheckBox = false
     var listOfSelectedItems = ArrayList<String>()
@@ -99,7 +102,6 @@ class MyAdapter(private var myDataset: ArrayList<String>,
     fun updateItems(dataset: ArrayList<String>){
         myDataset = dataset
     }
-
 
     // Return the size of your dataset (invoked by the layout manager)
     override fun getItemCount() = myDataset.size
