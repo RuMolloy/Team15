@@ -20,21 +20,17 @@ import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.support.constraint.ConstraintLayout
-import android.support.design.widget.TabLayout
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v4.content.FileProvider
-import android.support.v4.view.ViewPager
 import android.util.Log
 import com.team15app.team15.adapters.CountyAdapter
-import com.team15app.team15.adapters.CustomPagerAdapter
 import com.team15app.team15.listeners.OnTeamClickListener
 import java.io.*
 import java.text.SimpleDateFormat
 
 
 class MainActivity : OnTeamClickListener, AppCompatActivity(){
-
     companion object {
         const val PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE_SHARE = 1
         const val PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE_SAVE = 2
@@ -44,12 +40,14 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
     private lateinit var llTeamA: LinearLayout
     private lateinit var ivTeamA: ImageView
 
-    private lateinit var rlTeamNames: RelativeLayout
     private lateinit var tvTeamNameA: TextView
     private lateinit var tvTeamNameB: TextView
     private lateinit var tvMatchInfo: TextView
 
+    private lateinit var llMatchInfoWrite: LinearLayout
     private lateinit var rlMatchInfo: RelativeLayout
+    private lateinit var etTeamNameA: EditText
+    private lateinit var etTeamNameB: EditText
     private lateinit var etMatchInfo: EditText
 
     private lateinit var llTeamB: LinearLayout
@@ -62,16 +60,8 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
 
     private lateinit var dialogSelectTeam: AlertDialog
 
-    private var tabPosition = 0
-    private lateinit var tvClubDisclaimer: TextView
-
-    //TODO refactor to just use one map -> mapOfTeamsClubInCounty
-    private lateinit var mapOfTeamsClub: TreeMap<String, Team>
-    private lateinit var mapOfTeamsCounty: TreeMap<String, Team>
-    private lateinit var mapOfTeams: TreeMap<String, Team>
-    private lateinit var mapOfTeamsClubInCounty: TreeMap<String, County>
-
     private lateinit var pitchView: PitchView
+    private lateinit var team: Team
 
     private var fileName: String? = ""
 
@@ -82,127 +72,33 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT //UI only designed for portrait, so disable landscape
 
         loadVars()
-        loadTeams()
         initVars()
         deleteImagesIfHasPermission()
     }
 
     private fun loadVars(){
-        llTeamA = findViewById(R.id.ll_team_a)
-        ivTeamA = llTeamA.findViewById(R.id.iv_team_crest) as ImageView
-        ivTeamA.setOnClickListener{
-            openTeamSelectionDialog(getString(R.string.default_team_name_a))
-        }
-
-        rlTeamNames = findViewById(R.id.rl_team_names)
-        tvTeamNameA = rlTeamNames.findViewById(R.id.tv_match_info_team_a)
-
-        tvTeamNameB = rlTeamNames.findViewById(R.id.tv_match_info_team_b)
-        tvTeamNameB.setOnClickListener{
-            openTeamSelectionDialog(getString(R.string.default_team_name_b))
-        }
-
-        tvMatchInfo = rlTeamNames.findViewById(R.id.tv_match_info_name_read)
-        tvMatchInfo.setOnClickListener{
+        val rlMatchInfo = findViewById<RelativeLayout>(R.id.rl_match_info)
+        rlMatchInfo.setOnClickListener{
             openMatchInfoDialog()
         }
-
-        llTeamB = findViewById(R.id.ll_team_b)
-        ivTeamB = llTeamB.findViewById(R.id.iv_team_crest) as ImageView
-        ivTeamB.setOnClickListener{
-            openTeamSelectionDialog(getString(R.string.default_team_name_b))
-        }
+        tvTeamNameA = rlMatchInfo.findViewById(R.id.tv_match_info_team_a)
+        tvTeamNameB = rlMatchInfo.findViewById(R.id.tv_match_info_team_b)
+        tvMatchInfo = rlMatchInfo.findViewById(R.id.tv_match_info_name_read)
 
         pitchView = findViewById(R.id.view_pitch)
-    }
-
-
-    private fun loadTeams(){
-        // load clubs
-        val listOfCountiesWithClubSupport = resources.getStringArray(R.array.team_names_counties_with_club_support).toList()
-        val listOfClubs = resources.getStringArray(R.array.team_names_clubs).toList()
-
-        mapOfTeamsClubInCounty = TreeMap()
-        mapOfTeamsClub = TreeMap()
-        for(club in listOfClubs){
-            for(county in listOfCountiesWithClubSupport){
-                if(isClubResourceFound(county, club)){
-                    if(mapOfTeamsClubInCounty.containsKey(county)){
-                        mapOfTeamsClubInCounty[county]!!.addClub(Club(club))
-                    } else{
-                        val clubs = ArrayList<Club>()
-                        clubs.add(Club(club))
-                        mapOfTeamsClubInCounty[county] = County(county, clubs)
-                    }
-                    mapOfTeamsClub[club+"_"+county] = getTeam(county, club)
-                    break
-                }
-            }
-        }
-        //sort clubs alphabetically
-        sortClubs()
-
-        // load counties
-        val listOfCounties = resources.getStringArray(R.array.team_names_counties).toList()
-        mapOfTeamsCounty = TreeMap()
-        for(county in listOfCounties){
-            mapOfTeamsCounty[county] = getTeam(county, "")
-        }
-
-        mapOfTeams = TreeMap()
-        mapOfTeams.putAll(mapOfTeamsCounty)
-        mapOfTeams.putAll(mapOfTeamsClub)
-    }
-
-    private fun isClubResourceFound(county: String, club: String): Boolean{
-        val crest = if(club.isEmpty()) getImageResourceId("crest_$county") else getImageResourceId("crest_" + club + "_" + county)
-        return crest > 0 && !mapOfTeamsClub.containsKey(club+"_"+county)
-    }
-
-    private fun getTeam(county: String, club: String): Team{
-        var crest = if(club.isEmpty()) getImageResourceId("crest_$county") else getImageResourceId("crest_" + club + "_" + county)
-        if(crest <= 0){
-            crest = R.drawable.crest_default
-        }
-
-        var jerseyGk = if(club.isEmpty()) getImageResourceId("jersey_" + county + "_gk") else getImageResourceId("jersey_" + club + "_" + county + "_gk")
-        if(jerseyGk <= 0){
-            jerseyGk = R.drawable.jersey_default
-        }
-
-        var jerseyOf = if(club.isEmpty()) getImageResourceId("jersey_" + county + "_of") else getImageResourceId("jersey_" + club + "_" + county + "_of")
-        if(jerseyOf <= 0){
-            jerseyOf = R.drawable.jersey_default
-        }
-
-        return Team(if(club.isEmpty()) county else club, crest, jerseyGk, jerseyOf)
-    }
-
-    private fun getImageResourceId(imageName: String): Int{
-        val validImageName = imageName.toLowerCase().replace(Regex("[ /-]"), "_")
-
-        return resources.getIdentifier(validImageName, "drawable", packageName)
-    }
-
-    private fun sortClubs(){
-        //TODO find a better way to sort the clubs rather than creating a new list and clearing the old one
-        for(Item in mapOfTeamsClubInCounty){
-            val county = Item.value
-            val list: ArrayList<Club> = ArrayList(county.getClubs().sortedWith(compareBy { it.name }))
-            county.getClubs().clear()
-            county.getClubs().addAll(list)
-        }
+        pitchView.initJerseyListener(this)
     }
 
     private fun initVars(){
+        team = Team(getString(R.string.default_team_name_a), R.drawable.crest_default, R.drawable.jersey_default, R.drawable.jersey_default)
         setDefaultTeamANameAndCrest()
         setDefaultTeamBNameAndCrest()
-
-        tvMatchInfo.setText(R.string.default_match_info)
+        updateMatchInfo(getString(R.string.default_match_info))
         fileName = ""
     }
 
     private fun deleteImagesIfHasPermission(){
+        // delete previously shared images to stop image build up in the user's team15 directory
         when {isPermissionGranted() -> deleteImages()}
     }
 
@@ -214,11 +110,17 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
         builder.setView(view)
         builder.apply {
             setPositiveButton(R.string.ok) { _, _ ->
-                if(etMatchInfo.text.toString().isNotEmpty()){
-                    tvMatchInfo.text = etMatchInfo.text.toString()
+                when {
+                    etTeamNameA.text.toString().isNotEmpty() -> updateTeamASelection(etTeamNameA.text.toString())
+                    else -> updateTeamASelection(getString(R.string.default_team_name_a))
                 }
-                else{
-                    tvMatchInfo.setText(R.string.default_match_info)
+                when {
+                    etTeamNameB.text.toString().isNotEmpty() -> updateTeamBSelection(etTeamNameB.text.toString())
+                    else -> updateTeamBSelection(getString(R.string.default_team_name_b))
+                }
+                when {
+                    etMatchInfo.text.toString().isNotEmpty() -> updateMatchInfo(etMatchInfo.text.toString())
+                    else -> updateMatchInfo(getString(R.string.default_match_info))
                 }
             }
             setNegativeButton(R.string.cancel) { _, _ ->
@@ -227,70 +129,23 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
 
         builder.show()
 
-        rlMatchInfo = view.findViewById(R.id.rl_match_info_write)
-        etMatchInfo = rlMatchInfo.findViewById(R.id.et_match_info_name_write)
+        llMatchInfoWrite = view.findViewById(R.id.ll_match_info_write)
+        etMatchInfo = llMatchInfoWrite.findViewById(R.id.et_match_info_name_write)
+        etTeamNameA = llMatchInfoWrite.findViewById(R.id.et_team_a)
+        etTeamNameB = llMatchInfoWrite.findViewById(R.id.et_team_b)
+
+        if(tvTeamNameA.text.isEmpty() || tvTeamNameA.text == getString(R.string.default_team_name_a)) etTeamNameA.setHint(R.string.default_team_name_a)
+        else etTeamNameA.setText(tvTeamNameA.text.toString())
+
+        if(tvTeamNameB.text.isEmpty() || tvTeamNameB.text == "vs. "+getString(R.string.default_team_name_b)) etTeamNameB.setHint(R.string.default_team_name_b)
+        else etTeamNameB.setText(tvTeamNameB.text.toString().substringAfter("vs. "))
+
         if(tvMatchInfo.text.isEmpty() || tvMatchInfo.text == getString(R.string.default_match_info)) etMatchInfo.setHint(R.string.default_match_info)
         else etMatchInfo.setText(tvMatchInfo.text.toString())
     }
 
-    private fun openTeamSelectionDialog(title: String){
-        val builder = AlertDialog.Builder(this, R.style.DialogWindowTitle_Holo)
-        builder.setTitle(title)
-
-        val listOfClubs = ArrayList(mapOfTeamsClubInCounty.values)
-
-        val row = layoutInflater.inflate(R.layout.dialog_tabs, null)
-        val tab = row.findViewById<TabLayout>(R.id.tab)
-        val pageAdapter = CustomPagerAdapter(applicationContext, this, listOfClubs)
-        tvClubDisclaimer = row.findViewById(R.id.tv_club_disclaimer)
-        val viewPager = row.findViewById<ViewPager>(R.id.viewpager)
-        viewPager.adapter = pageAdapter
-        viewPager.currentItem = tabPosition
-        tab.setupWithViewPager(viewPager)
-        tab.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
-            override fun onTabSelected(tab: TabLayout.Tab) {
-                tabPosition = tab.position
-                showHideClubDisclaimer(tabPosition)
-                pageAdapter.updateTabContents(tabPosition)
-            }
-            override fun onTabUnselected(tab: TabLayout.Tab) {
-
-            }
-
-            override fun onTabReselected(tab: TabLayout.Tab) {
-
-            }
-        })
-        builder.setView(row)
-        showHideClubDisclaimer(tabPosition)
-        dialogSelectTeam = builder.create()
-        dialogSelectTeam.show()
-
-        val width = (resources.displayMetrics.widthPixels * 0.75).toInt()
-        val height = (resources.displayMetrics.heightPixels * 0.75).toInt()
-        dialogSelectTeam.window.setLayout(width, height)
-    }
-
-    fun showHideClubDisclaimer(tabPosition : Int){
-        when (tabPosition) {
-            0 -> {
-                tvClubDisclaimer.visibility = View.GONE
-            }
-            else -> {
-                tvClubDisclaimer.visibility = View.VISIBLE
-            }
-        }
-    }
-
     override fun onTeamClick(teamName: String?) {
-        val dialogTitle = dialogSelectTeam.findViewById<TextView>(android.support.v7.appcompat.R.id.alertTitle)
-        if (dialogTitle != null) when {
-            dialogTitle.text == getString(R.string.default_team_name_a) -> updateTeamASelection(teamName)
-            dialogTitle.text == getString(R.string.default_team_name_b) -> updateTeamBSelection(teamName)
-            else -> {
-                loadTeamFromFile(teamName)
-            }
-        }
+        loadTeamFromFile(teamName)
         dialogSelectTeam.dismiss()
     }
 
@@ -303,32 +158,33 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
         }
     }
 
+    override fun onJerseyClick(isGoalkeeper: Boolean, drawable: Int) {
+        when {
+            isGoalkeeper -> {
+                team.setJerseyGoalkeeper(drawable)
+                pitchView.setJerseyGoalkeeperBitmap(drawable)
+            }
+            else -> {
+                team.setJerseyOutfield(drawable)
+                pitchView.setJerseyOutfieldBitmap(drawable)
+            }
+        }
+        pitchView.invalidate()
+    }
+
     private fun updateTeamASelection(teamName: String?){
-        val team = mapOfTeams[teamName]
-        if(team != null){
-            ivTeamA.setImageResource(team.getCrest())
-            tvTeamNameA.text = team.getName()
-            pitchView.setJerseyBitmaps(team.getJerseyGoalkeeper(), team.getJerseyOutfield())
-            pitchView.invalidate()
-        }
-        else{
-            setDefaultTeamANameAndCrest()
-        }
+        tvTeamNameA.text = teamName
     }
 
     private fun updateTeamBSelection(teamName: String?){
-        val team = mapOfTeams[teamName]
-        if(team != null){
-            ivTeamB.setImageResource(team.getCrest())
-            tvTeamNameB.text = "vs." +team.getName()
-        }
-        else{
-            setDefaultTeamBNameAndCrest()
-        }
+        tvTeamNameB.text = "vs. $teamName"
+    }
+
+    private fun updateMatchInfo(matchInfo: String?){
+        tvMatchInfo.setText(matchInfo)
     }
 
     private fun setDefaultTeamANameAndCrest(){
-        ivTeamA.setImageResource(R.drawable.crest_default)
         tvTeamNameA.setText(R.string.default_team_name_a)
 
         pitchView.setJerseyBitmaps(R.drawable.jersey_default, R.drawable.jersey_default)
@@ -344,8 +200,7 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
     }
 
     private fun setDefaultTeamBNameAndCrest(){
-        ivTeamB.setImageResource(R.drawable.crest_default)
-        tvTeamNameB.setText(R.string.default_team_name_b)
+        updateTeamBSelection(getString(R.string.default_team_name_b))
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -583,6 +438,8 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
         val fileWriter = FileWriter(csvFile, false)
         val bufferedWriter = BufferedWriter(fileWriter)
 
+        bufferedWriter.write(BuildConfig.VERSION_NAME)
+        bufferedWriter.write("\n")
         bufferedWriter.write(tvTeamNameA.text.toString())
         bufferedWriter.write("\n")
         bufferedWriter.write(tvMatchInfo.text.toString())
@@ -595,6 +452,10 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
                 bufferedWriter.write("\n")
             }
         }
+        bufferedWriter.write("\n")
+        bufferedWriter.write(team.getJerseyGoalkeeper().toString())
+        bufferedWriter.write("\n")
+        bufferedWriter.write(team.getJerseyOutfield().toString())
 
         bufferedWriter.close()
         fileWriter.close()
@@ -711,17 +572,29 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
             bufferedReader.useLines { lines -> lines.forEach { lineList.add(it) } }
             var lineNum = 0
             var playerIndex = 0
+            var offset = 0
+            var version = getString(R.string.version)
             lineList.forEach {
                 when (lineNum) {
-                    0 -> updateTeamASelection(it)
-                    1 -> tvMatchInfo.text = it
-                    2 -> updateTeamBSelection(it)
-                    else -> {
+                    0 -> {
+                        if(!it.contains(version)){
+                            updateTeamASelection(it)
+                            onJerseyClick(true, R.drawable.jersey_default)
+                            onJerseyClick(false, R.drawable.jersey_default)
+                            offset = 1
+                        }
+                    }
+                    1-offset -> updateTeamASelection(it)
+                    2-offset -> tvMatchInfo.text = it
+                    3-offset -> updateTeamBSelection(it)
+                    in 4-offset..18-offset -> {
                         val player = pitchView.mapOfPlayers[playerIndex]
                         player!!.setCustomName(it)
                         pitchView.setPlayerNumberAndNameRect(player)
                         playerIndex++
                     }
+                    19 -> onJerseyClick(true, it.toInt())
+                    20 -> onJerseyClick(false, it.toInt())
                 }
                 lineNum++
             }

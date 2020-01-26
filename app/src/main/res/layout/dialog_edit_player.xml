@@ -3,25 +3,120 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="@dimen/fab_margin"
-        android:orientation="horizontal">
+        android:layout_height="wrap_content"
+        android:paddingLeft="@dimen/fab_margin"
+        android:paddingRight="@dimen/fab_margin"
+        android:paddingTop="@dimen/fab_margin"
+        android:orientation="vertical">
 
-    <EditText
-            android:id="@+id/et_edit_player_number"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:inputType="number"
-            android:layout_weight="0.2"/>
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-    <EditText
-            android:id="@+id/et_edit_player_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:inputType="text"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            android:layout_weight="0.8"/>
+        <EditText
+                android:id="@+id/et_edit_player_number"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:layout_weight="0.2"/>
 
+        <EditText
+                android:id="@+id/et_edit_player_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                android:layout_weight="0.8"/>
+
+    </LinearLayout>
+
+    <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        <com.team15app.team15.adapters.CustomViewPager
+                android:id="@+id/viewPager"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginTop="@dimen/fab_margin">
+        </com.team15app.team15.adapters.CustomViewPager>
+
+        <GridView
+                android:id="@+id/gridView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:columnWidth="80dp"
+                android:gravity="center"
+                android:numColumns="4"
+                android:verticalSpacing="10dp"
+                android:stretchMode="columnWidth"
+                android:layout_alignParentTop="true"
+                android:layout_margin="@dimen/util_margin">
+        </GridView>
+
+        <RadioGroup
+                android:id="@+id/rbHomeGroup"
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_gravity="center"
+                android:layout_below="@+id/viewPager">
+
+            <RadioButton
+                    android:id="@+id/rbJerseysOne"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:scaleX="0.75"
+                    android:scaleY="0.75"
+                    android:checked="true"
+                    android:clickable="false"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"/>
+
+            <RadioButton
+                    android:id="@+id/rbJerseysTwo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:scaleX="0.75"
+                    android:scaleY="0.75"
+                    android:clickable="false"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"/>
+
+            <RadioButton
+                    android:id="@+id/rbJerseysThree"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:scaleX="0.75"
+                    android:scaleY="0.75"
+                    android:clickable="false"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"/>
+
+            <RadioButton
+                    android:id="@+id/rbJerseysFour"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:scaleX="0.75"
+                    android:scaleY="0.75"
+                    android:clickable="false"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"/>
+
+            <RadioButton
+                    android:id="@+id/rbJerseysFive"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:scaleX="0.75"
+                    android:scaleY="0.75"
+                    android:clickable="false"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"/>
+
+            </RadioGroup>
+
+    </RelativeLayout>
 
 </LinearLayout>

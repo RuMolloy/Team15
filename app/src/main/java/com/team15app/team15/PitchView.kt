@@ -3,16 +3,26 @@ package com.team15app.team15
 import android.content.Context
 import android.graphics.*
 import android.support.v4.content.ContextCompat
+import android.support.v4.view.ViewPager
 import android.support.v7.app.AlertDialog
 import android.util.AttributeSet
+import android.util.Log
 import android.view.View
 import java.util.*
 import android.view.MotionEvent
 import android.widget.EditText
+import android.widget.RadioButton
+import android.widget.RadioGroup
+import com.team15app.team15.adapters.JerseyPagerAdapter
+import com.team15app.team15.listeners.OnTeamClickListener
+import android.R.attr.bitmap
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
 
 
-class PitchView : View  {
 
+
+class PitchView : View, ViewPager.OnPageChangeListener {
     private val line13m = 13.0
     private val pitchWidthInMetres = 90.0
     private val pitchLengthInMetres = 145.0
@@ -43,10 +53,16 @@ class PitchView : View  {
 
     lateinit var mapOfPlayers: TreeMap<Int, Player>
 
+    private lateinit var rbtngJersey: RadioGroup
+    private lateinit var viewPagerJersey: ViewPager
+
     private lateinit var etPlayerNumber: EditText
     private lateinit var etPlayerName: EditText
+    private var viewPagerIndex = 0
 
     private var isDrawingPitchDebugLines = false
+
+    private lateinit var myOnTeamClickListener: OnTeamClickListener
 
     constructor(context: Context) : super(context) {
         init()
@@ -88,7 +104,7 @@ class PitchView : View  {
 
         paintPitchHashtag = Paint()
         paintPitchHashtag.color = ContextCompat.getColor(context, R.color.colorPitchLinesAndText)
-        paintPitchHashtag.textSize = resources.getDimension(R.dimen.font_team_name_secondary)
+        paintPitchHashtag.textSize = resources.getDimension(R.dimen.font_hashtag)
         paintPitchHashtag.textAlign = Paint.Align.CENTER
         paintPitchHashtag.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
         paintPitchHashtag.alpha = 125
@@ -150,7 +166,15 @@ class PitchView : View  {
     }
 
     fun setJerseyBitmaps(jerseyGoalkeeper: Int, jerseyOutfield: Int){
+        setJerseyGoalkeeperBitmap(jerseyGoalkeeper)
+        setJerseyOutfieldBitmap(jerseyOutfield)
+    }
+
+    fun setJerseyGoalkeeperBitmap(jerseyGoalkeeper: Int){
         bitmapJerseyGoalkeeper = BitmapFactory.decodeResource(context.resources, jerseyGoalkeeper)
+    }
+
+    fun setJerseyOutfieldBitmap(jerseyOutfield: Int){
         bitmapJerseyOutfield = BitmapFactory.decodeResource(context.resources, jerseyOutfield)
     }
 
@@ -187,22 +211,24 @@ class PitchView : View  {
         val centreX = halfScreenResolutionWidthInPixels - bitmapJerseyOutfield!!.width/2
         val centreY = rectPitchPerimeter.bottom/2 - bitmapJerseyOutfield!!.height/2
         val pitchCentre = Point(centreX.toInt(), centreY)
-        val pitchLeft = (centreX - centreX/1.6).toInt()
-        val pitchRight = (centreX + centreX/1.6).toInt()
+        val pitchLeft = (centreX - centreX/1.5).toInt()
+        val pitchRight = (centreX + centreX/1.5).toInt()
         val offsetPlayerText = bitmapJerseyOutfield!!.width/2
         val offsetPlayerJersey = (resources.getDimension(R.dimen.player_jersey_offset).toInt())
 
-        val midfielderLeft = (centreX - centreX/3.5).toInt()
-        val midfielderRight = (centreX + centreX/3.5).toInt()
+        val midfielderLeft = (centreX - centreX/3.0).toInt()
+        val midfielderRight = (centreX + centreX/3.0).toInt()
 
         var p = Point(pitchLeft, getXmLine(line13m))
         var r = Point(p.x+offsetPlayerText, getYmLine(line13m))
 
         when (player.getDefaultName()) {
+            //Goalkeeper
             resources.getStringArray(R.array.team_positions)[0] -> {
                 p = Point(pitchCentre.x, getLineMinusJerseyOffset(0) + offsetPlayerJersey)
                 r = Point(p.x+offsetPlayerText, getLinePlusJerseyOffset(0) + offsetPlayerJersey)
             }
+            //Full back line
             resources.getStringArray(R.array.team_positions)[1] -> {
                 p = Point(pitchLeft, getLineMinusJerseyOffset(1) + offsetPlayerJersey)
                 r = Point(p.x+offsetPlayerText, getLinePlusJerseyOffset(1) + offsetPlayerJersey)
@@ -215,6 +241,7 @@ class PitchView : View  {
                 p = Point(pitchRight, getLineMinusJerseyOffset(1) + offsetPlayerJersey)
                 r = Point(p.x+offsetPlayerText, getLinePlusJerseyOffset(1) + offsetPlayerJersey)
             }
+            //Half back line
             resources.getStringArray(R.array.team_positions)[4] -> {
                 p = Point(pitchLeft, getLineMinusJerseyOffset(2) + offsetPlayerJersey)
                 r = Point(p.x+offsetPlayerText, getLinePlusJerseyOffset(2) + offsetPlayerJersey)
@@ -227,6 +254,7 @@ class PitchView : View  {
                 p = Point(pitchRight, getLineMinusJerseyOffset(2) + offsetPlayerJersey)
                 r = Point(p.x+offsetPlayerText, getLinePlusJerseyOffset(2) + offsetPlayerJersey)
             }
+            //Midfielder
             resources.getStringArray(R.array.team_positions)[7] -> {
                 p = Point(midfielderLeft, getLineMinusJerseyOffset(3) + offsetPlayerJersey)
                 r = Point(p.x+offsetPlayerText, getLinePlusJerseyOffset(3) + offsetPlayerJersey)
@@ -235,6 +263,7 @@ class PitchView : View  {
                 p = Point(midfielderRight, getLineMinusJerseyOffset(3) + offsetPlayerJersey)
                 r = Point(p.x+offsetPlayerText, getLinePlusJerseyOffset(3) + offsetPlayerJersey)
             }
+            //Half forward line
             resources.getStringArray(R.array.team_positions)[9] -> {
                 p = Point(pitchLeft, getLineMinusJerseyOffset(4) + offsetPlayerJersey)
                 r = Point(p.x+offsetPlayerText, getLinePlusJerseyOffset(4) + offsetPlayerJersey)
@@ -247,6 +276,7 @@ class PitchView : View  {
                 p = Point(pitchRight, getLineMinusJerseyOffset(4) + offsetPlayerJersey)
                 r = Point(p.x+offsetPlayerText, getLinePlusJerseyOffset(4) + offsetPlayerJersey)
             }
+            //Full forward line
             resources.getStringArray(R.array.team_positions)[12] -> {
                 p = Point(pitchLeft, getLineMinusJerseyOffset(5) + offsetPlayerJersey)
                 r = Point(p.x+offsetPlayerText, getLinePlusJerseyOffset(5) + offsetPlayerJersey)
@@ -295,6 +325,10 @@ class PitchView : View  {
         return getXmLine(xLineInMetres) + textOffsetY
     }
 
+    fun initJerseyListener(myOnTeamClickListener: OnTeamClickListener){
+        this.myOnTeamClickListener = myOnTeamClickListener
+    }
+
     override fun onTouchEvent(event: MotionEvent): Boolean {
         val eventX = event.x.toInt()
         val eventY = event.y.toInt()
@@ -304,6 +338,15 @@ class PitchView : View  {
                 val player = isMouseEventOnThePlayer(eventX, eventY)
                 if(player != null){
                     val view = inflate(context, R.layout.dialog_edit_player, null)
+                    val isGoalkeeper = player.getDefaultName().contains(resources.getString(R.string.goalkeeper))
+                    val pageAdapter = JerseyPagerAdapter(context, myOnTeamClickListener, isGoalkeeper)
+                    viewPagerJersey = view.findViewById(R.id.viewPager)
+                    viewPagerJersey.adapter = pageAdapter
+                    viewPagerJersey.addOnPageChangeListener(this)
+                    //viewPagerJersey.offscreenPageLimit = JerseyEnum.values().size
+
+                    rbtngJersey = view.findViewById(R.id.rbHomeGroup)
+
                     val builder = AlertDialog.Builder(context)
                     builder.setTitle(R.string.default_edit_player_title)
                     builder.setView(view)
@@ -313,12 +356,15 @@ class PitchView : View  {
                             player.setCustomName(etPlayerName.text.toString())
                             setPlayerNumberAndNameRect(player)
 
+                            viewPagerIndex = viewPagerJersey.currentItem
+
                             invalidate() //this will call the onDraw() method so the player's name gets updated
                         }
                         setNegativeButton(R.string.cancel) { _, _ ->
                         }
                     }
-                    builder.show()
+                    var dialog = builder.create()
+                    dialog.show()
 
                     etPlayerNumber = view.findViewById(R.id.et_edit_player_number)
                     etPlayerNumber.setText(player.getNumber())
@@ -327,10 +373,29 @@ class PitchView : View  {
                     if(player.isDefaultName()) etPlayerName.hint = player.getName()
                     else etPlayerName.setText(player.getName())
                     etPlayerName.requestFocus()
+
+                    viewPagerJersey.currentItem = viewPagerIndex
                 }
             }
         }
         return true
+    }
+
+    override fun onPageScrollStateChanged(p0: Int) {
+
+    }
+
+    override fun onPageScrolled(p0: Int, p1: Float, p2: Int) {
+
+    }
+
+    override fun onPageSelected(p0: Int) {
+        if(p0 >= viewPagerJersey.adapter!!.count){
+            rbtngJersey.check(rbtngJersey.getChildAt(0).id)
+        }
+        else{
+            rbtngJersey.check(rbtngJersey.getChildAt(p0).id)
+        }
     }
 
     fun setPlayerNumberAndNameRect(player: Player){

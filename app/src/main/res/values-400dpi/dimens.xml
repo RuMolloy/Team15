@@ -1,9 +1,10 @@
 <resources>
     <dimen name="player_jersey_offset">12dp</dimen>
-    <dimen name="player_name_offset">12dp</dimen>
-    <dimen name="font_team_name_primary">17sp</dimen>
-    <dimen name="font_team_name_secondary">15sp</dimen>
-    <dimen name="font_match_info">13sp</dimen>
-    <dimen name="font_player_name">11sp</dimen>
+    <dimen name="player_name_offset">13dp</dimen>
+    <dimen name="font_team_name_primary">24sp</dimen>
+    <dimen name="font_team_name_secondary">19sp</dimen>
+    <dimen name="font_hashtag">15sp</dimen>
+    <dimen name="font_match_info">15sp</dimen>
+    <dimen name="font_player_name">13sp</dimen>
     <dimen name="font_player_number">22sp</dimen>
 </resources>

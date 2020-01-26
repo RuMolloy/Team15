@@ -16,7 +16,7 @@
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="0dp"
             android:layout_marginLeft="12dp"
             android:layout_marginRight="12dp"
             android:gravity="center"
@@ -27,51 +27,14 @@
             app:layout_constraintVertical_chainStyle="spread"
             app:layout_constraintVertical_weight="1.5">
 
-        <include android:id="@+id/ll_team_a"
-                 android:layout_height="wrap_content"
-                 android:layout_width="wrap_content"
-                 android:layout_alignParentStart="true"
-                 layout="@layout/team_crest"/>
+        <include
+             android:id="@+id/rl_match_info"
+             android:layout_height="wrap_content"
+             android:layout_width="wrap_content"
+             android:layout_marginLeft="@dimen/util_margin"
+             android:layout_marginRight="@dimen/util_margin"
+             layout="@layout/match_info_read"/>
 
-        <include android:id="@+id/rl_team_names"
-                 android:layout_height="wrap_content"
-                 android:layout_width="wrap_content"
-                 android:layout_toRightOf="@+id/ll_team_a"
-                 android:layout_toLeftOf="@+id/ll_team_b"
-                 android:layout_marginLeft="@dimen/util_margin"
-                 android:layout_marginRight="@dimen/util_margin"
-                 layout="@layout/match_info_read"/>
-
-        <LinearLayout
-                android:id="@+id/ll_match_info_read"
-                android:orientation="vertical"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_centerHorizontal="true">
-
-            <include android:id="@+id/rl_competition_read"
-                     layout="@layout/match_info_read"/>
-
-            <android.support.v4.widget.Space
-                    android:layout_width="wrap_content"
-                    android:layout_height="10dp"/>
-
-            <include android:id="@+id/rl_venue_write_read"
-                     layout="@layout/match_info_read"/>
-
-            <android.support.v4.widget.Space
-                    android:layout_width="wrap_content"
-                    android:layout_height="10dp"/>
-
-            <include android:id="@+id/rl_time_write_read"
-                     layout="@layout/match_info_read"/>
-        </LinearLayout>
-
-        <include android:id="@+id/ll_team_b"
-                 android:layout_height="wrap_content"
-                 android:layout_width="wrap_content"
-                 android:layout_alignParentEnd="true"
-                 layout="@layout/team_crest"/>
     </RelativeLayout>
 
     <!--<View-->

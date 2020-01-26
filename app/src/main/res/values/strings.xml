@@ -6,10 +6,13 @@
     <string name="action_about">About</string>
     <string name="action_save">Save</string>
     <string name="action_load">Load</string>
+    <string name="version">Version</string>
     <string name="title_select_team_name">Select Team A</string>
-    <string name="default_team_name_a">Team A</string>
-    <string name="default_team_name_b">vs. Team Name B</string>
-    <string name="default_match_info">Competition name and stage, time and date, venue etc.</string>
+    <string name="default_team_name_a">Insert Team A</string>
+    <string name="default_team_name_b">Insert Team Name B</string>
+    <string name="versus">vs. </string>
+    <string name="default_match_title">Match Info</string>
+    <string name="default_match_info">Insert competition name and stage, time and date, venue etc.</string>
     <string name="default_team_name">Select Team</string>
     <string name="default_match_info_competition_title">Competition</string>
     <string name="default_match_info_competition_name">Enter Competition</string>
@@ -37,9 +40,10 @@
     <string name="tab_county">County</string>
     <string name="tab_club">Club</string>
     <string name="club_support_disclaimer">Only Galway, Mayo, Roscommon, Sligo and Leitrim clubs are supported</string>
+    <string name="goalkeeper">Goalkeeper</string>
 
     <string-array name="team_positions">
-        <item>Goalkeeper</item>
+        <item>@string/goalkeeper</item>
         <item>Left corner back</item>
         <item>Full back</item>
         <item>Right corner back</item>

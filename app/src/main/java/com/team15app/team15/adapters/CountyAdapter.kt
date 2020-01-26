@@ -11,8 +11,7 @@ import com.team15app.team15.R
 
 class CountyAdapter(private var myDataset: ArrayList<String>,
                     private val isDeleteSupportedOnLongPress: Boolean,
-                    private val myOnTeamClickListener: OnTeamClickListener
-) : RecyclerView.Adapter<CountyAdapter.MyViewHolder>(){
+                    private val myOnTeamClickListener: OnTeamClickListener) : RecyclerView.Adapter<CountyAdapter.MyViewHolder>(){
 
     var showCheckBox = false
     var listOfSelectedItems = ArrayList<String>()
@@ -97,10 +96,6 @@ class CountyAdapter(private var myDataset: ArrayList<String>,
         if(listOfSelectedItems.contains(item)){
             listOfSelectedItems.remove(item)
         }
-    }
-
-    fun updateItems(dataset: ArrayList<String>){
-        myDataset = dataset
     }
 
     // Return the size of your dataset (invoked by the layout manager)

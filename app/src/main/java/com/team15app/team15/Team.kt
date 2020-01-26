@@ -13,8 +13,16 @@ class Team(private var name: String,
         return crest
     }
 
+    fun setJerseyGoalkeeper(jersey: Int){
+        jerseyGoalkeeper = jersey
+    }
+
     fun getJerseyGoalkeeper(): Int{
         return jerseyGoalkeeper
+    }
+
+    fun setJerseyOutfield(jersey: Int){
+        jerseyOutfield = jersey
     }
 
     fun getJerseyOutfield(): Int{
