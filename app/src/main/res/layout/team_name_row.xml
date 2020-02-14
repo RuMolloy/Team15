@@ -12,7 +12,7 @@
     <TextView
         android:id="@+id/tv_team_name"
         android:text="@string/default_team_name_a"
-        android:textSize="@dimen/font_size_large"
+        android:textSize="@dimen/font_size_medium"
         android:layout_alignParentStart="true"
         android:layout_toLeftOf="@+id/cbx_delete_team"
         android:layout_width="match_parent"

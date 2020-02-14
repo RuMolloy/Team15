@@ -9,6 +9,7 @@ var listOfWhiteAndBlack: ArrayList<Int> = object : ArrayList<Int>() {
         add(R.drawable.jersey_white_with_green_light_ends)
         add(R.drawable.jersey_white_with_purple_ends)
         add(R.drawable.jersey_white_with_maroon_ends)
+        add(R.drawable.jersey_white_with_navy_ends)
         add(R.drawable.jersey_white_with_black_ends)
 
         add(R.drawable.jersey_yellow_with_blue_ends)
@@ -36,6 +37,7 @@ var listOfWhiteAndBlack: ArrayList<Int> = object : ArrayList<Int>() {
         add(R.drawable.jersey_turquoise_with_navy_ends)
         add(R.drawable.jersey_blue_light_with_white_ends)
         add(R.drawable.jersey_blue_with_red_ends)
+        add(R.drawable.jersey_blue_with_navy_ends)
         add(R.drawable.jersey_royal_blue_with_white_ends)
         add(R.drawable.jersey_navy_with_white_ends)
         add(R.drawable.jersey_blue_dark_with_yellow_ends)

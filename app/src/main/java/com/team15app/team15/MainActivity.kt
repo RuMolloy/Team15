@@ -437,17 +437,18 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
 
         val fileWriter = FileWriter(csvFile, false)
         val bufferedWriter = BufferedWriter(fileWriter)
+        val matchInfo = tvMatchInfo.text.toString().replace("\n", "")
 
         bufferedWriter.write(BuildConfig.VERSION_NAME)
         bufferedWriter.write("\n")
         bufferedWriter.write(tvTeamNameA.text.toString())
         bufferedWriter.write("\n")
-        bufferedWriter.write(tvMatchInfo.text.toString())
+        bufferedWriter.write(matchInfo)
         bufferedWriter.write("\n")
         bufferedWriter.write(tvTeamNameB.text.toString().substringAfter("vs. "))
         bufferedWriter.write("\n")
         for(item in pitchView.mapOfPlayers){
-            bufferedWriter.write(item.value.getName())
+            bufferedWriter.write(item.value.getNumber() + "\t" + item.value.getName())
             if(item != pitchView.mapOfPlayers.lastEntry()){
                 bufferedWriter.write("\n")
             }
@@ -589,7 +590,13 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
                     3-offset -> updateTeamBSelection(it)
                     in 4-offset..18-offset -> {
                         val player = pitchView.mapOfPlayers[playerIndex]
-                        player!!.setCustomName(it)
+                        val numberAndName = it
+                        val number = it.substringBefore("\t")
+                        val name = it.substringAfter("\t")
+                        if(number != numberAndName){
+                            player!!.setNumber(number)
+                        }
+                        player!!.setCustomName(name)
                         pitchView.setPlayerNumberAndNameRect(player)
                         playerIndex++
                     }
