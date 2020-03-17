@@ -21,6 +21,11 @@
     <string name="default_match_info_time_title">Date/Time</string>
     <string name="default_match_info_time_name">Enter Date/Time</string>
     <string name="default_edit_player_title">Edit Player</string>
+    <string name="error_player_name_char_limit">Character limit reached!</string>
+    <string name="error_player_number_in_use">Player number is already in use by</string>
+    <string name="player_name_char_limit">18</string>
+    <string name="close_title">Close?</string>
+    <string name="close_message">Any unsaved changes to your team, player or venue information will be lost</string>
     <string name="reset_title">Reset?</string>
     <string name="reset_message">All team, player and venue information will be cleared</string>
     <string name="delete_title">Delete</string>

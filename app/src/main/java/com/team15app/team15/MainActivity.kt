@@ -640,4 +640,18 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
     private fun showToast(msg: String){
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
     }
+
+    override fun onBackPressed() {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle(R.string.close_title)
+        builder.setMessage(R.string.close_message)
+        builder.apply {
+            setPositiveButton(R.string.ok) { _, _ ->
+                super.onBackPressed()
+            }
+            setNegativeButton(R.string.cancel) { _, _ ->
+            }
+        }
+        builder.show()
+    }
 }

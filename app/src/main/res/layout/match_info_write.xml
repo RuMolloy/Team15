@@ -12,6 +12,7 @@
             android:textSize="@dimen/font_size_large"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true" android:singleLine="false"/>
+            android:layout_centerHorizontal="true"
+            android:singleLine="false"/>
 
 </RelativeLayout>

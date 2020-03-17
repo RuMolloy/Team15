@@ -6,20 +6,15 @@ import android.support.v4.content.ContextCompat
 import android.support.v4.view.ViewPager
 import android.support.v7.app.AlertDialog
 import android.util.AttributeSet
-import android.util.Log
 import android.view.View
 import java.util.*
 import android.view.MotionEvent
 import android.widget.EditText
-import android.widget.RadioButton
 import android.widget.RadioGroup
 import com.team15app.team15.adapters.JerseyPagerAdapter
 import com.team15app.team15.listeners.OnTeamClickListener
-import android.R.attr.bitmap
-import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.Drawable
-
-
+import android.text.Editable
+import android.text.TextWatcher
 
 
 class PitchView : View, ViewPager.OnPageChangeListener {
@@ -368,6 +363,25 @@ class PitchView : View, ViewPager.OnPageChangeListener {
 
                     etPlayerNumber = view.findViewById(R.id.et_edit_player_number)
                     etPlayerNumber.setText(player.getNumber())
+                    etPlayerNumber.addTextChangedListener(object : TextWatcher {
+                        override fun afterTextChanged(p0: Editable?) {
+                            var playerInUse = isPlayerNumberInUse(player, etPlayerNumber.text.toString())
+                            if(playerInUse.isNotEmpty()){
+                                etPlayerNumber.error = resources.getString(R.string.error_player_number_in_use) + " " + playerInUse
+                                dialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = false
+                            }
+                            else{
+                                etPlayerNumber.error = null
+                                dialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = true
+                            }
+                        }
+
+                        override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                        }
+
+                        override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                        }
+                    })
 
                     etPlayerName = view.findViewById(R.id.et_edit_player_name)
                     if(player.isDefaultName()) etPlayerName.hint = player.getName()
@@ -402,7 +416,10 @@ class PitchView : View, ViewPager.OnPageChangeListener {
         val padding = 10
         val textWidth = (paintPitchText.measureText(player.getName()) / 2).toInt() + padding
         val textSize = paintPitchText.textSize.toInt()
-        val rectText = Rect(player.getNamePoint()!!.x - textWidth, player.getNamePoint()!!.y - textSize, player.getNamePoint()!!.x + textWidth, player.getNamePoint()!!.y + padding)
+        val rectText = Rect(player.getNamePoint()!!.x - textWidth,
+            player.getNamePoint()!!.y - textSize,
+            player.getNamePoint()!!.x + textWidth,
+            player.getNamePoint()!!.y + padding)
 
         player.setNameRect(rectText)
     }
@@ -416,5 +433,15 @@ class PitchView : View, ViewPager.OnPageChangeListener {
             }
         }
         return null
+    }
+
+    private fun isPlayerNumberInUse(selectedPlayer: Player, number: String): String{
+        for(Item in mapOfPlayers) {
+            val player = Item.value
+            if(player != selectedPlayer && player.getNumber() == number){
+                return player.getName()
+            }
+        }
+        return ""
     }
 }
