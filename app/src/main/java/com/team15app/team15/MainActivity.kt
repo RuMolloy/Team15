@@ -385,8 +385,8 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
                 fileName = fileName.replace("/", "")
                 val errorMsg = isFileNameValid(fileName, cbxOverwriteFile.isChecked)
                 if(errorMsg.isNotEmpty()){
-                    etMatchInfo.requestFocus()
                     etMatchInfo.error = errorMsg
+                    etMatchInfo.requestFocus()
                 }
                 else{
                     writeTeamToFile(fileName)
@@ -470,7 +470,7 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
             val files = csvDir.listFiles()
             for(file in files.iterator()){
                 if(file.extension == "csv"){
-                    listOfTeamFilesToLoad.add(file.name)
+                    listOfTeamFilesToLoad.add(file.nameWithoutExtension)
                 }
             }
         }
@@ -566,7 +566,7 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
     }
 
     private fun loadTeamFromFile(team: String?){
-        val filePath = Environment.getExternalStorageDirectory().toString() + "/" + getString(R.string.app_name) + "/" + team
+        val filePath = Environment.getExternalStorageDirectory().toString() + "/" + getString(R.string.app_name) + "/" + team + ".csv"
         val bufferedReader = File(filePath).bufferedReader()
         try {
             val lineList = mutableListOf<String>()
@@ -606,7 +606,7 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
                 lineNum++
             }
 
-            fileName = removeExtensionFromFileName(team)
+            fileName = team
             pitchView.invalidate()
 
         } catch (e : IOException) {
@@ -618,16 +618,6 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
                 e.printStackTrace()
             }
         }
-    }
-
-    private fun removeExtensionFromFileName(team :String?) :String?{
-        var fileNameWithoutExtension = team
-        when {
-            team != null -> when {
-                team.indexOf(".") > 0 -> fileNameWithoutExtension = team.substring(0, team.lastIndexOf("."))
-            }
-        }
-        return fileNameWithoutExtension
     }
 
     private fun openAboutDialog(){

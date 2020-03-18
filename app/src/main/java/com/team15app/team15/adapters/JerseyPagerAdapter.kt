@@ -23,7 +23,12 @@ class JerseyPagerAdapter(private val context: Context,
         val layout = inflater.inflate(jerseyEnum.layout, collection, false) as ViewGroup
         val row: GridView = layout.findViewById(R.id.gridView)
 
-        val gridviewAdapter = GridViewAdapter(context, R.layout.team_jersey_grid_item, jerseyEnum.jerseys, myOnTeamClickListener, isGoalkeeper)
+        val gridviewAdapter = GridViewAdapter(context,
+            R.layout.team_jersey_grid_item,
+            jerseyEnum.jerseys,
+            myOnTeamClickListener,
+            isGoalkeeper)
+
         row.adapter = gridviewAdapter
 
         collection.addView(layout)
@@ -41,5 +46,4 @@ class JerseyPagerAdapter(private val context: Context,
     override fun getCount(): Int {
         return JerseyEnum.values().size
     }
-
 }

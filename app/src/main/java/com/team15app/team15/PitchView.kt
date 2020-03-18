@@ -1,6 +1,7 @@
 package com.team15app.team15
 
 import android.content.Context
+import android.content.Context.INPUT_METHOD_SERVICE
 import android.graphics.*
 import android.support.v4.content.ContextCompat
 import android.support.v4.view.ViewPager
@@ -15,7 +16,7 @@ import com.team15app.team15.adapters.JerseyPagerAdapter
 import com.team15app.team15.listeners.OnTeamClickListener
 import android.text.Editable
 import android.text.TextWatcher
-
+import android.view.inputmethod.InputMethodManager
 
 class PitchView : View, ViewPager.OnPageChangeListener {
     private val line13m = 13.0
@@ -342,6 +343,9 @@ class PitchView : View, ViewPager.OnPageChangeListener {
 
                     rbtngJersey = view.findViewById(R.id.rbHomeGroup)
 
+                    val imm = context.getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager?
+                    imm!!.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
+
                     val builder = AlertDialog.Builder(context)
                     builder.setTitle(R.string.default_edit_player_title)
                     builder.setView(view)
@@ -350,12 +354,12 @@ class PitchView : View, ViewPager.OnPageChangeListener {
                             if(etPlayerNumber.text.toString().isNotEmpty()) player.setNumber(etPlayerNumber.text.toString())
                             player.setCustomName(etPlayerName.text.toString())
                             setPlayerNumberAndNameRect(player)
-
                             viewPagerIndex = viewPagerJersey.currentItem
-
                             invalidate() //this will call the onDraw() method so the player's name gets updated
+                            imm!!.hideSoftInputFromWindow(view.windowToken,0)
                         }
                         setNegativeButton(R.string.cancel) { _, _ ->
+                            imm!!.hideSoftInputFromWindow(view.windowToken,0)
                         }
                     }
                     var dialog = builder.create()
