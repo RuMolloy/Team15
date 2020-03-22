@@ -2,7 +2,6 @@ package com.team15app.team15.adapters
 
 import android.content.Context
 import android.support.v4.view.PagerAdapter
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -23,13 +22,13 @@ class JerseyPagerAdapter(private val context: Context,
         val layout = inflater.inflate(jerseyEnum.layout, collection, false) as ViewGroup
         val row: GridView = layout.findViewById(R.id.gridView)
 
-        val gridviewAdapter = GridViewAdapter(context,
+        val gvAdapter = GridViewAdapter(context,
             R.layout.team_jersey_grid_item,
             jerseyEnum.jerseys,
             myOnTeamClickListener,
             isGoalkeeper)
 
-        row.adapter = gridviewAdapter
+        row.adapter = gvAdapter
 
         collection.addView(layout)
         return layout

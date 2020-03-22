@@ -60,15 +60,20 @@ class PitchView : View, ViewPager.OnPageChangeListener {
 
     private lateinit var myOnTeamClickListener: OnTeamClickListener
 
+    private lateinit var mContext: Context
+
     constructor(context: Context) : super(context) {
+        mContext = context
         init()
     }
 
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
+        mContext = context
         init()
     }
 
     constructor(context: Context, attrs: AttributeSet, defStyle: Int) : super(context, attrs, defStyle) {
+        mContext = context
         init()
     }
 
@@ -354,6 +359,11 @@ class PitchView : View, ViewPager.OnPageChangeListener {
                             if(etPlayerNumber.text.toString().isNotEmpty()) player.setNumber(etPlayerNumber.text.toString())
                             player.setCustomName(etPlayerName.text.toString())
                             setPlayerNumberAndNameRect(player)
+                            if(mContext is MainActivity){
+                                //TODO refactor
+                                var mainActivity = (mContext as MainActivity)
+                                mainActivity.updateJersey(mainActivity.isGoalKeeper, mainActivity.jerseyDrawable)
+                            }
                             viewPagerIndex = viewPagerJersey.currentItem
                             invalidate() //this will call the onDraw() method so the player's name gets updated
                             imm!!.hideSoftInputFromWindow(view.windowToken,0)

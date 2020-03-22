@@ -64,6 +64,8 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
     private lateinit var team: Team
 
     private var fileName: String? = ""
+    var isGoalKeeper: Boolean = false
+    var jerseyDrawable: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -159,6 +161,11 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
     }
 
     override fun onJerseyClick(isGoalkeeper: Boolean, drawable: Int) {
+        this.isGoalKeeper = isGoalkeeper
+        this.jerseyDrawable = drawable
+    }
+
+    fun updateJersey(isGoalkeeper: Boolean, drawable: Int){
         when {
             isGoalkeeper -> {
                 team.setJerseyGoalkeeper(drawable)
@@ -580,8 +587,8 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
                     0 -> {
                         if(!it.contains(version)){
                             updateTeamASelection(it)
-                            onJerseyClick(true, R.drawable.jersey_default)
-                            onJerseyClick(false, R.drawable.jersey_default)
+                            updateJersey(true, R.drawable.jersey_default)
+                            updateJersey(false, R.drawable.jersey_default)
                             offset = 1
                         }
                     }
@@ -600,8 +607,8 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
                         pitchView.setPlayerNumberAndNameRect(player)
                         playerIndex++
                     }
-                    19 -> onJerseyClick(true, it.toInt())
-                    20 -> onJerseyClick(false, it.toInt())
+                    19 -> updateJersey(true, it.toInt())
+                    20 -> updateJersey(false, it.toInt())
                 }
                 lineNum++
             }
