@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Context.INPUT_METHOD_SERVICE
 import android.graphics.*
 import android.support.v4.content.ContextCompat
+import android.support.v4.view.GestureDetectorCompat
 import android.support.v4.view.ViewPager
 import android.support.v7.app.AlertDialog
 import android.util.AttributeSet
@@ -16,9 +17,13 @@ import com.team15app.team15.adapters.JerseyPagerAdapter
 import com.team15app.team15.listeners.OnTeamClickListener
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
+import android.view.GestureDetector
+import android.view.HapticFeedbackConstants
 import android.view.inputmethod.InputMethodManager
 
-class PitchView : View, ViewPager.OnPageChangeListener {
+
+class PitchView : View, ViewPager.OnPageChangeListener, GestureDetector.OnGestureListener, GestureDetector.OnDoubleTapListener {
     private val line13m = 13.0
     private val pitchWidthInMetres = 90.0
     private val pitchLengthInMetres = 145.0
@@ -28,6 +33,11 @@ class PitchView : View, ViewPager.OnPageChangeListener {
     private var paintPitchText: Paint = Paint()
     private var paintJerseyNumberText: Paint = Paint()
     private var paintJerseyNumberStroke: Paint = Paint()
+
+    private var paintJerseySelected: Paint = Paint()
+    private var paintJerseyIsNotOverlapping: Paint = Paint()
+    private var paintJerseyIsOverlapping: Paint = Paint()
+
     private var paintTranslucent: Paint = Paint()
     private var paintPlayerNumberAndNameRect: Paint = Paint()
 
@@ -61,6 +71,9 @@ class PitchView : View, ViewPager.OnPageChangeListener {
     private lateinit var myOnTeamClickListener: OnTeamClickListener
 
     private lateinit var mContext: Context
+    private lateinit var mDetector: GestureDetectorCompat
+    private var timeWhenDownPressed: Long = 0
+    private val DEBUG_TAG = "Gestures"
 
     constructor(context: Context) : super(context) {
         mContext = context
@@ -78,7 +91,14 @@ class PitchView : View, ViewPager.OnPageChangeListener {
     }
 
     private fun init() {
+        initGestureDetector()
         initUIResources()
+    }
+
+    private fun initGestureDetector(){
+        mDetector = GestureDetectorCompat(mContext, this)
+        mDetector.setOnDoubleTapListener(this)
+        mDetector.setIsLongpressEnabled(false)
     }
 
     private fun initUIResources() {
@@ -102,6 +122,21 @@ class PitchView : View, ViewPager.OnPageChangeListener {
         paintJerseyNumberStroke.textAlign = Paint.Align.CENTER
         paintJerseyNumberStroke.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
         paintJerseyNumberStroke.isAntiAlias = true
+
+        paintJerseySelected = Paint()
+        paintJerseySelected.color = Color.BLUE
+        paintJerseySelected.style = Paint.Style.STROKE
+        paintJerseySelected.strokeWidth = 3f
+
+        paintJerseyIsNotOverlapping = Paint()
+        paintJerseyIsNotOverlapping.color = Color.RED
+        paintJerseyIsNotOverlapping.style = Paint.Style.STROKE
+        paintJerseyIsNotOverlapping.strokeWidth = 3f
+
+        paintJerseyIsOverlapping = Paint()
+        paintJerseyIsOverlapping.color = Color.GREEN
+        paintJerseyIsOverlapping.style = Paint.Style.STROKE
+        paintJerseyIsOverlapping.strokeWidth = 3f
 
         paintPitchHashtag = Paint()
         paintPitchHashtag.color = ContextCompat.getColor(context, R.color.colorPitchLinesAndText)
@@ -143,71 +178,6 @@ class PitchView : View, ViewPager.OnPageChangeListener {
         }
     }
 
-    public override fun onDraw(canvas: Canvas) {
-        //drawPitchBackground(canvas)
-        drawHashtag(canvas)
-        drawJersey(canvas)
-    }
-
-    private fun drawHashtag(canvas: Canvas){
-        val centreX = halfScreenResolutionWidthInPixels - bitmapJerseyOutfield!!.width/2
-        val pitchLeft = (centreX - centreX/1.75).toInt()
-        val pitchRight = (centreX + centreX/1.6).toInt()
-        val offsetPlayerJersey = (resources.getDimension(R.dimen.player_jersey_offset).toInt())
-
-        canvas.drawText(resources.getString(R.string.app_handle),
-            pitchLeft.toFloat() + bitmapJerseyOutfield!!.width/2,
-            (getLineMinusJerseyOffset(0) + offsetPlayerJersey).toFloat() + bitmapJerseyOutfield!!.height/2 + paintPitchHashtag.textSize.toInt(),
-            paintPitchHashtag)
-
-        canvas.drawText(resources.getString(R.string.app_hashtag),
-            pitchRight.toFloat() + bitmapJerseyOutfield!!.width/2,
-            (getLineMinusJerseyOffset(0) + offsetPlayerJersey).toFloat() + bitmapJerseyOutfield!!.height/2 + paintPitchHashtag.textSize.toInt(),
-            paintPitchHashtag)
-    }
-
-    fun setJerseyBitmaps(jerseyGoalkeeper: Int, jerseyOutfield: Int){
-        setJerseyGoalkeeperBitmap(jerseyGoalkeeper)
-        setJerseyOutfieldBitmap(jerseyOutfield)
-    }
-
-    fun setJerseyGoalkeeperBitmap(jerseyGoalkeeper: Int){
-        bitmapJerseyGoalkeeper = BitmapFactory.decodeResource(context.resources, jerseyGoalkeeper)
-    }
-
-    fun setJerseyOutfieldBitmap(jerseyOutfield: Int){
-        bitmapJerseyOutfield = BitmapFactory.decodeResource(context.resources, jerseyOutfield)
-    }
-
-    private fun drawJersey(canvas: Canvas){
-        for(Item in mapOfPlayers) {
-            val player = Item.value
-
-            canvas.drawBitmap(getJersey(player), player.getJerseyPoint()!!.x.toFloat(), player.getJerseyPoint()!!.y.toFloat(), Paint())
-            canvas.drawRect(player.getJerseyRect(), paintTranslucent)
-
-            canvas.drawRect(player.getNameRect(), paintPlayerNumberAndNameRect)
-            canvas.drawText(player.getName(), player.getNamePoint()!!.x.toFloat(), player.getNamePoint()!!.y.toFloat(), paintPitchText)
-            canvas.drawText(player.getNumber(), player.getJerseyPoint()!!.x.toFloat() + bitmapJerseyOutfield!!.width/2, player.getJerseyPoint()!!.y.toFloat()+ bitmapJerseyOutfield!!.height/2, paintJerseyNumberText)
-            canvas.drawText(player.getNumber(), player.getJerseyPoint()!!.x.toFloat() + bitmapJerseyOutfield!!.width/2, player.getJerseyPoint()!!.y.toFloat()+ bitmapJerseyOutfield!!.height/2, paintJerseyNumberStroke)
-
-            if(isDrawingPitchDebugLines){
-                //canvas.drawRect(rectPitchPerimeter, paintPlayerNumberAndNameRect)
-                canvas.drawLine(rectPitchPerimeter.left.toFloat(), getLine(0).toFloat(), rectPitchPerimeter.right.toFloat(), getLine(0).toFloat(), paintPitchText)
-                canvas.drawLine(rectPitchPerimeter.left.toFloat(), getLine(1).toFloat(), rectPitchPerimeter.right.toFloat(), getLine(1).toFloat(), paintPitchText)
-                canvas.drawLine(rectPitchPerimeter.left.toFloat(), getLine(2).toFloat(), rectPitchPerimeter.right.toFloat(), getLine(2).toFloat(), paintPitchText)
-                canvas.drawLine(rectPitchPerimeter.left.toFloat(), getLine(3).toFloat(), rectPitchPerimeter.right.toFloat(), getLine(3).toFloat(), paintPitchText)
-                canvas.drawLine(rectPitchPerimeter.left.toFloat(), getLine(4).toFloat(), rectPitchPerimeter.right.toFloat(), getLine(4).toFloat(), paintPitchText)
-                canvas.drawLine(rectPitchPerimeter.left.toFloat(), getLine(5).toFloat(), rectPitchPerimeter.right.toFloat(), getLine(5).toFloat(), paintPitchText)
-                canvas.drawLine(rectPitchPerimeter.left.toFloat(), getLine(6).toFloat(), rectPitchPerimeter.right.toFloat(), getLine(6).toFloat(), paintPitchText)
-            }
-        }
-    }
-
-    private fun getJersey(player: Player): Bitmap?{
-        return if(player.getDefaultName() == resources.getStringArray(R.array.team_positions)[0]) bitmapJerseyGoalkeeper else bitmapJerseyOutfield
-    }
-
     private fun setPlayerLocationParameters(player: Player){
         val centreX = halfScreenResolutionWidthInPixels - bitmapJerseyOutfield!!.width/2
         val centreY = rectPitchPerimeter.bottom/2 - bitmapJerseyOutfield!!.height/2
@@ -226,8 +196,8 @@ class PitchView : View, ViewPager.OnPageChangeListener {
         when (player.getDefaultName()) {
             //Goalkeeper
             resources.getStringArray(R.array.team_positions)[0] -> {
-                p = Point(pitchCentre.x, getLineMinusJerseyOffset(0) + offsetPlayerJersey)
-                r = Point(p.x+offsetPlayerText, getLinePlusJerseyOffset(0) + offsetPlayerJersey)
+                p = Point(pitchCentre.x, getLineMinusJerseyOffset(0) + offsetPlayerJersey+5)
+                r = Point(p.x+offsetPlayerText, getLinePlusJerseyOffset(0) + offsetPlayerJersey+5)
             }
             //Full back line
             resources.getStringArray(R.array.team_positions)[1] -> {
@@ -292,16 +262,96 @@ class PitchView : View, ViewPager.OnPageChangeListener {
             }
         }
 
-        player.setJerseyPoint(p)
+        player.setJerseyPointDefault(p)
+        player.setJerseyPointCustom(p)
         player.setNamePoint(r)
 
         val rectJersey = Rect(player.getJerseyPoint()!!.x,
             player.getJerseyPoint()!!.y,
             player.getJerseyPoint()!!.x + bitmapJerseyOutfield!!.width,
             player.getJerseyPoint()!!.y + bitmapJerseyOutfield!!.height)
-
-        player.setJerseyRect(rectJersey)
+        player.setJerseyRectDefault(rectJersey)
+        player.setJerseyRectCustom(rectJersey)
         setPlayerNumberAndNameRect(player)
+    }
+
+    public override fun onDraw(canvas: Canvas) {
+        //drawPitchBackground(canvas)
+        drawHashtag(canvas)
+        drawJersey(canvas)
+    }
+
+    private fun drawHashtag(canvas: Canvas){
+        val centreX = halfScreenResolutionWidthInPixels - bitmapJerseyOutfield!!.width/2
+        val pitchLeft = (centreX - centreX/1.75).toInt()
+        val pitchRight = (centreX + centreX/1.6).toInt()
+        val offsetPlayerJersey = (resources.getDimension(R.dimen.player_jersey_offset).toInt())
+
+        canvas.drawText(resources.getString(R.string.app_handle),
+            pitchLeft.toFloat() + bitmapJerseyOutfield!!.width/2,
+            (getLineMinusJerseyOffset(0) + offsetPlayerJersey).toFloat() + bitmapJerseyOutfield!!.height/2 + paintPitchHashtag.textSize.toInt(),
+            paintPitchHashtag)
+
+        canvas.drawText(resources.getString(R.string.app_hashtag),
+            pitchRight.toFloat() + bitmapJerseyOutfield!!.width/2,
+            (getLineMinusJerseyOffset(0) + offsetPlayerJersey).toFloat() + bitmapJerseyOutfield!!.height/2 + paintPitchHashtag.textSize.toInt(),
+            paintPitchHashtag)
+    }
+
+    fun setJerseyBitmaps(jerseyGoalkeeper: Int, jerseyOutfield: Int){
+        setJerseyGoalkeeperBitmap(jerseyGoalkeeper)
+        setJerseyOutfieldBitmap(jerseyOutfield)
+    }
+
+    fun setJerseyGoalkeeperBitmap(jerseyGoalkeeper: Int){
+        bitmapJerseyGoalkeeper = BitmapFactory.decodeResource(context.resources, jerseyGoalkeeper)
+    }
+
+    fun setJerseyOutfieldBitmap(jerseyOutfield: Int){
+        bitmapJerseyOutfield = BitmapFactory.decodeResource(context.resources, jerseyOutfield)
+    }
+
+    private fun drawJersey(canvas: Canvas){
+        for(player in mapOfPlayers.values) {
+
+            canvas.drawBitmap(getJersey(player), player.getJerseyPoint()!!.x.toFloat(), player.getJerseyPoint()!!.y.toFloat(), Paint())
+            canvas.drawRect(player.getJerseyRect(), getJerseyBorder(player))
+            canvas.drawRect(player.getNameRect(), paintPlayerNumberAndNameRect)
+            canvas.drawText(player.getName(), player.getNamePoint()!!.x.toFloat(), player.getNamePoint()!!.y.toFloat(), paintPitchText)
+            canvas.drawText(player.getNumber(), player.getJerseyPoint()!!.x.toFloat() + bitmapJerseyOutfield!!.width/2, player.getJerseyPoint()!!.y.toFloat() + bitmapJerseyOutfield!!.height/2, paintJerseyNumberText)
+            canvas.drawText(player.getNumber(), player.getJerseyPoint()!!.x.toFloat() + bitmapJerseyOutfield!!.width/2, player.getJerseyPoint()!!.y.toFloat() + bitmapJerseyOutfield!!.height/2, paintJerseyNumberStroke)
+
+            if(isDrawingPitchDebugLines){
+                //canvas.drawRect(rectPitchPerimeter, paintPlayerNumberAndNameRect)
+                canvas.drawLine(rectPitchPerimeter.left.toFloat(), getLine(0).toFloat(), rectPitchPerimeter.right.toFloat(), getLine(0).toFloat(), paintPitchText)
+                canvas.drawLine(rectPitchPerimeter.left.toFloat(), getLine(1).toFloat(), rectPitchPerimeter.right.toFloat(), getLine(1).toFloat(), paintPitchText)
+                canvas.drawLine(rectPitchPerimeter.left.toFloat(), getLine(2).toFloat(), rectPitchPerimeter.right.toFloat(), getLine(2).toFloat(), paintPitchText)
+                canvas.drawLine(rectPitchPerimeter.left.toFloat(), getLine(3).toFloat(), rectPitchPerimeter.right.toFloat(), getLine(3).toFloat(), paintPitchText)
+                canvas.drawLine(rectPitchPerimeter.left.toFloat(), getLine(4).toFloat(), rectPitchPerimeter.right.toFloat(), getLine(4).toFloat(), paintPitchText)
+                canvas.drawLine(rectPitchPerimeter.left.toFloat(), getLine(5).toFloat(), rectPitchPerimeter.right.toFloat(), getLine(5).toFloat(), paintPitchText)
+                canvas.drawLine(rectPitchPerimeter.left.toFloat(), getLine(6).toFloat(), rectPitchPerimeter.right.toFloat(), getLine(6).toFloat(), paintPitchText)
+            }
+        }
+    }
+
+    private fun getJersey(player: Player): Bitmap?{
+        return if(player.getDefaultName() == resources.getStringArray(R.array.team_positions)[0]) bitmapJerseyGoalkeeper else bitmapJerseyOutfield
+    }
+
+    private fun getJerseyBorder(player: Player): Paint{
+        return if(isAnyPlayerSelected()){
+            if(player.isSelected()){
+                paintJerseySelected
+            } else{
+                if(player.isOverlapping()){
+                    paintJerseyIsOverlapping
+                } else{
+                    paintJerseyIsNotOverlapping
+                }
+            }
+        } else{
+            paintTranslucent
+        }
     }
 
     private fun getXmLine(xLineInMetres: Double): Int {
@@ -333,88 +383,150 @@ class PitchView : View, ViewPager.OnPageChangeListener {
     override fun onTouchEvent(event: MotionEvent): Boolean {
         val eventX = event.x.toInt()
         val eventY = event.y.toInt()
+        if (mDetector.onTouchEvent(event) === true) {
+            //Fling or other gesture detected (not long-press because it is disabled)
+            if (event.action == MotionEvent.ACTION_MOVE) {
+                timeWhenDownPressed = System.currentTimeMillis()
+                val playerSelected = getSelectedPlayer()
+                if(playerSelected != null) {
+                    playerSelected.setJerseyPointCustom(Point(eventX-(bitmapJerseyOutfield!!.width/2), eventY-(bitmapJerseyOutfield!!.height/2)))
+                    playerSelected.setJerseyRectCustom(Rect(playerSelected.getJerseyPoint()!!.x, playerSelected.getJerseyPoint()!!.y, playerSelected.getJerseyPoint()!!.x + bitmapJerseyOutfield!!.width, playerSelected.getJerseyPoint()!!.y + bitmapJerseyOutfield!!.height))
+                    invalidate()
+
+                    resetOverlappedPlayers()
+                    isPlayerOverlapping(playerSelected)?.setIsOverlapping(true)
+                    invalidate()
+                }
+            }
+        } else {
+            if (event.action == MotionEvent.ACTION_MOVE) {
+                /*Check if user is actually longpressing, not slow-moving
+                  if current position differs much then press positon then discard whole thing
+                  if position change is minimal then after 0.5s that is a longpress. You can now process your other gestures*/
+                val timeNow = System.currentTimeMillis()
+                if(timeNow - timeWhenDownPressed > 200){
+                    timeWhenDownPressed = timeNow
+                    val player = isMouseEventOnThePlayer(eventX, eventY)
+                    if(player != null && !player.isSelected()){
+                        resetSelectedPlayers()
+                        player.setIsSelected(true)
+                        this.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
+                        invalidate()
+                    }
+                }
+            }
+            if (event.action == MotionEvent.ACTION_UP) {
+                //Log.e(DEBUG_TAG, "Action up")
+                swapPlayer()
+            }
+        }
+        return true
+    }
+
+    override fun onSingleTapConfirmed(event: MotionEvent): Boolean {
+        //Log.d(DEBUG_TAG, "onSingleTapConfirmed: $event")
+        val eventX = event.x.toInt()
+        val eventY = event.y.toInt()
 
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
                 val player = isMouseEventOnThePlayer(eventX, eventY)
                 if(player != null){
-                    val view = inflate(context, R.layout.dialog_edit_player, null)
-                    val isGoalkeeper = player.getDefaultName().contains(resources.getString(R.string.goalkeeper))
-                    val pageAdapter = JerseyPagerAdapter(context, myOnTeamClickListener, isGoalkeeper)
-                    viewPagerJersey = view.findViewById(R.id.viewPager)
-                    viewPagerJersey.adapter = pageAdapter
-                    viewPagerJersey.addOnPageChangeListener(this)
-                    //viewPagerJersey.offscreenPageLimit = JerseyEnum.values().size
+                    if(!isAnyPlayerSelected()){
+                        val view = inflate(context, R.layout.dialog_edit_player, null)
+                        val isGoalkeeper = player.getDefaultName().contains(resources.getString(R.string.goalkeeper))
+                        val pageAdapter = JerseyPagerAdapter(context, myOnTeamClickListener, isGoalkeeper)
+                        viewPagerJersey = view.findViewById(R.id.viewPager)
+                        viewPagerJersey.adapter = pageAdapter
+                        viewPagerJersey.addOnPageChangeListener(this)
+                        //viewPagerJersey.offscreenPageLimit = JerseyEnum.values().size
 
-                    rbtngJersey = view.findViewById(R.id.rbHomeGroup)
+                        rbtngJersey = view.findViewById(R.id.rbHomeGroup)
 
-                    val imm = context.getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager?
-                    imm!!.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
+                        val imm = context.getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager?
+                        imm!!.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
 
-                    val builder = AlertDialog.Builder(context)
-                    builder.setTitle(R.string.default_edit_player_title)
-                    builder.setView(view)
-                    builder.apply {
-                        setPositiveButton(R.string.ok) { _, _ ->
-                            if(etPlayerNumber.text.toString().isNotEmpty()) player.setNumber(etPlayerNumber.text.toString())
-                            player.setCustomName(etPlayerName.text.toString())
-                            setPlayerNumberAndNameRect(player)
-                            if(mContext is MainActivity){
-                                //TODO refactor
-                                var mainActivity = (mContext as MainActivity)
-                                mainActivity.updateJersey(mainActivity.isGoalKeeper, mainActivity.jerseyDrawable)
+                        val builder = AlertDialog.Builder(context)
+                        builder.setTitle(R.string.default_edit_player_title)
+                        builder.setView(view)
+                        builder.apply {
+                            setPositiveButton(R.string.ok) { _, _ ->
+                                if(etPlayerNumber.text.toString().isNotEmpty()) player.setNumber(etPlayerNumber.text.toString())
+                                player.setCustomName(etPlayerName.text.toString())
+                                setPlayerNumberAndNameRect(player)
+                                if(mContext is MainActivity){
+                                    //TODO refactor
+                                    var mainActivity = (mContext as MainActivity)
+                                    mainActivity.updateJersey(mainActivity.isGoalKeeper, mainActivity.jerseyDrawable)
+                                }
+                                viewPagerIndex = viewPagerJersey.currentItem
+                                invalidate() //this will call the onDraw() method so the player's name gets updated
+                                imm!!.hideSoftInputFromWindow(view.windowToken,0)
                             }
-                            viewPagerIndex = viewPagerJersey.currentItem
-                            invalidate() //this will call the onDraw() method so the player's name gets updated
-                            imm!!.hideSoftInputFromWindow(view.windowToken,0)
+                            setNegativeButton(R.string.cancel) { _, _ ->
+                                imm!!.hideSoftInputFromWindow(view.windowToken,0)
+                            }
                         }
-                        setNegativeButton(R.string.cancel) { _, _ ->
-                            imm!!.hideSoftInputFromWindow(view.windowToken,0)
-                        }
+                        var dialog = builder.create()
+                        dialog.show()
+
+                        etPlayerNumber = view.findViewById(R.id.et_edit_player_number)
+                        etPlayerNumber.setText(player.getNumber())
+                        etPlayerNumber.addTextChangedListener(object : TextWatcher {
+                            override fun afterTextChanged(p0: Editable?) {
+                                var playerInUse = isPlayerNumberInUse(player, etPlayerNumber.text.toString())
+                                if(playerInUse.isNotEmpty()){
+                                    etPlayerNumber.error = resources.getString(R.string.error_player_number_in_use) + " " + playerInUse
+                                    dialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = false
+                                }
+                                else{
+                                    etPlayerNumber.error = null
+                                    dialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = true
+                                }
+                            }
+
+                            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                            }
+
+                            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                            }
+                        })
+
+                        etPlayerName = view.findViewById(R.id.et_edit_player_name)
+                        if(player.isDefaultName()) etPlayerName.hint = player.getName()
+                        else etPlayerName.setText(player.getName())
+                        etPlayerName.requestFocus()
+
+                        viewPagerJersey.currentItem = viewPagerIndex
                     }
-                    var dialog = builder.create()
-                    dialog.show()
-
-                    etPlayerNumber = view.findViewById(R.id.et_edit_player_number)
-                    etPlayerNumber.setText(player.getNumber())
-                    etPlayerNumber.addTextChangedListener(object : TextWatcher {
-                        override fun afterTextChanged(p0: Editable?) {
-                            var playerInUse = isPlayerNumberInUse(player, etPlayerNumber.text.toString())
-                            if(playerInUse.isNotEmpty()){
-                                etPlayerNumber.error = resources.getString(R.string.error_player_number_in_use) + " " + playerInUse
-                                dialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = false
-                            }
-                            else{
-                                etPlayerNumber.error = null
-                                dialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = true
-                            }
+                    else{
+                        val isThisPlayerSelected = player.isSelected()
+                        setPlayersUnselected()
+                        if(!isThisPlayerSelected){
+                            player.setIsSelected(true)
                         }
-
-                        override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                        }
-
-                        override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                        }
-                    })
-
-                    etPlayerName = view.findViewById(R.id.et_edit_player_name)
-                    if(player.isDefaultName()) etPlayerName.hint = player.getName()
-                    else etPlayerName.setText(player.getName())
-                    etPlayerName.requestFocus()
-
-                    viewPagerJersey.currentItem = viewPagerIndex
+                        invalidate()
+                    }
+                }
+                else{
+                    setPlayersUnselected()
+                    invalidate()
                 }
             }
         }
         return true
     }
 
-    override fun onPageScrollStateChanged(p0: Int) {
-
+    override fun onDown(event: MotionEvent): Boolean {
+        //Log.d(DEBUG_TAG, "onDown: $event")
+        timeWhenDownPressed = System.currentTimeMillis()
+        return true
     }
 
-    override fun onPageScrolled(p0: Int, p1: Float, p2: Int) {
-
+    override fun onFling(event1: MotionEvent, event2: MotionEvent, velocityX: Float, velocityY: Float): Boolean {
+        //Log.d(DEBUG_TAG, "onFling: $event1 $event2")
+        swapPlayer()
+        return true
     }
 
     override fun onPageSelected(p0: Int) {
@@ -438,9 +550,52 @@ class PitchView : View, ViewPager.OnPageChangeListener {
         player.setNameRect(rectText)
     }
 
+    private fun getSelectedPlayer(): Player? {
+        for(player in mapOfPlayers.values) {
+            if(player.isSelected()){
+                return player
+            }
+        }
+        return null
+    }
+
+    private fun getOverlappedPlayer(): Player? {
+        for(player in mapOfPlayers.values) {
+            if(player.isOverlapping()){
+                return player
+            }
+        }
+        return null
+    }
+
+    private fun setPlayersUnselected(){
+        for(player in mapOfPlayers.values) {
+            player.setIsSelected(false)
+        }
+    }
+
+    private fun resetSelectedPlayer(){
+        val player = getSelectedPlayer()
+        if(player != null) {
+            player.setJerseyPointCustom(player.getJerseyPointDefault()!!)
+            player.setJerseyRectCustom(player.getJerseyRectDefault()!!)
+        }
+    }
+
+    fun resetSelectedPlayers(){
+        for(player in mapOfPlayers.values) {
+            player.setIsSelected(false)
+        }
+    }
+
+    private fun resetOverlappedPlayers(){
+        for(player in mapOfPlayers.values) {
+            player.setIsOverlapping(false)
+        }
+    }
+
     private fun isMouseEventOnThePlayer(eventX: Int, eventY: Int): Player? {
-        for(Item in mapOfPlayers) {
-            val player = Item.value
+        for(player in mapOfPlayers.values) {
             if(player.getJerseyRect()!!.contains(eventX, eventY) ||
                     player.getNameRect()!!.contains(eventX, eventY)){
                 return player
@@ -449,13 +604,106 @@ class PitchView : View, ViewPager.OnPageChangeListener {
         return null
     }
 
+    private fun isPlayerOverlapping(playerSelected: Player): Player? {
+        for(player in mapOfPlayers.values) {
+            if(player != playerSelected){
+                if(player.getJerseyRect()!!.centerX() < playerSelected.getJerseyRect()!!.centerX() + playerSelected.getJerseyRect()!!.width()
+                    && player.getJerseyRect()!!.centerX() + player.getJerseyRect()!!.width() > playerSelected.getJerseyRect()!!.centerX()
+                    && player.getJerseyRect()!!.centerY() < playerSelected.getJerseyRect()!!.centerY() + playerSelected.getJerseyRect()!!.height()
+                    && player.getJerseyRect()!!.centerY() + player.getJerseyRect()!!.height() > playerSelected.getJerseyRect()!!.centerY()){
+                    return player
+                }
+            }
+        }
+        return null
+    }
+
     private fun isPlayerNumberInUse(selectedPlayer: Player, number: String): String{
-        for(Item in mapOfPlayers) {
-            val player = Item.value
+        for(player in mapOfPlayers.values) {
             if(player != selectedPlayer && player.getNumber() == number){
                 return player.getName()
             }
         }
         return ""
+    }
+
+    private fun isAnyPlayerSelected(): Boolean{
+        for(player in mapOfPlayers.values) {
+            if(player.isSelected()){
+                return true
+            }
+        }
+        return false
+    }
+
+    private fun swapPlayer(){
+        resetSelectedPlayer()
+        invalidate()
+
+        val playerOverlapped = getOverlappedPlayer()
+        val playerSelected = getSelectedPlayer()
+        if(playerOverlapped != null && playerSelected != null){
+            val p  = playerSelected.getJerseyPointDefault()
+            val r = playerSelected.getJerseyRectDefault()
+            val np = playerSelected.getNamePoint()
+            val nr = playerSelected.getNameRect()
+
+            playerSelected.setJerseyPointDefault(playerOverlapped.getJerseyPointDefault())
+            playerSelected.setJerseyRectDefault(playerOverlapped.getJerseyRectDefault())
+            playerSelected.setJerseyPointCustom(playerOverlapped.getJerseyPointDefault())
+            playerSelected.setJerseyRectCustom(playerOverlapped.getJerseyRectDefault())
+            playerSelected.setNamePoint(playerOverlapped.getNamePoint())
+            playerSelected.setNameRect(playerOverlapped.getNameRect())
+            setPlayerNumberAndNameRect(playerSelected)
+
+            playerOverlapped.setJerseyPointDefault(p)
+            playerOverlapped.setJerseyRectDefault(r)
+            playerOverlapped.setJerseyPointCustom(p)
+            playerOverlapped.setJerseyRectCustom(r)
+            playerOverlapped.setNamePoint(np)
+            playerOverlapped.setNameRect(nr)
+            setPlayerNumberAndNameRect(playerOverlapped)
+
+            resetSelectedPlayers()
+            resetOverlappedPlayers()
+
+            invalidate()
+        }
+    }
+
+    override fun onLongPress(event: MotionEvent) {
+        //Log.d(DEBUG_TAG, "onLongPress: $event")
+    }
+
+    override fun onShowPress(event: MotionEvent) {
+        //Log.d(DEBUG_TAG, "onShowPress: $event")
+    }
+
+    override fun onSingleTapUp(event: MotionEvent): Boolean {
+        //Log.d(DEBUG_TAG, "onSingleTapUp: $event")
+        return true
+    }
+
+    override fun onDoubleTap(event: MotionEvent): Boolean {
+        //Log.d(DEBUG_TAG, "onDoubleTap: $event")
+        return true
+    }
+
+    override fun onDoubleTapEvent(event: MotionEvent): Boolean {
+        //Log.d(DEBUG_TAG, "onDoubleTapEvent: $event")
+        return true
+    }
+
+    override fun onScroll(event1: MotionEvent, event2: MotionEvent, distanceX: Float, distanceY: Float): Boolean {
+        //Log.d(DEBUG_TAG, "onScroll: $event1 $event2")
+        return true
+    }
+
+    override fun onPageScrollStateChanged(p0: Int) {
+
+    }
+
+    override fun onPageScrolled(p0: Int, p1: Float, p2: Int) {
+
     }
 }

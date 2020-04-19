@@ -81,6 +81,8 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
     private fun loadVars(){
         val rlMatchInfo = findViewById<RelativeLayout>(R.id.rl_match_info)
         rlMatchInfo.setOnClickListener{
+            pitchView.resetSelectedPlayers()
+            pitchView.invalidate()
             openMatchInfoDialog()
         }
         tvTeamNameA = rlMatchInfo.findViewById(R.id.tv_match_info_team_a)
@@ -221,6 +223,8 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
+        pitchView.resetSelectedPlayers()
+        pitchView.invalidate()
         return when (item.itemId) {
             R.id.menu_item_reset -> {
                 openResetDialog()
@@ -487,7 +491,7 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
 
             val builder = AlertDialog.Builder(this, R.style.DialogWindowTitle_Holo)
             builder.setCustomTitle(view)
-            builder.setTitle(R.string.action_load)
+            builder.setTitle(R.string.swap_name)
 
             val row = layoutInflater.inflate(R.layout.team_name_view, null)
 

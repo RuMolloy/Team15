@@ -6,6 +6,7 @@
     <string name="action_about">About</string>
     <string name="action_save">Save</string>
     <string name="action_load">Load</string>
+    <string name="action_swap">Swap Player</string>
     <string name="version">Version</string>
     <string name="title_select_team_name">Select Team A</string>
     <string name="default_team_name_a">Insert Team A</string>
@@ -42,10 +43,16 @@
     <string name="delete_all_success">"All teams have been deleted!"</string>
     <string name="load_not_available">No teams available to load, try saving a team first!</string>
     <string name="overwrite_file">Overwrite file if it exists</string>
-    <string name="tab_county">County</string>
-    <string name="tab_club">Club</string>
-    <string name="club_support_disclaimer">Only Galway, Mayo, Roscommon, Sligo and Leitrim clubs are supported</string>
+    <string name="swap_name">Name</string>
+    <string name="swap_number">Number</string>
+    <string name="swap_name_and_number">Name and Number</string>
     <string name="goalkeeper">Goalkeeper</string>
+
+    <string-array name="swap_options">
+        <item>@string/swap_name</item>
+        <item>@string/swap_number</item>
+        <item>@string/swap_name_and_number</item>
+    </string-array>
 
     <string-array name="team_positions">
         <item>@string/goalkeeper</item>

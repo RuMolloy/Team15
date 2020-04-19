@@ -8,10 +8,14 @@ class Player(name: String, number: String){
     private var nameDefault: String = name
     private var nameCustom: String = name
     private var number: String = number
-    private var pointJersey: Point? = null
+    private var pointJerseyDefault: Point? = null
+    private var pointJerseyCustom: Point? = null
     private var pointName: Point? = null
-    private var rectJersey: Rect? = null
+    private var rectJerseyDefault: Rect? = null
+    private var rectJerseyCustom: Rect? = null
     private var rectName: Rect? = null
+    private var isSelected: Boolean = false
+    private var isOverlapping: Boolean = false
 
     fun setCustomName(name: String) {
         this.nameCustom = name
@@ -42,15 +46,26 @@ class Player(name: String, number: String){
         return number + ". " + getName()
     }
 
-    fun setJerseyPoint(pointJersey: Point){
-        this.pointJersey = pointJersey
+    fun setJerseyPointDefault(pointJersey: Point?){
+        this.pointJerseyDefault = pointJersey
+    }
+
+    fun setJerseyPointCustom(pointJersey: Point?){
+        this.pointJerseyCustom = pointJersey
+    }
+
+    fun getJerseyPointDefault(): Point?{
+        return pointJerseyDefault
     }
 
     fun getJerseyPoint(): Point?{
-        return pointJersey
+        if(pointJerseyCustom == pointJerseyDefault){
+            return pointJerseyDefault
+        }
+        return pointJerseyCustom
     }
 
-    fun setNamePoint(pointName: Point){
+    fun setNamePoint(pointName: Point?){
         this.pointName = pointName
     }
 
@@ -58,19 +73,46 @@ class Player(name: String, number: String){
         return pointName
     }
 
-    fun setJerseyRect(rectJersey: Rect){
-        this.rectJersey = rectJersey
+    fun setJerseyRectDefault(rectJersey: Rect?){
+        this.rectJerseyDefault = rectJersey
+    }
+
+    fun setJerseyRectCustom(rectJersey: Rect?){
+        this.rectJerseyCustom = rectJersey
+    }
+
+    fun getJerseyRectDefault(): Rect?{
+        return rectJerseyDefault
     }
 
     fun getJerseyRect(): Rect?{
-        return rectJersey
+        if(rectJerseyCustom == rectJerseyDefault){
+            return rectJerseyDefault
+        }
+        return rectJerseyCustom
     }
 
-    fun setNameRect(rectNumberAndName: Rect){
+    fun setNameRect(rectNumberAndName: Rect?){
         this.rectName = rectNumberAndName
     }
 
     fun getNameRect(): Rect?{
         return rectName
+    }
+
+    fun setIsSelected(isSelected: Boolean){
+        this.isSelected = isSelected
+    }
+
+    fun isSelected(): Boolean{
+        return isSelected
+    }
+
+    fun setIsOverlapping(isOverlapping: Boolean){
+        this.isOverlapping = isOverlapping
+    }
+
+    fun isOverlapping(): Boolean{
+        return isOverlapping
     }
 }

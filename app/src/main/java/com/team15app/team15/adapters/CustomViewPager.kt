@@ -11,7 +11,7 @@ class CustomViewPager : ViewPager {
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {}
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        val numRows = 3.25
+        val numRows = 2.25
         var heightMeasureSpec = heightMeasureSpec
 
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
