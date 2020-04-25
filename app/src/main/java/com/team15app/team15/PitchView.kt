@@ -7,6 +7,9 @@ import android.support.v4.content.ContextCompat
 import android.support.v4.view.GestureDetectorCompat
 import android.support.v4.view.ViewPager
 import android.support.v7.app.AlertDialog
+import android.support.v7.widget.DividerItemDecoration
+import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.util.AttributeSet
 import android.view.View
 import java.util.*
@@ -17,10 +20,12 @@ import com.team15app.team15.adapters.JerseyPagerAdapter
 import com.team15app.team15.listeners.OnTeamClickListener
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.GestureDetector
 import android.view.HapticFeedbackConstants
 import android.view.inputmethod.InputMethodManager
+import android.widget.ImageView
+import android.widget.TextView
+import com.team15app.team15.adapters.CountyAdapter
 
 
 class PitchView : View, ViewPager.OnPageChangeListener, GestureDetector.OnGestureListener, GestureDetector.OnDoubleTapListener {
@@ -70,7 +75,7 @@ class PitchView : View, ViewPager.OnPageChangeListener, GestureDetector.OnGestur
 
     private lateinit var myOnTeamClickListener: OnTeamClickListener
 
-    private lateinit var mContext: Context
+    private var mContext: Context
     private lateinit var mDetector: GestureDetectorCompat
     private var timeWhenDownPressed: Long = 0
     private val DEBUG_TAG = "Gestures"
@@ -417,7 +422,7 @@ class PitchView : View, ViewPager.OnPageChangeListener, GestureDetector.OnGestur
             }
             if (event.action == MotionEvent.ACTION_UP) {
                 //Log.e(DEBUG_TAG, "Action up")
-                swapPlayer()
+                swapPlayerName()
             }
         }
         return true
@@ -461,10 +466,10 @@ class PitchView : View, ViewPager.OnPageChangeListener, GestureDetector.OnGestur
                                 }
                                 viewPagerIndex = viewPagerJersey.currentItem
                                 invalidate() //this will call the onDraw() method so the player's name gets updated
-                                imm!!.hideSoftInputFromWindow(view.windowToken,0)
+                                imm.hideSoftInputFromWindow(view.windowToken,0)
                             }
                             setNegativeButton(R.string.cancel) { _, _ ->
-                                imm!!.hideSoftInputFromWindow(view.windowToken,0)
+                                imm.hideSoftInputFromWindow(view.windowToken,0)
                             }
                         }
                         var dialog = builder.create()
@@ -525,7 +530,7 @@ class PitchView : View, ViewPager.OnPageChangeListener, GestureDetector.OnGestur
 
     override fun onFling(event1: MotionEvent, event2: MotionEvent, velocityX: Float, velocityY: Float): Boolean {
         //Log.d(DEBUG_TAG, "onFling: $event1 $event2")
-        swapPlayer()
+        swapPlayerName()
         return true
     }
 
@@ -636,30 +641,32 @@ class PitchView : View, ViewPager.OnPageChangeListener, GestureDetector.OnGestur
         return false
     }
 
-    private fun swapPlayer(){
+    private fun swapPlayerName(){
         resetSelectedPlayer()
         invalidate()
 
         val playerOverlapped = getOverlappedPlayer()
         val playerSelected = getSelectedPlayer()
         if(playerOverlapped != null && playerSelected != null){
+//            openSwapPlayer(playerSelected, playerOverlapped)
+
             val p  = playerSelected.getJerseyPointDefault()
             val r = playerSelected.getJerseyRectDefault()
             val np = playerSelected.getNamePoint()
             val nr = playerSelected.getNameRect()
 
-            playerSelected.setJerseyPointDefault(playerOverlapped.getJerseyPointDefault())
-            playerSelected.setJerseyRectDefault(playerOverlapped.getJerseyRectDefault())
-            playerSelected.setJerseyPointCustom(playerOverlapped.getJerseyPointDefault())
-            playerSelected.setJerseyRectCustom(playerOverlapped.getJerseyRectDefault())
+//            playerSelected.setJerseyPointDefault(playerOverlapped.getJerseyPointDefault())
+//            playerSelected.setJerseyRectDefault(playerOverlapped.getJerseyRectDefault())
+//            playerSelected.setJerseyPointCustom(playerOverlapped.getJerseyPointDefault())
+//            playerSelected.setJerseyRectCustom(playerOverlapped.getJerseyRectDefault())
             playerSelected.setNamePoint(playerOverlapped.getNamePoint())
             playerSelected.setNameRect(playerOverlapped.getNameRect())
             setPlayerNumberAndNameRect(playerSelected)
 
-            playerOverlapped.setJerseyPointDefault(p)
-            playerOverlapped.setJerseyRectDefault(r)
-            playerOverlapped.setJerseyPointCustom(p)
-            playerOverlapped.setJerseyRectCustom(r)
+//            playerOverlapped.setJerseyPointDefault(p)
+//            playerOverlapped.setJerseyRectDefault(r)
+//            playerOverlapped.setJerseyPointCustom(p)
+//            playerOverlapped.setJerseyRectCustom(r)
             playerOverlapped.setNamePoint(np)
             playerOverlapped.setNameRect(nr)
             setPlayerNumberAndNameRect(playerOverlapped)
@@ -669,6 +676,68 @@ class PitchView : View, ViewPager.OnPageChangeListener, GestureDetector.OnGestur
 
             invalidate()
         }
+    }
+
+    private fun openSwapPlayer(playerA: Player, playerB: Player){
+        val view = inflate(context, R.layout.dialog_custom_title, null)
+        val tvTitle = view.findViewById<TextView>(R.id.tv_team_name)
+        tvTitle.setText(R.string.action_swap)
+
+        val builder = AlertDialog.Builder(context, R.style.DialogWindowTitle_Holo)
+        builder.setCustomTitle(view)
+        builder.setTitle(R.string.action_swap)
+
+        var mainActivity = (mContext as MainActivity)
+        val row = mainActivity.layoutInflater.inflate(R.layout.dialog_swap_player, null)
+        var isGoalkeeper = playerA.getDefaultName().contains(resources.getString(R.string.goalkeeper))
+        val ivPlayerA = row.findViewById<ImageView>(R.id.iv_player_a)
+        when {
+            isGoalkeeper -> ivPlayerA.setImageBitmap(bitmapJerseyGoalkeeper)
+            else -> ivPlayerA.setImageBitmap(bitmapJerseyOutfield)
+        }
+        val tvPlayerA = row.findViewById<TextView>(R.id.tv_player_a)
+        tvPlayerA.text = playerA.getName()
+
+        isGoalkeeper = playerB.getDefaultName().contains(resources.getString(R.string.goalkeeper))
+        val ivPlayerB = row.findViewById<ImageView>(R.id.iv_player_b)
+        when {
+            isGoalkeeper -> ivPlayerB.setImageBitmap(bitmapJerseyGoalkeeper)
+            else -> ivPlayerB.setImageBitmap(bitmapJerseyOutfield)
+        }
+        val tvPlayerB = row.findViewById<TextView>(R.id.tv_player_b)
+        tvPlayerB.text=playerB.getName()
+
+        val swapOptions = resources.getStringArray(R.array.swap_options)
+        val listOfSwapOptions = ArrayList<String>()
+        for(swapOption in swapOptions){
+            listOfSwapOptions.add(swapOption)
+        }
+
+        val viewManager: RecyclerView.LayoutManager = LinearLayoutManager(context)
+        val viewAdapter = CountyAdapter(listOfSwapOptions, true, myOnTeamClickListener)
+
+        val rvTeams:RecyclerView = row.findViewById<RecyclerView>(R.id.rv_team_names).apply {
+            // use this setting to improve performance if you know that changes
+            // in content do not change the layout size of the RecyclerView
+            setHasFixedSize(true)
+
+            // use a linear layout manager
+            layoutManager = viewManager
+
+            // specify an viewAdapter (see also next example)
+            adapter = viewAdapter
+
+            // adds a line between each recyclerview item
+            addItemDecoration(DividerItemDecoration(context, LinearLayoutManager.VERTICAL))
+        }
+        builder.setView(row)
+        val dialogSwapOption = builder.create()
+        dialogSwapOption.show()
+
+        val width = (resources.displayMetrics.widthPixels * 0.75).toInt()
+        val height = (resources.displayMetrics.heightPixels * 0.48).toInt()
+
+        dialogSwapOption.window.setLayout(width, height)
     }
 
     override fun onLongPress(event: MotionEvent) {

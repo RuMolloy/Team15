@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    <LinearLayout
+            android:id="@+id/ll_swap_player"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:baselineAligned="false">
+
+        <LinearLayout
+                android:id="@+id/ll_player_a"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:layout_weight="1">
+
+            <ImageView
+                    android:id="@+id/iv_player_a"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:src="@drawable/jersey_default"
+                    android:contentDescription="@string/outfielder"/>
+
+            <TextView
+                    android:id="@+id/tv_player_a"
+                    android:text="@string/outfielder"
+                    android:textSize="@dimen/font_size_small"
+                    android:gravity="center"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:layout_weight="1">
+
+            <ImageView
+                    android:id="@+id/iv_jersey_swap"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center_horizontal"
+                    android:src="@drawable/swap_player"/>
+        </LinearLayout>
+
+        <LinearLayout
+                android:id="@+id/ll_player_b"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:layout_weight="1">
+
+            <ImageView
+                    android:id="@+id/iv_player_b"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:src="@drawable/jersey_default"
+                    android:contentDescription="@string/outfielder"/>
+
+            <TextView
+                    android:id="@+id/tv_player_b"
+                    android:text="@string/outfielder"
+                    android:textSize="@dimen/font_size_small"
+                    android:gravity="center"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+            android:id="@+id/ll_space"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:baselineAligned="false"
+            android:layout_below="@+id/ll_swap_player">
+
+        <android.support.v4.widget.Space
+                android:layout_width="match_parent"
+                android:layout_height="15dp"/>
+
+        <View
+            android:id="@+id/view_separator"
+            android:layout_width="wrap_content"
+            android:layout_height="1dp"
+            android:background="@android:color/darker_gray"/>
+
+    </LinearLayout>
+
+    <include
+            layout="@layout/team_name_view"
+            android:id="@+id/rv_swap_options"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_below="@+id/ll_space"/>
+
+</RelativeLayout>

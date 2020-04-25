@@ -10,7 +10,7 @@
     <string name="version">Version</string>
     <string name="title_select_team_name">Select Team A</string>
     <string name="default_team_name_a">Insert Team A</string>
-    <string name="default_team_name_b">Insert Team Name B</string>
+    <string name="default_team_name_b">Insert Team B</string>
     <string name="versus">vs. </string>
     <string name="default_match_title">Match Info</string>
     <string name="default_match_info">Insert competition name and stage, time and date, venue etc.</string>
@@ -47,6 +47,7 @@
     <string name="swap_number">Number</string>
     <string name="swap_name_and_number">Name and Number</string>
     <string name="goalkeeper">Goalkeeper</string>
+    <string name="outfielder">Outfield</string>
 
     <string-array name="swap_options">
         <item>@string/swap_name</item>
