@@ -13,14 +13,14 @@
             android:baselineAligned="false">
 
         <LinearLayout
-                android:id="@+id/ll_player_a"
+                android:id="@+id/ll_goalkeeper"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical"
                 android:layout_weight="1">
 
             <ImageView
-                    android:id="@+id/iv_player_a"
+                    android:id="@+id/iv_goalkeeper"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
@@ -28,7 +28,7 @@
                     android:contentDescription="@string/outfielder"/>
 
             <TextView
-                    android:id="@+id/tv_player_a"
+                    android:id="@+id/tv_goalkeeper"
                     android:text="@string/outfielder"
                     android:textSize="@dimen/font_size_small"
                     android:gravity="center"
@@ -52,14 +52,14 @@
         </LinearLayout>
 
         <LinearLayout
-                android:id="@+id/ll_player_b"
+                android:id="@+id/ll_outfielder"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical"
                 android:layout_weight="1">
 
             <ImageView
-                    android:id="@+id/iv_player_b"
+                    android:id="@+id/iv_outfielder"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
@@ -67,7 +67,7 @@
                     android:contentDescription="@string/outfielder"/>
 
             <TextView
-                    android:id="@+id/tv_player_b"
+                    android:id="@+id/tv_outfielder"
                     android:text="@string/outfielder"
                     android:textSize="@dimen/font_size_small"
                     android:gravity="center"

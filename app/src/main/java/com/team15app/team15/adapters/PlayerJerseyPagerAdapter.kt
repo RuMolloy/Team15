@@ -7,12 +7,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.GridView
 import com.team15app.team15.JerseyEnum
+import com.team15app.team15.dialogs.PlayerJerseyFragmentListener
 import com.team15app.team15.R
-import com.team15app.team15.listeners.OnTeamClickListener
 
-class JerseyPagerAdapter(private val context: Context,
-                         private val myOnTeamClickListener: OnTeamClickListener,
-                         private val isGoalkeeper: Boolean) : PagerAdapter() {
+class PlayerJerseyPagerAdapter(private val context: Context,
+                               private val playerJerseyFragmentListener: PlayerJerseyFragmentListener
+) : PagerAdapter() {
 
     override fun instantiateItem(collection: ViewGroup, position: Int): Any {
 
@@ -25,8 +25,7 @@ class JerseyPagerAdapter(private val context: Context,
         val gvAdapter = GridViewAdapter(context,
             R.layout.team_jersey_grid_item,
             jerseyEnum.jerseys,
-            myOnTeamClickListener,
-            isGoalkeeper)
+            playerJerseyFragmentListener)
 
         row.adapter = gvAdapter
 

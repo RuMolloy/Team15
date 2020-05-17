@@ -2,23 +2,36 @@ package com.team15app.team15
 
 import android.graphics.Point
 import android.graphics.Rect
+import java.io.Serializable
 
-class Player(name: String, number: String){
+class Player(name: String, number: String) : Serializable {
 
     private var nameDefault: String = name
     private var nameCustom: String = name
-    private var number: String = number
+    private var nameEdit: String = ""
+
+    private var numberDefault: String = number
+    private var numberCustom: String = number
+    private var numberEdit: String = number
+
     private var pointJerseyDefault: Point? = null
     private var pointJerseyCustom: Point? = null
+
+    private var rectName: Rect? = null
     private var pointName: Point? = null
+
     private var rectJerseyDefault: Rect? = null
     private var rectJerseyCustom: Rect? = null
-    private var rectName: Rect? = null
+
     private var isSelected: Boolean = false
     private var isOverlapping: Boolean = false
 
     fun setCustomName(name: String) {
         this.nameCustom = name
+    }
+
+    fun setEditName(name: String){
+        this.nameEdit = name
     }
 
     fun getName(): String{
@@ -30,20 +43,40 @@ class Player(name: String, number: String){
         return nameDefault
     }
 
+    fun getEditName(): String{
+        return nameEdit
+    }
+
     fun isDefaultName(): Boolean{
         return (nameCustom == nameDefault) || nameCustom.isNullOrEmpty()
     }
 
-    fun setNumber(number: String) {
-        this.number = number
+    fun setDefaultNumber(numberDefault: String) {
+        this.numberDefault = numberDefault
+    }
+
+    fun getDefaultNumber(): String{
+        return numberDefault
+    }
+
+    fun setCustomNumber(numberCustom: String) {
+        this.numberCustom = numberCustom
+    }
+
+    fun setEditNumber(numberEdit: String){
+        this.numberEdit = numberEdit
     }
 
     fun getNumber(): String{
-        return number
+        return numberCustom
+    }
+
+    fun getEditNumber(): String{
+        return numberEdit
     }
 
     fun getNumberAndName(): String{
-        return number + ". " + getName()
+        return numberCustom + ". " + getName()
     }
 
     fun setJerseyPointDefault(pointJersey: Point?){

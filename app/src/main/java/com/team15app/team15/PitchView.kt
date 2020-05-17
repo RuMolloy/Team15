@@ -1,34 +1,25 @@
 package com.team15app.team15
 
 import android.content.Context
-import android.content.Context.INPUT_METHOD_SERVICE
 import android.graphics.*
+import android.os.Bundle
 import android.support.v4.content.ContextCompat
 import android.support.v4.view.GestureDetectorCompat
-import android.support.v4.view.ViewPager
 import android.support.v7.app.AlertDialog
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.util.AttributeSet
-import android.view.View
-import java.util.*
-import android.view.MotionEvent
-import android.widget.EditText
-import android.widget.RadioGroup
-import com.team15app.team15.adapters.JerseyPagerAdapter
+import android.view.*
+import android.widget.*
+import com.team15app.team15.dialogs.PlayerDialogFragment.OnFinishEditDialog
+import com.team15app.team15.adapters.TeamNameAdapter
+import com.team15app.team15.dialogs.PlayerDialogFragment
 import com.team15app.team15.listeners.OnTeamClickListener
-import android.text.Editable
-import android.text.TextWatcher
-import android.view.GestureDetector
-import android.view.HapticFeedbackConstants
-import android.view.inputmethod.InputMethodManager
-import android.widget.ImageView
-import android.widget.TextView
-import com.team15app.team15.adapters.CountyAdapter
+import java.util.*
 
 
-class PitchView : View, ViewPager.OnPageChangeListener, GestureDetector.OnGestureListener, GestureDetector.OnDoubleTapListener {
+class PitchView : View, GestureDetector.OnGestureListener, GestureDetector.OnDoubleTapListener, OnFinishEditDialog {
     private val line13m = 13.0
     private val pitchWidthInMetres = 90.0
     private val pitchLengthInMetres = 145.0
@@ -63,13 +54,6 @@ class PitchView : View, ViewPager.OnPageChangeListener, GestureDetector.OnGestur
     private var bitmapJerseyOutfield: Bitmap? = null
 
     lateinit var mapOfPlayers: TreeMap<Int, Player>
-
-    private lateinit var rbtngJersey: RadioGroup
-    private lateinit var viewPagerJersey: ViewPager
-
-    private lateinit var etPlayerNumber: EditText
-    private lateinit var etPlayerName: EditText
-    private var viewPagerIndex = 0
 
     private var isDrawingPitchDebugLines = false
 
@@ -438,71 +422,21 @@ class PitchView : View, ViewPager.OnPageChangeListener, GestureDetector.OnGestur
                 val player = isMouseEventOnThePlayer(eventX, eventY)
                 if(player != null){
                     if(!isAnyPlayerSelected()){
-                        val view = inflate(context, R.layout.dialog_edit_player, null)
-                        val isGoalkeeper = player.getDefaultName().contains(resources.getString(R.string.goalkeeper))
-                        val pageAdapter = JerseyPagerAdapter(context, myOnTeamClickListener, isGoalkeeper)
-                        viewPagerJersey = view.findViewById(R.id.viewPager)
-                        viewPagerJersey.adapter = pageAdapter
-                        viewPagerJersey.addOnPageChangeListener(this)
-                        //viewPagerJersey.offscreenPageLimit = JerseyEnum.values().size
+                        val mainActivity = (mContext as MainActivity)
+                        val args = Bundle()
+                        args.putSerializable(resources.getString(R.string.default_edit_player_title), mapOfPlayers)
+                        args.putInt(resources.getString(R.string.outfielder), player.getDefaultNumber().toInt())
 
-                        rbtngJersey = view.findViewById(R.id.rbHomeGroup)
-
-                        val imm = context.getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager?
-                        imm!!.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
-
-                        val builder = AlertDialog.Builder(context)
-                        builder.setTitle(R.string.default_edit_player_title)
-                        builder.setView(view)
-                        builder.apply {
-                            setPositiveButton(R.string.ok) { _, _ ->
-                                if(etPlayerNumber.text.toString().isNotEmpty()) player.setNumber(etPlayerNumber.text.toString())
-                                player.setCustomName(etPlayerName.text.toString())
-                                setPlayerNumberAndNameRect(player)
-                                if(mContext is MainActivity){
-                                    //TODO refactor
-                                    var mainActivity = (mContext as MainActivity)
-                                    mainActivity.updateJersey(mainActivity.isGoalKeeper, mainActivity.jerseyDrawable)
-                                }
-                                viewPagerIndex = viewPagerJersey.currentItem
-                                invalidate() //this will call the onDraw() method so the player's name gets updated
-                                imm.hideSoftInputFromWindow(view.windowToken,0)
-                            }
-                            setNegativeButton(R.string.cancel) { _, _ ->
-                                imm.hideSoftInputFromWindow(view.windowToken,0)
-                            }
-                        }
-                        var dialog = builder.create()
-                        dialog.show()
-
-                        etPlayerNumber = view.findViewById(R.id.et_edit_player_number)
-                        etPlayerNumber.setText(player.getNumber())
-                        etPlayerNumber.addTextChangedListener(object : TextWatcher {
-                            override fun afterTextChanged(p0: Editable?) {
-                                var playerInUse = isPlayerNumberInUse(player, etPlayerNumber.text.toString())
-                                if(playerInUse.isNotEmpty()){
-                                    etPlayerNumber.error = resources.getString(R.string.error_player_number_in_use) + " " + playerInUse
-                                    dialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = false
-                                }
-                                else{
-                                    etPlayerNumber.error = null
-                                    dialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = true
-                                }
-                            }
-
-                            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                            }
-
-                            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                            }
-                        })
-
-                        etPlayerName = view.findViewById(R.id.et_edit_player_name)
-                        if(player.isDefaultName()) etPlayerName.hint = player.getName()
-                        else etPlayerName.setText(player.getName())
-                        etPlayerName.requestFocus()
-
-                        viewPagerJersey.currentItem = viewPagerIndex
+                        val dialogFragment =
+                            PlayerDialogFragment()
+                        dialogFragment.arguments = args
+                        dialogFragment.show(mainActivity.supportFragmentManager, "")
+                        mainActivity.supportFragmentManager.executePendingTransactions();
+                        dialogFragment.dialog.window.clearFlags(
+                            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+                                    or WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM
+                        )
+                        dialogFragment.setOnFinishEditDialogListener(this)
                     }
                     else{
                         val isThisPlayerSelected = player.isSelected()
@@ -522,6 +456,20 @@ class PitchView : View, ViewPager.OnPageChangeListener, GestureDetector.OnGestur
         return true
     }
 
+    override fun onFinishEditDialog(isChangeAccepted: Boolean) {
+        //Log.d(DEBUG_TAG, "onFinishEditDialog")
+        for(player in mapOfPlayers.values) {
+            if(isChangeAccepted){
+                if(player.getEditNumber().isNotEmpty()) player.setCustomNumber(player.getEditNumber())
+                if(player.getEditName().isNotEmpty()) player.setCustomName(player.getEditName())
+                setPlayerNumberAndNameRect(player)
+            }
+            player.setEditNumber("")
+            player.setEditName("")
+        }
+        invalidate()
+    }
+
     override fun onDown(event: MotionEvent): Boolean {
         //Log.d(DEBUG_TAG, "onDown: $event")
         timeWhenDownPressed = System.currentTimeMillis()
@@ -532,15 +480,6 @@ class PitchView : View, ViewPager.OnPageChangeListener, GestureDetector.OnGestur
         //Log.d(DEBUG_TAG, "onFling: $event1 $event2")
         swapPlayerName()
         return true
-    }
-
-    override fun onPageSelected(p0: Int) {
-        if(p0 >= viewPagerJersey.adapter!!.count){
-            rbtngJersey.check(rbtngJersey.getChildAt(0).id)
-        }
-        else{
-            rbtngJersey.check(rbtngJersey.getChildAt(p0).id)
-        }
     }
 
     fun setPlayerNumberAndNameRect(player: Player){
@@ -690,21 +629,21 @@ class PitchView : View, ViewPager.OnPageChangeListener, GestureDetector.OnGestur
         var mainActivity = (mContext as MainActivity)
         val row = mainActivity.layoutInflater.inflate(R.layout.dialog_swap_player, null)
         var isGoalkeeper = playerA.getDefaultName().contains(resources.getString(R.string.goalkeeper))
-        val ivPlayerA = row.findViewById<ImageView>(R.id.iv_player_a)
+        val ivPlayerA = row.findViewById<ImageView>(R.id.iv_goalkeeper)
         when {
             isGoalkeeper -> ivPlayerA.setImageBitmap(bitmapJerseyGoalkeeper)
             else -> ivPlayerA.setImageBitmap(bitmapJerseyOutfield)
         }
-        val tvPlayerA = row.findViewById<TextView>(R.id.tv_player_a)
+        val tvPlayerA = row.findViewById<TextView>(R.id.tv_goalkeeper)
         tvPlayerA.text = playerA.getName()
 
         isGoalkeeper = playerB.getDefaultName().contains(resources.getString(R.string.goalkeeper))
-        val ivPlayerB = row.findViewById<ImageView>(R.id.iv_player_b)
+        val ivPlayerB = row.findViewById<ImageView>(R.id.iv_outfielder)
         when {
             isGoalkeeper -> ivPlayerB.setImageBitmap(bitmapJerseyGoalkeeper)
             else -> ivPlayerB.setImageBitmap(bitmapJerseyOutfield)
         }
-        val tvPlayerB = row.findViewById<TextView>(R.id.tv_player_b)
+        val tvPlayerB = row.findViewById<TextView>(R.id.tv_outfielder)
         tvPlayerB.text=playerB.getName()
 
         val swapOptions = resources.getStringArray(R.array.swap_options)
@@ -714,7 +653,7 @@ class PitchView : View, ViewPager.OnPageChangeListener, GestureDetector.OnGestur
         }
 
         val viewManager: RecyclerView.LayoutManager = LinearLayoutManager(context)
-        val viewAdapter = CountyAdapter(listOfSwapOptions, true, myOnTeamClickListener)
+        val viewAdapter = TeamNameAdapter(listOfSwapOptions, true, myOnTeamClickListener)
 
         val rvTeams:RecyclerView = row.findViewById<RecyclerView>(R.id.rv_team_names).apply {
             // use this setting to improve performance if you know that changes
@@ -766,13 +705,5 @@ class PitchView : View, ViewPager.OnPageChangeListener, GestureDetector.OnGestur
     override fun onScroll(event1: MotionEvent, event2: MotionEvent, distanceX: Float, distanceY: Float): Boolean {
         //Log.d(DEBUG_TAG, "onScroll: $event1 $event2")
         return true
-    }
-
-    override fun onPageScrollStateChanged(p0: Int) {
-
-    }
-
-    override fun onPageScrolled(p0: Int, p1: Float, p2: Int) {
-
     }
 }

@@ -1,17 +1,18 @@
-package com.team15app.team15.adapters
+package com.team15app.team15.viewpagers
 
 import android.content.Context
 import android.support.v4.view.ViewPager
 import android.util.AttributeSet
 
-class CustomViewPager : ViewPager {
+class PlayerJerseyViewPager : ViewPager {
 
-    constructor(context: Context) : super(context) {}
+    constructor(context: Context) : super(context) {
+    }
 
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {}
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        val numRows = 2.25
+        val numRows = 3.25
         var heightMeasureSpec = heightMeasureSpec
 
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
@@ -33,4 +34,5 @@ class CustomViewPager : ViewPager {
 
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
     }
+
 }

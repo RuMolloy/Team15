@@ -8,14 +8,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.ImageView
+import com.team15app.team15.dialogs.PlayerJerseyFragmentListener
 import com.team15app.team15.R
-import com.team15app.team15.listeners.OnTeamClickListener
 
 class GridViewAdapter(context: Context,
                       layoutResourceId: Int,
                       data: ArrayList<Int>,
-                      private val myOnTeamClickListener: OnTeamClickListener,
-                      private val isGoalkeeper: Boolean) : ArrayAdapter<Int>(context, layoutResourceId, data)
+                      private val playerJerseyFragmentListener: PlayerJerseyFragmentListener
+) : ArrayAdapter<Int>(context, layoutResourceId, data)
 {
     private var resourceId = layoutResourceId
     private var selectedPos = -1
@@ -48,7 +48,7 @@ class GridViewAdapter(context: Context,
         holder.imgItem.setOnClickListener {
             selectedPos = position
             notifyDataSetChanged()
-            myOnTeamClickListener.onJerseyClick(isGoalkeeper, getItem(position))
+            playerJerseyFragmentListener.onJerseySelected(getItem(position))
         }
 
         return itemView
@@ -58,4 +58,5 @@ class GridViewAdapter(context: Context,
     {
         lateinit var imgItem : ImageView
     }
+
 }

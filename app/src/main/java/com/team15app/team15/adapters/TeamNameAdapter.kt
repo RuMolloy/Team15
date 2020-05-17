@@ -9,9 +9,9 @@ import android.widget.TextView
 import com.team15app.team15.listeners.OnTeamClickListener
 import com.team15app.team15.R
 
-class CountyAdapter(private var myDataset: ArrayList<String>,
-                    private val isDeleteSupportedOnLongPress: Boolean,
-                    private val myOnTeamClickListener: OnTeamClickListener) : RecyclerView.Adapter<CountyAdapter.MyViewHolder>(){
+class TeamNameAdapter(private var myDataset: ArrayList<String>,
+                      private val isDeleteSupportedOnLongPress: Boolean,
+                      private val myOnTeamClickListener: OnTeamClickListener) : RecyclerView.Adapter<TeamNameAdapter.MyViewHolder>(){
 
     var showCheckBox = false
     var listOfSelectedItems = ArrayList<String>()

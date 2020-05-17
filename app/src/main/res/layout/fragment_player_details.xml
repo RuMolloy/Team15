@@ -1,0 +1,28 @@
+<RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    <!-- putting name ahead of the number as this was the only
+         the edit text with perform the request focus which
+         automatically opens the soft keyboard when the DialogFragment is opened
+         The number should appear before the name but we want the focus on the name-->
+    <EditText
+            android:id="@+id/et_edit_player_name"
+            android:layout_gravity="end"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text"
+            android:maxLength="@string/player_name_char_limit"
+            android:layout_toEndOf="@id/et_edit_player_number">
+        <requestFocus />
+    </EditText>
+
+    <EditText
+            android:id="@+id/et_edit_player_number"
+            android:layout_gravity="start"
+            android:layout_width="@dimen/player_number_input_size"
+            android:layout_height="wrap_content"
+            android:inputType="number"/>
+
+</RelativeLayout>

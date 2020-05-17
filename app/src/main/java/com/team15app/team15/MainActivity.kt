@@ -24,13 +24,16 @@ import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v4.content.FileProvider
 import android.util.Log
-import com.team15app.team15.adapters.CountyAdapter
+import android.view.WindowManager
+import com.team15app.team15.adapters.TeamNameAdapter
+import com.team15app.team15.dialogs.MatchInfoDialogFragment
 import com.team15app.team15.listeners.OnTeamClickListener
+import com.thoughtbot.expandablerecyclerview.BuildConfig
 import java.io.*
 import java.text.SimpleDateFormat
 
 
-class MainActivity : OnTeamClickListener, AppCompatActivity(){
+class MainActivity : OnTeamClickListener, AppCompatActivity(), MatchInfoDialogFragment.OnFinishEditDialog {
     companion object {
         const val PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE_SHARE = 1
         const val PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE_SAVE = 2
@@ -53,7 +56,7 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
     private lateinit var llTeamB: LinearLayout
     private lateinit var ivTeamB: ImageView
 
-    private lateinit var viewAdapter: CountyAdapter
+    private lateinit var viewAdapter: TeamNameAdapter
     private lateinit var viewManager: RecyclerView.LayoutManager
     private lateinit var rvTeams: RecyclerView
     private lateinit var ivDeleteFile: ImageView
@@ -107,45 +110,47 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
     }
 
     private fun openMatchInfoDialog(){
-        val view = View.inflate(this, R.layout.dialog_edit_match_info, null)
+        val args = Bundle()
+        args.putString(resources.getString(R.string.default_team_name_a), tvTeamNameA.text.toString())
+        args.putString(resources.getString(R.string.default_team_name_b), tvTeamNameB.text.toString())
+        args.putString(resources.getString(R.string.default_match_info), tvMatchInfo.text.toString())
+        args.putInt(resources.getString(R.string.goalkeeper), team.getJerseyGoalkeeper())
+        args.putInt(resources.getString(R.string.outfielder), team.getJerseyOutfield())
 
-        val builder = AlertDialog.Builder(this)
-        builder.setTitle(R.string.set_match_details)
-        builder.setView(view)
-        builder.apply {
-            setPositiveButton(R.string.ok) { _, _ ->
-                when {
-                    etTeamNameA.text.toString().isNotEmpty() -> updateTeamASelection(etTeamNameA.text.toString())
-                    else -> updateTeamASelection(getString(R.string.default_team_name_a))
-                }
-                when {
-                    etTeamNameB.text.toString().isNotEmpty() -> updateTeamBSelection(etTeamNameB.text.toString())
-                    else -> updateTeamBSelection(getString(R.string.default_team_name_b))
-                }
-                when {
-                    etMatchInfo.text.toString().isNotEmpty() -> updateMatchInfo(etMatchInfo.text.toString())
-                    else -> updateMatchInfo(getString(R.string.default_match_info))
-                }
-            }
-            setNegativeButton(R.string.cancel) { _, _ ->
-            }
+        val dialogFragment =
+            MatchInfoDialogFragment()
+        dialogFragment.arguments = args
+        dialogFragment.show(this.supportFragmentManager, "")
+        dialogFragment.setOnFinishEditDialogListener(this)
+        supportFragmentManager.executePendingTransactions();
+        dialogFragment.dialog.window.clearFlags(
+            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+                    or WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM
+        )
+    }
+
+    override fun onFinishEditDialog(bundle: Bundle) {
+        val tvTeamNameA = bundle!!.getString(getString(R.string.default_team_name_a))
+        val tvTeamNameB = bundle.getString(getString(R.string.default_team_name_b))
+        val tvMatchInfo = bundle.getString(getString(R.string.default_match_info))
+        val dGoalKeeper = bundle.getInt(getString(R.string.goalkeeper))
+        val dOutfielder = bundle.getInt(getString(R.string.outfielder))
+
+        when {
+            !tvTeamNameA.isNullOrEmpty() -> updateTeamASelection(tvTeamNameA)
+            else -> updateTeamASelection(getString(R.string.default_team_name_a))
+        }
+        when {
+            !tvTeamNameB.isNullOrEmpty() -> updateTeamBSelection(tvTeamNameB)
+            else -> updateTeamBSelection(getString(R.string.default_team_name_b))
+        }
+        when {
+            !tvMatchInfo.isNullOrEmpty() -> updateMatchInfo(tvMatchInfo)
+            else -> updateMatchInfo(getString(R.string.default_match_info))
         }
 
-        builder.show()
-
-        llMatchInfoWrite = view.findViewById(R.id.ll_match_info_write)
-        etMatchInfo = llMatchInfoWrite.findViewById(R.id.et_match_info_name_write)
-        etTeamNameA = llMatchInfoWrite.findViewById(R.id.et_team_a)
-        etTeamNameB = llMatchInfoWrite.findViewById(R.id.et_team_b)
-
-        if(tvTeamNameA.text.isEmpty() || tvTeamNameA.text == getString(R.string.default_team_name_a)) etTeamNameA.setHint(R.string.default_team_name_a)
-        else etTeamNameA.setText(tvTeamNameA.text.toString())
-
-        if(tvTeamNameB.text.isEmpty() || tvTeamNameB.text == "vs. "+getString(R.string.default_team_name_b)) etTeamNameB.setHint(R.string.default_team_name_b)
-        else etTeamNameB.setText(tvTeamNameB.text.toString().substringAfter("vs. "))
-
-        if(tvMatchInfo.text.isEmpty() || tvMatchInfo.text == getString(R.string.default_match_info)) etMatchInfo.setHint(R.string.default_match_info)
-        else etMatchInfo.setText(tvMatchInfo.text.toString())
+        updateJersey(true, dGoalKeeper)
+        updateJersey(false, dOutfielder)
     }
 
     override fun onTeamClick(teamName: String?) {
@@ -162,12 +167,7 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
         }
     }
 
-    override fun onJerseyClick(isGoalkeeper: Boolean, drawable: Int) {
-        this.isGoalKeeper = isGoalkeeper
-        this.jerseyDrawable = drawable
-    }
-
-    fun updateJersey(isGoalkeeper: Boolean, drawable: Int){
+    private fun updateJersey(isGoalkeeper: Boolean, drawable: Int){
         when {
             isGoalkeeper -> {
                 team.setJerseyGoalkeeper(drawable)
@@ -190,7 +190,7 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
     }
 
     private fun updateMatchInfo(matchInfo: String?){
-        tvMatchInfo.setText(matchInfo)
+        tvMatchInfo.text = matchInfo
     }
 
     private fun setDefaultTeamANameAndCrest(){
@@ -200,7 +200,8 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
         var number = 1
         for(item in pitchView.mapOfPlayers){
             item.value.setCustomName("")
-            item.value.setNumber(number.toString())
+            item.value.setCustomNumber(number.toString())
+            item.value.setDefaultNumber(number.toString())
             pitchView.setPlayerNumberAndNameRect(item.value)
             number++
         }
@@ -497,7 +498,7 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
 
             listOfTeamFilesToLoad.sort()
             viewManager = LinearLayoutManager(this)
-            viewAdapter = CountyAdapter(listOfTeamFilesToLoad, true, this)
+            viewAdapter = TeamNameAdapter(listOfTeamFilesToLoad, true, this)
 
             rvTeams = row.findViewById<RecyclerView>(R.id.rv_team_names).apply {
                 // use this setting to improve performance if you know that changes
@@ -546,9 +547,9 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
                             if(csvDir.exists()) {
                                 val files = csvDir.listFiles()
                                 for (file in files.iterator()) {
-                                    if(listOfFiles.contains(file.name)){
+                                    if(listOfFiles.contains(file.nameWithoutExtension)){
                                         file.delete()
-                                        viewAdapter.removeItem(file.name)
+                                        viewAdapter.removeItem(file.nameWithoutExtension)
                                     }
                                 }
                                 viewAdapter.notifyDataSetChanged()
@@ -605,7 +606,8 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(){
                         val number = it.substringBefore("\t")
                         val name = it.substringAfter("\t")
                         if(number != numberAndName){
-                            player!!.setNumber(number)
+                            player!!.setDefaultNumber((number.toInt()-3).toString())
+                            player!!.setCustomNumber(number)
                         }
                         player!!.setCustomName(name)
                         pitchView.setPlayerNumberAndNameRect(player)

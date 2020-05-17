@@ -12,6 +12,7 @@
     <string name="default_team_name_a">Insert Team A</string>
     <string name="default_team_name_b">Insert Team B</string>
     <string name="versus">vs. </string>
+    <string name="title_fixture">Fixture</string>
     <string name="default_match_title">Match Info</string>
     <string name="default_match_info">Insert competition name and stage, time and date, venue etc.</string>
     <string name="default_team_name">Select Team</string>
@@ -22,9 +23,10 @@
     <string name="default_match_info_time_title">Date/Time</string>
     <string name="default_match_info_time_name">Enter Date/Time</string>
     <string name="default_edit_player_title">Edit Player</string>
+    <string name="default_edit_player_instruction"> Swipe left or right to quickly change player</string>
     <string name="error_player_name_char_limit">Character limit reached!</string>
     <string name="error_player_number_in_use">Player number is already in use by</string>
-    <string name="player_name_char_limit">18</string>
+    <string name="player_name_char_limit">20</string>
     <string name="close_title">Close?</string>
     <string name="close_message">Any unsaved changes to your team, player or venue information will be lost</string>
     <string name="reset_title">Reset?</string>
@@ -47,7 +49,7 @@
     <string name="swap_number">Number</string>
     <string name="swap_name_and_number">Name and Number</string>
     <string name="goalkeeper">Goalkeeper</string>
-    <string name="outfielder">Outfield</string>
+    <string name="outfielder">Outfielder</string>
 
     <string-array name="swap_options">
         <item>@string/swap_name</item>
