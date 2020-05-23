@@ -59,6 +59,10 @@ class Player(name: String, number: String) : Serializable {
         return numberDefault
     }
 
+    fun isDefaultNumber(): Boolean{
+        return (numberCustom == numberDefault) || numberCustom.isNullOrEmpty()
+    }
+
     fun setCustomNumber(numberCustom: String) {
         this.numberCustom = numberCustom
     }

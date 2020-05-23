@@ -40,21 +40,11 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(), MatchInfoDialogFr
         const val PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE_LOAD = 3
     }
 
-    private lateinit var llTeamA: LinearLayout
-    private lateinit var ivTeamA: ImageView
-
     private lateinit var tvTeamNameA: TextView
     private lateinit var tvTeamNameB: TextView
     private lateinit var tvMatchInfo: TextView
 
-    private lateinit var llMatchInfoWrite: LinearLayout
     private lateinit var rlMatchInfo: RelativeLayout
-    private lateinit var etTeamNameA: EditText
-    private lateinit var etTeamNameB: EditText
-    private lateinit var etMatchInfo: EditText
-
-    private lateinit var llTeamB: LinearLayout
-    private lateinit var ivTeamB: ImageView
 
     private lateinit var viewAdapter: TeamNameAdapter
     private lateinit var viewManager: RecyclerView.LayoutManager
@@ -67,8 +57,7 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(), MatchInfoDialogFr
     private lateinit var team: Team
 
     private var fileName: String? = ""
-    var isGoalKeeper: Boolean = false
-    var jerseyDrawable: Int = 0
+    private var csvFile = File(fileName)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -151,6 +140,9 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(), MatchInfoDialogFr
 
         updateJersey(true, dGoalKeeper)
         updateJersey(false, dOutfielder)
+
+        checkPermission(PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE_SAVE)
+        writeTeamToFile()
     }
 
     override fun onTeamClick(teamName: String?) {
@@ -235,10 +227,6 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(), MatchInfoDialogFr
                 checkPermission(PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE_SHARE)
                 true
             }
-            R.id.menu_item_save -> {
-                checkPermission(PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE_SAVE)
-                true
-            }
             R.id.menu_item_load -> {
                 checkPermission(PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE_LOAD)
                 true
@@ -274,7 +262,7 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(), MatchInfoDialogFr
             // Permission has already been granted
             when (requestCode) {
                 PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE_SHARE -> storeAndShareImage(getScreenImage())
-                PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE_SAVE -> openSaveDialog()
+                PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE_SAVE -> writeTeamToFile()
                 PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE_LOAD -> openLoadDialog()
             }
         }
@@ -301,7 +289,7 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(), MatchInfoDialogFr
             // permission was granted, proceed to operation
             when (requestCode) {
                 PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE_SHARE -> storeAndShareImage(getScreenImage())
-                PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE_SAVE -> openSaveDialog()
+                //PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE_SAVE -> writeTeamToFile()
                 PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE_LOAD -> openLoadDialog()
             }
         }
@@ -379,47 +367,6 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(), MatchInfoDialogFr
         }
     }
 
-    private fun openSaveDialog(){
-        val view = View.inflate(this, R.layout.dialog_save_team, null)
-        val cbxOverwriteFile = view.findViewById<CheckBox>(R.id.cbx_overwrite_file)
-
-        val builder : AlertDialog = AlertDialog.Builder(this)
-        .setTitle(R.string.action_save)
-        .setView(view)
-        .setPositiveButton(R.string.ok, null)
-        .setNegativeButton(R.string.cancel, null)
-        .create()
-
-        builder.setOnShowListener {
-            val button = builder.getButton(AlertDialog.BUTTON_POSITIVE)
-            button.setOnClickListener {
-                var fileName = etMatchInfo.text.toString()
-                fileName = fileName.replace("/", "")
-                val errorMsg = isFileNameValid(fileName, cbxOverwriteFile.isChecked)
-                if(errorMsg.isNotEmpty()){
-                    etMatchInfo.error = errorMsg
-                    etMatchInfo.requestFocus()
-                }
-                else{
-                    writeTeamToFile(fileName)
-                    showToast("Team saved as $fileName.csv")
-                    builder.dismiss()
-                }
-            }
-        }
-        builder.show()
-
-        rlMatchInfo = view.findViewById(R.id.rl_save_team)
-        etMatchInfo = rlMatchInfo.findViewById(R.id.et_match_info_name_write)
-
-        val defaultFileName = (tvTeamNameA.text.toString() + " " + tvTeamNameB.text.toString())
-        etMatchInfo.hint = defaultFileName
-        when {
-            fileName?.isEmpty()!! -> etMatchInfo.setText(defaultFileName)
-            else -> etMatchInfo.setText(fileName)
-        }
-    }
-
     private fun isFileNameValid(fileName: String, isAllowedToOverwriteFile: Boolean):String{
         if(fileName.isEmpty()){
             return getString(R.string.file_name_empty)
@@ -439,19 +386,24 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(), MatchInfoDialogFr
         return csvFile.exists()
     }
 
-    private fun writeTeamToFile(fileName: String){
+    private fun writeTeamToFile(){
+        var fileName = tvTeamNameA.text.toString() + " " + tvTeamNameB.text.toString()
+        fileName = fileName.replace("/", "")
         this.fileName = fileName
 
         val csvDir = File(Environment.getExternalStorageDirectory().toString() + "/" + getString(R.string.app_name))
         csvDir.mkdirs()
 
-        val csvFile = File(csvDir, "$fileName.csv")
+        if(csvFile.exists()){
+            csvFile.delete() //overwrite previous file
+        }
+        csvFile = File(csvDir, "$fileName.csv")
 
         val fileWriter = FileWriter(csvFile, false)
         val bufferedWriter = BufferedWriter(fileWriter)
         val matchInfo = tvMatchInfo.text.toString().replace("\n", "")
 
-        bufferedWriter.write(BuildConfig.VERSION_NAME)
+        bufferedWriter.write(getString(R.string.version) + BuildConfig.VERSION_NAME)
         bufferedWriter.write("\n")
         bufferedWriter.write(tvTeamNameA.text.toString())
         bufferedWriter.write("\n")
@@ -472,6 +424,7 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(), MatchInfoDialogFr
 
         bufferedWriter.close()
         fileWriter.close()
+        showToast("Team saved as $fileName.csv")
     }
 
     private fun openLoadDialog(){
@@ -645,16 +598,24 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(), MatchInfoDialogFr
     }
 
     override fun onBackPressed() {
-        val builder = AlertDialog.Builder(this)
-        builder.setTitle(R.string.close_title)
-        builder.setMessage(R.string.close_message)
-        builder.apply {
-            setPositiveButton(R.string.ok) { _, _ ->
-                super.onBackPressed()
-            }
-            setNegativeButton(R.string.cancel) { _, _ ->
+        checkPermission(PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE_SAVE)
+        writeTeamToFile()
+    }
+
+    private fun isDefault(): Boolean{
+        when {
+            !(team.getName() == getString(R.string.default_team_name_a) ||
+                team.getJerseyGoalkeeper() == R.drawable.jersey_default ||
+                team.getJerseyOutfield() == R.drawable.jersey_default) -> return false
+            tvTeamNameB.text.toString() != getString(R.string.default_team_name_b) -> return false
+            tvMatchInfo.text.toString() != getString(R.string.default_match_info) -> return false
+            else -> {
+                for (player in pitchView.mapOfPlayers.values) {
+                    if (player.isDefaultName() && player.isDefaultNumber()) continue
+                    return false
+                }
+                return true
             }
         }
-        builder.show()
     }
 }
