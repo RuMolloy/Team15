@@ -11,10 +11,11 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.util.AttributeSet
 import android.view.*
-import android.widget.*
-import com.team15app.team15.dialogs.PlayerDialogFragment.OnFinishEditDialog
+import android.widget.ImageView
+import android.widget.TextView
 import com.team15app.team15.adapters.TeamNameAdapter
 import com.team15app.team15.dialogs.PlayerDialogFragment
+import com.team15app.team15.dialogs.PlayerDialogFragment.OnFinishEditDialog
 import com.team15app.team15.listeners.OnTeamClickListener
 import java.util.*
 
@@ -142,8 +143,8 @@ class PitchView : View, GestureDetector.OnGestureListener, GestureDetector.OnDou
         paintPlayerNumberAndNameRect.color = ContextCompat.getColor(context, R.color.colorPlayerNameBackground)
         paintPlayerNumberAndNameRect.alpha = 50
 
-        bitmapJerseyGoalkeeper = BitmapFactory.decodeResource(this.resources, R.drawable.jersey_default)
-        bitmapJerseyOutfield = BitmapFactory.decodeResource(this.resources, R.drawable.jersey_default)
+        bitmapJerseyGoalkeeper = BitmapFactory.decodeResource(resources, R.drawable.jersey_default)
+        bitmapJerseyOutfield = BitmapFactory.decodeResource(resources, R.drawable.jersey_default)
 
         mapOfPlayers = TreeMap()
 
@@ -253,7 +254,8 @@ class PitchView : View, GestureDetector.OnGestureListener, GestureDetector.OnDou
 
         player.setJerseyPointDefault(p)
         player.setJerseyPointCustom(p)
-        player.setNamePoint(r)
+        player.setNamePointDefault(r)
+        player.setNamePointCustom(r)
 
         val rectJersey = Rect(player.getJerseyPoint()!!.x,
             player.getJerseyPoint()!!.y,
@@ -287,17 +289,19 @@ class PitchView : View, GestureDetector.OnGestureListener, GestureDetector.OnDou
             paintPitchHashtag)
     }
 
-    fun setJerseyBitmaps(jerseyGoalkeeper: Int, jerseyOutfield: Int){
+    fun setJerseyBitmaps(jerseyGoalkeeper: String, jerseyOutfield: String){
         setJerseyGoalkeeperBitmap(jerseyGoalkeeper)
         setJerseyOutfieldBitmap(jerseyOutfield)
     }
 
-    fun setJerseyGoalkeeperBitmap(jerseyGoalkeeper: Int){
-        bitmapJerseyGoalkeeper = BitmapFactory.decodeResource(context.resources, jerseyGoalkeeper)
+    fun setJerseyGoalkeeperBitmap(jerseyGoalkeeper: String){
+        val resId = resources.getIdentifier(jerseyGoalkeeper, "drawable", context.packageName)
+        bitmapJerseyGoalkeeper = BitmapFactory.decodeResource(context.resources, resId)
     }
 
-    fun setJerseyOutfieldBitmap(jerseyOutfield: Int){
-        bitmapJerseyOutfield = BitmapFactory.decodeResource(context.resources, jerseyOutfield)
+    fun setJerseyOutfieldBitmap(jerseyOutfield: String){
+        val resId = resources.getIdentifier(jerseyOutfield, "drawable", context.packageName)
+        bitmapJerseyOutfield = BitmapFactory.decodeResource(context.resources, resId)
     }
 
     private fun drawJersey(canvas: Canvas){
@@ -305,8 +309,8 @@ class PitchView : View, GestureDetector.OnGestureListener, GestureDetector.OnDou
 
             canvas.drawBitmap(getJersey(player), player.getJerseyPoint()!!.x.toFloat(), player.getJerseyPoint()!!.y.toFloat(), Paint())
             canvas.drawRect(player.getJerseyRect(), getJerseyBorder(player))
-            canvas.drawRect(player.getNameRect(), paintPlayerNumberAndNameRect)
-            canvas.drawText(player.getName(), player.getNamePoint()!!.x.toFloat(), player.getNamePoint()!!.y.toFloat(), paintPitchText)
+            canvas.drawRect(player.getNameRectCustom(), paintPlayerNumberAndNameRect)
+            canvas.drawText(player.getName(), player.getNamePointCustom()!!.x.toFloat(), player.getNamePointCustom()!!.y.toFloat(), paintPitchText)
             canvas.drawText(player.getNumber(), player.getJerseyPoint()!!.x.toFloat() + bitmapJerseyOutfield!!.width/2, player.getJerseyPoint()!!.y.toFloat() + bitmapJerseyOutfield!!.height/2, paintJerseyNumberText)
             canvas.drawText(player.getNumber(), player.getJerseyPoint()!!.x.toFloat() + bitmapJerseyOutfield!!.width/2, player.getJerseyPoint()!!.y.toFloat() + bitmapJerseyOutfield!!.height/2, paintJerseyNumberStroke)
 
@@ -427,8 +431,7 @@ class PitchView : View, GestureDetector.OnGestureListener, GestureDetector.OnDou
                         args.putSerializable(resources.getString(R.string.default_edit_player_title), mapOfPlayers)
                         args.putInt(resources.getString(R.string.outfielder), player.getDefaultNumber().toInt())
 
-                        val dialogFragment =
-                            PlayerDialogFragment()
+                        val dialogFragment = PlayerDialogFragment()
                         dialogFragment.arguments = args
                         dialogFragment.show(mainActivity.supportFragmentManager, "")
                         mainActivity.supportFragmentManager.executePendingTransactions();
@@ -437,6 +440,7 @@ class PitchView : View, GestureDetector.OnGestureListener, GestureDetector.OnDou
                                     or WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM
                         )
                         dialogFragment.setOnFinishEditDialogListener(this)
+                        dialogFragment.dialog.setCanceledOnTouchOutside(false);
                     }
                     else{
                         val isThisPlayerSelected = player.isSelected()
@@ -486,12 +490,12 @@ class PitchView : View, GestureDetector.OnGestureListener, GestureDetector.OnDou
         val padding = 10
         val textWidth = (paintPitchText.measureText(player.getName()) / 2).toInt() + padding
         val textSize = paintPitchText.textSize.toInt()
-        val rectText = Rect(player.getNamePoint()!!.x - textWidth,
-            player.getNamePoint()!!.y - textSize,
-            player.getNamePoint()!!.x + textWidth,
-            player.getNamePoint()!!.y + padding)
+        val rectText = Rect(player.getNamePointCustom()!!.x - textWidth,
+            player.getNamePointCustom()!!.y - textSize,
+            player.getNamePointCustom()!!.x + textWidth,
+            player.getNamePointCustom()!!.y + padding)
 
-        player.setNameRect(rectText)
+        player.setNameRectCustom(rectText)
     }
 
     private fun getSelectedPlayer(): Player? {
@@ -541,7 +545,7 @@ class PitchView : View, GestureDetector.OnGestureListener, GestureDetector.OnDou
     private fun isMouseEventOnThePlayer(eventX: Int, eventY: Int): Player? {
         for(player in mapOfPlayers.values) {
             if(player.getJerseyRect()!!.contains(eventX, eventY) ||
-                    player.getNameRect()!!.contains(eventX, eventY)){
+                    player.getNameRectCustom()!!.contains(eventX, eventY)){
                 return player
             }
         }
@@ -591,23 +595,23 @@ class PitchView : View, GestureDetector.OnGestureListener, GestureDetector.OnDou
 
             val p  = playerSelected.getJerseyPointDefault()
             val r = playerSelected.getJerseyRectDefault()
-            val np = playerSelected.getNamePoint()
-            val nr = playerSelected.getNameRect()
+            val np = playerSelected.getNamePointCustom()
+            val nr = playerSelected.getNameRectCustom()
 
 //            playerSelected.setJerseyPointDefault(playerOverlapped.getJerseyPointDefault())
 //            playerSelected.setJerseyRectDefault(playerOverlapped.getJerseyRectDefault())
 //            playerSelected.setJerseyPointCustom(playerOverlapped.getJerseyPointDefault())
 //            playerSelected.setJerseyRectCustom(playerOverlapped.getJerseyRectDefault())
-            playerSelected.setNamePoint(playerOverlapped.getNamePoint())
-            playerSelected.setNameRect(playerOverlapped.getNameRect())
+            playerSelected.setNamePointCustom(playerOverlapped.getNamePointCustom())
+            playerSelected.setNameRectCustom(playerOverlapped.getNameRectCustom())
             setPlayerNumberAndNameRect(playerSelected)
 
 //            playerOverlapped.setJerseyPointDefault(p)
 //            playerOverlapped.setJerseyRectDefault(r)
 //            playerOverlapped.setJerseyPointCustom(p)
 //            playerOverlapped.setJerseyRectCustom(r)
-            playerOverlapped.setNamePoint(np)
-            playerOverlapped.setNameRect(nr)
+            playerOverlapped.setNamePointCustom(np)
+            playerOverlapped.setNameRectCustom(nr)
             setPlayerNumberAndNameRect(playerOverlapped)
 
             resetSelectedPlayers()
@@ -619,7 +623,7 @@ class PitchView : View, GestureDetector.OnGestureListener, GestureDetector.OnDou
 
     private fun openSwapPlayer(playerA: Player, playerB: Player){
         val view = inflate(context, R.layout.dialog_custom_title, null)
-        val tvTitle = view.findViewById<TextView>(R.id.tv_team_name)
+        val tvTitle = view.findViewById<TextView>(R.id.tv_dialog_title)
         tvTitle.setText(R.string.action_swap)
 
         val builder = AlertDialog.Builder(context, R.style.DialogWindowTitle_Holo)

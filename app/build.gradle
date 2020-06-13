@@ -10,8 +10,8 @@ android {
         applicationId "com.appteam15.team15"
         minSdkVersion 21
         targetSdkVersion 28
-        versionCode 12
-        versionName "Version 2.0.2"
+        versionCode 13
+        versionName "Version 2.1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {

@@ -30,8 +30,8 @@ class MatchInfoFragment(): Fragment(){
         val tvTeamNameA = args!!.getString(getString(R.string.default_team_name_a))
         val tvTeamNameB = args.getString(getString(R.string.default_team_name_b))
         val tvMatchInfo = args.getString(getString(R.string.default_match_info))
-        val dGoalKeeper = args.getInt(getString(R.string.goalkeeper))
-        val dOutfielder = args.getInt(getString(R.string.outfielder))
+        val dGoalKeeper = args.getString(getString(R.string.goalkeeper))
+        val dOutfielder = args.getString(getString(R.string.outfielder))
 
         val llMatchInfoWrite = view.findViewById<LinearLayout>(R.id.ll_match_info_write)
         etMatchInfo = llMatchInfoWrite.findViewById<EditText>(R.id.et_match_info_name_write)
@@ -46,14 +46,14 @@ class MatchInfoFragment(): Fragment(){
         else etTeamNameA.setText(tvTeamNameA)
 
         ivGoalkeeper = llMatchInfoWrite.findViewById<ImageView>(R.id.iv_goalkeeper)
-        ivGoalkeeper.setImageResource(dGoalKeeper)
-        ivGoalkeeper.tag = dGoalKeeper.toString()
+        ivGoalkeeper.setImageResource(resources.getIdentifier(dGoalKeeper, "drawable", context!!.packageName))
+        ivGoalkeeper.tag = dGoalKeeper
         ivGoalkeeper.setOnClickListener{
             onJerseyPressed(getString(R.string.goalkeeper))
         }
         ivOutfielder = llMatchInfoWrite.findViewById<ImageView>(R.id.iv_outfielder)
-        ivOutfielder.setImageResource(dOutfielder)
-        ivOutfielder.tag = dOutfielder.toString()
+        ivOutfielder.setImageResource(resources.getIdentifier(dOutfielder, "drawable", context!!.packageName))
+        ivOutfielder.tag = dOutfielder
         ivOutfielder.setOnClickListener{
             onJerseyPressed(getString(R.string.outfielder))
         }
@@ -71,13 +71,13 @@ class MatchInfoFragment(): Fragment(){
         return view
     }
 
-    fun updateJersey(tabNumber: Int, drawable: Int){
+    fun updateJersey(tabNumber: Int, resourceName: String){
         if (tabNumber == 1) {
-            ivGoalkeeper.setImageResource(drawable)
-            ivGoalkeeper.tag = drawable.toString()
+            ivGoalkeeper.setImageResource(resources.getIdentifier(resourceName, "drawable", context!!.packageName))
+            ivGoalkeeper.tag = resourceName
         } else {
-            ivOutfielder.setImageResource(drawable)
-            ivOutfielder.tag = drawable.toString()
+            ivOutfielder.setImageResource(resources.getIdentifier(resourceName, "drawable", context!!.packageName))
+            ivOutfielder.tag = resourceName
         }
     }
 

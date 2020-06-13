@@ -48,7 +48,7 @@ class GridViewAdapter(context: Context,
         holder.imgItem.setOnClickListener {
             selectedPos = position
             notifyDataSetChanged()
-            playerJerseyFragmentListener.onJerseySelected(getItem(position))
+            playerJerseyFragmentListener.onJerseySelected(context.resources.getResourceEntryName(getItem(position)))
         }
 
         return itemView

@@ -10,7 +10,7 @@
         android:padding="@dimen/fab_margin">
 
     <TextView
-        android:id="@+id/tv_team_name"
+        android:id="@+id/tv_dialog_title"
         android:text="@string/default_team_name_a"
         android:textSize="@dimen/font_size_medium"
         android:layout_alignParentStart="true"

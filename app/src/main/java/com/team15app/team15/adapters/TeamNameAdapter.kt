@@ -1,5 +1,6 @@
 package com.team15app.team15.adapters
 
+import android.content.Context
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -13,6 +14,7 @@ class TeamNameAdapter(private var myDataset: ArrayList<String>,
                       private val isDeleteSupportedOnLongPress: Boolean,
                       private val myOnTeamClickListener: OnTeamClickListener) : RecyclerView.Adapter<TeamNameAdapter.MyViewHolder>(){
 
+    lateinit var context: Context
     var showCheckBox = false
     var listOfSelectedItems = ArrayList<String>()
     // Provide a reference to the views for each data item
@@ -20,15 +22,16 @@ class TeamNameAdapter(private var myDataset: ArrayList<String>,
     // you provide access to all the views for a data item in a view holder.
     // Each data item is just a string in this case that is shown in a TextView.
     class MyViewHolder(view: View) : RecyclerView.ViewHolder(view){
-        val textView = view.findViewById<TextView>(R.id.tv_team_name)!!
+        val textView = view.findViewById<TextView>(R.id.tv_dialog_title)!!
         val checkBox = view.findViewById<CheckBox>(R.id.cbx_delete_team)!!
     }
 
     // Create new views (invoked by the layout manager)
     override fun onCreateViewHolder(parent: ViewGroup,
                                     viewType: Int): MyViewHolder {
+        context = parent.context
         // create a new view
-        val view = LayoutInflater.from(parent.context)
+        val view = LayoutInflater.from(context)
             .inflate(R.layout.team_name_row, parent, false) as View
         // set the view's size, margins, paddings and layout parameters
         return MyViewHolder(view)
@@ -42,19 +45,29 @@ class TeamNameAdapter(private var myDataset: ArrayList<String>,
         holder.textView.text = item
         holder.checkBox.isChecked = listOfSelectedItems.contains(item)
             when {
-                showCheckBox -> holder.checkBox.visibility = View.VISIBLE
+                showCheckBox && isCheckboxSupported(item) -> holder.checkBox.visibility = View.VISIBLE
                 else -> holder.checkBox.visibility = View.INVISIBLE
             }
         holder.itemView.setOnClickListener {
             when {
                 showCheckBox -> {
-                    holder.checkBox.isChecked = !holder.checkBox.isChecked
-                    updateSelectedItems(holder, item)
+                    when {
+                        isCheckboxSupported(item) -> {
+                            holder.checkBox.isChecked = !holder.checkBox.isChecked
+                            updateSelectedItems(holder, item)
+                        }
+                        else -> {
+                            listOfSelectedItems.clear()
+                            notifyDataSetChanged()
+                            showCheckBox = false
+                            myOnTeamClickListener.onTeamLongClick(showCheckBox)
+                        }
+                    }
                 }
                 else -> myOnTeamClickListener.onTeamClick(item)
             }
         }
-        if(isDeleteSupportedOnLongPress){
+        if(isDeleteSupportedOnLongPress && isCheckboxSupported(item)){
             holder.itemView.setOnLongClickListener {
                 showCheckBox = !showCheckBox
                 if(showCheckBox){
@@ -74,6 +87,12 @@ class TeamNameAdapter(private var myDataset: ArrayList<String>,
         }
     }
 
+    private fun isCheckboxSupported(item: String): Boolean{
+        // checkbox is unsupported if the list of items contains the items below
+        return !(item == context.getString(R.string.create_new_team)
+                || item == context.getString(R.string.duplicate_a_team))
+    }
+
     private fun updateSelectedItems(holder: MyViewHolder, item: String){
         when {
             holder.checkBox.isChecked -> if(!listOfSelectedItems.contains(item)){
@@ -89,6 +108,15 @@ class TeamNameAdapter(private var myDataset: ArrayList<String>,
         return listOfSelectedItems
     }
 
+    fun addItem(item : String){
+        if(!myDataset.contains(item)){
+            myDataset.add(0, item)
+        }
+        if(!listOfSelectedItems.contains(item)){
+            listOfSelectedItems.add(0, item)
+        }
+    }
+
     fun removeItem(item : String){
         if(myDataset.contains(item)){
             myDataset.remove(item)
@@ -96,6 +124,12 @@ class TeamNameAdapter(private var myDataset: ArrayList<String>,
         if(listOfSelectedItems.contains(item)){
             listOfSelectedItems.remove(item)
         }
+    }
+
+    fun resetCheckbox(){
+        showCheckBox = false
+        myOnTeamClickListener.onTeamLongClick(showCheckBox)
+        notifyDataSetChanged()
     }
 
     // Return the size of your dataset (invoked by the layout manager)

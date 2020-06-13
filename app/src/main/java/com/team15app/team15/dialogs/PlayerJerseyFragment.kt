@@ -67,21 +67,21 @@ class PlayerJerseyFragment(): ViewPager.OnPageChangeListener, Fragment(),
 
     }
 
-    override fun onJerseySelected(drawable: Int) {
+    override fun onJerseySelected(drawable: String) {
         onJerseyTemp(drawable)
     }
 
     internal interface Temp {
-        fun onJerseyTemp(drawable: Int)
+        fun onJerseyTemp(drawable: String)
     }
 
     //you have to call this method when user pressed to button
-    private fun onJerseyTemp(drawable: Int) {
+    private fun onJerseyTemp(drawable: String) {
         val listener: Temp? = parentFragment as Temp?
         listener?.onJerseyTemp(drawable)
     }
 }
 
 interface PlayerJerseyFragmentListener {
-    fun onJerseySelected(drawable: Int)
+    fun onJerseySelected(drawable: String)
 }

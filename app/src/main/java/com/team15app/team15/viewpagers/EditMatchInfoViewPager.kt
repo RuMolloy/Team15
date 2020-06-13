@@ -12,7 +12,7 @@ class EditMatchInfoViewPager : ViewPager {
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {}
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        val numRows = 0.15
+        val numRows = 0.175
         var heightMeasureSpec = heightMeasureSpec
 
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)

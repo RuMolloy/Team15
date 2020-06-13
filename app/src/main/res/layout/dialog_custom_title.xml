@@ -9,20 +9,29 @@
         android:orientation="horizontal"
         android:padding="@dimen/fab_margin">
 
-    <TextView
-        android:id="@+id/tv_team_name"
-        android:text="@string/action_load"
+    <ImageView
+        android:id="@+id/iv_dialog_back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
+        android:layout_marginEnd="@dimen/fab_margin"
+        android:src="@drawable/ic_menu_back"
+        android:visibility="gone"/>
+
+    <TextView
+        android:id="@+id/tv_dialog_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:text="@string/action_load"
+        android:layout_toEndOf="@id/iv_dialog_back"
         android:textAppearance="@android:style/TextAppearance.DeviceDefault.DialogWindowTitle"/>
 
     <ImageView
         android:id="@+id/iv_delete_team"
-        android:layout_alignParentEnd="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/ic_menu_delete_grey"
+        android:layout_alignParentEnd="true"
+        android:src="@drawable/ic_menu_delete_black"
         android:visibility="invisible"/>
 
 </RelativeLayout>

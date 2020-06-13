@@ -17,8 +17,11 @@ class Player(name: String, number: String) : Serializable {
     private var pointJerseyDefault: Point? = null
     private var pointJerseyCustom: Point? = null
 
-    private var rectName: Rect? = null
-    private var pointName: Point? = null
+    private var rectNameDefault: Rect? = null
+    private var rectNameCustom: Rect? = null
+
+    private var pointNameDefault: Point? = null
+    private var pointNameCustom: Point? = null
 
     private var rectJerseyDefault: Rect? = null
     private var rectJerseyCustom: Rect? = null
@@ -102,12 +105,20 @@ class Player(name: String, number: String) : Serializable {
         return pointJerseyCustom
     }
 
-    fun setNamePoint(pointName: Point?){
-        this.pointName = pointName
+    fun setNamePointCustom(pointNameCustom: Point?){
+        this.pointNameCustom = pointNameCustom
     }
 
-    fun getNamePoint(): Point?{
-        return pointName
+    fun setNamePointDefault(pointNameDefault: Point?){
+        this.pointNameDefault = pointNameDefault
+    }
+
+    fun getNamePointCustom(): Point?{
+        return pointNameCustom
+    }
+
+    fun getNamePointDefault(): Point?{
+        return pointNameDefault
     }
 
     fun setJerseyRectDefault(rectJersey: Rect?){
@@ -129,12 +140,12 @@ class Player(name: String, number: String) : Serializable {
         return rectJerseyCustom
     }
 
-    fun setNameRect(rectNumberAndName: Rect?){
-        this.rectName = rectNumberAndName
+    fun setNameRectCustom(rectNumberAndName: Rect?){
+        this.rectNameCustom = rectNumberAndName
     }
 
-    fun getNameRect(): Rect?{
-        return rectName
+    fun getNameRectCustom(): Rect?{
+        return rectNameCustom
     }
 
     fun setIsSelected(isSelected: Boolean){

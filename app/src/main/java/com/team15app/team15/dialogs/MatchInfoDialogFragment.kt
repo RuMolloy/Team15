@@ -70,10 +70,10 @@ class MatchInfoDialogFragment(): DialogFragment(),
         tabLayout.getTabAt(tabNum)!!.select();
     }
 
-    override fun onJerseyTemp(drawable: Int) {
+    override fun onJerseyTemp(resourceName: String) {
         for(frag in childFragmentManager.fragments){
             if (frag is MatchInfoFragment){
-                frag.updateJersey(tabLayout.selectedTabPosition, drawable)
+                frag.updateJersey(tabLayout.selectedTabPosition, resourceName)
             }
             break
         }
@@ -95,8 +95,8 @@ class MatchInfoDialogFragment(): DialogFragment(),
                 bundle.putString(resources.getString(R.string.default_team_name_a), frag.etTeamNameA.text.toString())
                 bundle.putString(resources.getString(R.string.default_team_name_b), frag.etTeamNameB.text.toString())
                 bundle.putString(resources.getString(R.string.default_match_info), frag.etMatchInfo.text.toString())
-                bundle.putInt(resources.getString(R.string.goalkeeper), frag.ivGoalkeeper.tag.toString().toInt())
-                bundle.putInt(resources.getString(R.string.outfielder), frag.ivOutfielder.tag.toString().toInt())
+                bundle.putString(resources.getString(R.string.goalkeeper), frag.ivGoalkeeper.tag.toString())
+                bundle.putString(resources.getString(R.string.outfielder), frag.ivOutfielder.tag.toString())
                 break
             }
         }
