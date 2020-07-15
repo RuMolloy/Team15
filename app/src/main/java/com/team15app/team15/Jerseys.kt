@@ -32,6 +32,7 @@ var listOfWhiteAndBlack: ArrayList<Int> = object : ArrayList<Int>() {
         add(R.drawable.jersey_red_with_white_ends)
         add(R.drawable.jersey_wine_with_white_ends)
         add(R.drawable.jersey_maroon_with_white_ends)
+        add(R.drawable.jersey_maroon_with_yellow_ends)
 
         add(R.drawable.jersey_baby_blue_with_white_ends)
         add(R.drawable.jersey_turquoise_with_navy_ends)
@@ -73,6 +74,7 @@ var listOfBandsBlackAndWhite: ArrayList<Int> = object : ArrayList<Int>() {
         add(R.drawable.jersey_yellow_with_black_band)
         add(R.drawable.jersey_gold_with_blue_band)
         add(R.drawable.jersey_yellow_with_green_band)
+        add(R.drawable.jersey_yellow_with_maroon_band)
 
         add(R.drawable.jersey_green_with_white_band)
         add(R.drawable.jersey_green_dark_with_yellow_band)
@@ -91,8 +93,9 @@ var listOfBandsBlackAndWhite: ArrayList<Int> = object : ArrayList<Int>() {
         add(R.drawable.jersey_red_with_black_band)
 
         add(R.drawable.jersey_mauve_with_green_band)
-        add(R.drawable.jersey_maroon_with_green_band)
         add(R.drawable.jersey_maroon_with_white_band)
+        add(R.drawable.jersey_maroon_with_yellow_band)
+        add(R.drawable.jersey_maroon_with_green_band)
         add(R.drawable.jersey_purple_with_green_band)
         add(R.drawable.jersey_blue_with_navy_band)
         add(R.drawable.jersey_blue_light_with_white_band)
@@ -157,6 +160,8 @@ var listOfStripesAndHoops: ArrayList<Int> = object : ArrayList<Int>() {
         add(R.drawable.jersey_black_white_hoops)
         add(R.drawable.jersey_black_red_hoops)
         add(R.drawable.jersey_blue_yellow_hoops)
+        add(R.drawable.jersey_green_white_gold_hoops)
+        add(R.drawable.jersey_black_yellow_green_hoops)
         add(R.drawable.jersey_red_yellow_black_hoops)
         add(R.drawable.jersey_black_blue_hoops)
         add(R.drawable.jersey_blue_white_stripes)
