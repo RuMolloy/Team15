@@ -4,7 +4,7 @@ import android.graphics.Point
 import android.graphics.Rect
 import java.io.Serializable
 
-class Player(name: String, number: String) : Serializable {
+class Player(name: String, number: String): Serializable {
 
     private var nameDefault: String = name
     private var nameCustom: String = name

@@ -680,6 +680,16 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(), MatchInfoDialogFr
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
     }
 
+    override fun onPause() {
+        pitchView.closeEditPlayerDialogIfOpen()
+        super.onPause()
+    }
+
+    override fun onUserLeaveHint() {
+        pitchView.closeEditPlayerDialogIfOpen()
+        super.onUserLeaveHint()
+    }
+
     override fun onBackPressed() {
         if (isLineupChanged()) {
             checkPermission(PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE_SAVE)

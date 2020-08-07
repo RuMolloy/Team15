@@ -49,15 +49,18 @@ class PlayerDialogFragment(): DialogFragment() {
 
         alertDialogBuilder.setView(customView)
         alertDialogBuilder.setPositiveButton(R.string.ok) { _, _ ->
-            imm.hideSoftInputFromWindow(view!!.windowToken,0)
-            onFinishEditDialogListener.onFinishEditDialog(true)
+            finishActionsBeforeClosing(true)
         }
         alertDialogBuilder.setNegativeButton(R.string.cancel) { _, _ ->
-            imm.hideSoftInputFromWindow(view!!.windowToken,0)
-            onFinishEditDialogListener.onFinishEditDialog(false)
+            finishActionsBeforeClosing(false)
         }
 
         return alertDialogBuilder.create()
+    }
+
+    fun finishActionsBeforeClosing(isChangeAccepted: Boolean){
+        imm.hideSoftInputFromWindow(view!!.windowToken,0)
+        onFinishEditDialogListener.onFinishEditDialog(isChangeAccepted)
     }
 
     interface OnFinishEditDialog {

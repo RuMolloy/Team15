@@ -60,6 +60,8 @@ class PitchView : View, GestureDetector.OnGestureListener, GestureDetector.OnDou
 
     private lateinit var myOnTeamClickListener: OnTeamClickListener
 
+    private var dialogFragmentPlayer = PlayerDialogFragment()
+
     private var mContext: Context
     private lateinit var mDetector: GestureDetectorCompat
     private var timeWhenDownPressed: Long = 0
@@ -431,16 +433,16 @@ class PitchView : View, GestureDetector.OnGestureListener, GestureDetector.OnDou
                         args.putSerializable(resources.getString(R.string.default_edit_player_title), mapOfPlayers)
                         args.putInt(resources.getString(R.string.outfielder), player.getDefaultNumber().toInt())
 
-                        val dialogFragment = PlayerDialogFragment()
-                        dialogFragment.arguments = args
-                        dialogFragment.show(mainActivity.supportFragmentManager, "")
+                        dialogFragmentPlayer = PlayerDialogFragment()
+                        dialogFragmentPlayer.arguments = args
+                        dialogFragmentPlayer.show(mainActivity.supportFragmentManager, "")
                         mainActivity.supportFragmentManager.executePendingTransactions();
-                        dialogFragment.dialog.window.clearFlags(
+                        dialogFragmentPlayer.dialog.window.clearFlags(
                             WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
                                     or WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM
                         )
-                        dialogFragment.setOnFinishEditDialogListener(this)
-                        dialogFragment.dialog.setCanceledOnTouchOutside(false);
+                        dialogFragmentPlayer.setOnFinishEditDialogListener(this)
+                        dialogFragmentPlayer.dialog.setCanceledOnTouchOutside(false);
                     }
                     else{
                         val isThisPlayerSelected = player.isSelected()
@@ -458,6 +460,13 @@ class PitchView : View, GestureDetector.OnGestureListener, GestureDetector.OnDou
             }
         }
         return true
+    }
+
+    fun closeEditPlayerDialogIfOpen(){
+        if(dialogFragmentPlayer.isVisible){
+            dialogFragmentPlayer.finishActionsBeforeClosing(true)
+            dialogFragmentPlayer.dismiss()
+        }
     }
 
     override fun onFinishEditDialog(isChangeAccepted: Boolean) {
