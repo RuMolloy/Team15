@@ -177,14 +177,17 @@ var listOfStripesAndHoops: ArrayList<Int> = object : ArrayList<Int>() {
         add(R.drawable.jersey_white_with_blue_stripe)
         add(R.drawable.jersey_white_with_red_stripe)
         add(R.drawable.jersey_white_with_green_stripe)
+        add(R.drawable.jersey_white_with_black_stripe)
         add(R.drawable.jersey_yellow_with_green_stripe)
         add(R.drawable.jersey_green_with_white_stripe)
         add(R.drawable.jersey_green_with_yellow_stripe)
-        add(R.drawable.jersey_red_with_white_stripe)
         add(R.drawable.jersey_green_with_red_stripe)
+        add(R.drawable.jersey_red_with_white_stripe)
+        add(R.drawable.jersey_red_with_green_stripe)
         add(R.drawable.jersey_blue_with_white_stripe)
         add(R.drawable.jersey_blue_with_yellow_stripe)
         add(R.drawable.jersey_maroon_with_green_stripe)
+        add(R.drawable.jersey_black_with_white_stripe)
     }
 }
 
