@@ -133,6 +133,7 @@ var listOfWhiteAndBlackWithSleeves: ArrayList<Int> = object : ArrayList<Int>() {
         add(R.drawable.jersey_green_yellow_sleeves)
 
         add(R.drawable.jersey_red_white_sleeves)
+        add(R.drawable.jersey_red_white_sleeves_with_blue_ends)
         add(R.drawable.jersey_red_black_sleeves)
         add(R.drawable.jersey_maroon_white_sleeves)
 
@@ -163,8 +164,10 @@ var listOfStripesAndHoops: ArrayList<Int> = object : ArrayList<Int>() {
         add(R.drawable.jersey_black_yellow_hoops)
         add(R.drawable.jersey_black_amber_hoops)
         add(R.drawable.jersey_black_red_hoops)
+        add(R.drawable.jersey_black_green_hoops)
         add(R.drawable.jersey_black_blue_hoops)
         add(R.drawable.jersey_blue_yellow_hoops)
+        add(R.drawable.jersey_green_yellow_hoops)
         add(R.drawable.jersey_green_white_gold_hoops)
         add(R.drawable.jersey_black_yellow_green_hoops)
         add(R.drawable.jersey_red_yellow_black_hoops)
@@ -188,6 +191,7 @@ var listOfStripesAndHoops: ArrayList<Int> = object : ArrayList<Int>() {
         add(R.drawable.jersey_blue_with_yellow_stripe)
         add(R.drawable.jersey_maroon_with_green_stripe)
         add(R.drawable.jersey_black_with_white_stripe)
+        add(R.drawable.jersey_black_with_green_stripe)
     }
 }
 

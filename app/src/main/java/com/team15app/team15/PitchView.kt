@@ -3,12 +3,12 @@ package com.team15app.team15
 import android.content.Context
 import android.graphics.*
 import android.os.Bundle
-import android.support.v4.content.ContextCompat
-import android.support.v4.view.GestureDetectorCompat
-import android.support.v7.app.AlertDialog
-import android.support.v7.widget.DividerItemDecoration
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
+import androidx.core.content.ContextCompat
+import androidx.core.view.GestureDetectorCompat
+import androidx.appcompat.app.AlertDialog
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import android.util.AttributeSet
 import android.view.*
 import android.widget.ImageView
@@ -665,10 +665,11 @@ class PitchView : View, GestureDetector.OnGestureListener, GestureDetector.OnDou
             listOfSwapOptions.add(swapOption)
         }
 
-        val viewManager: RecyclerView.LayoutManager = LinearLayoutManager(context)
+        val viewManager: RecyclerView.LayoutManager =
+            LinearLayoutManager(context)
         val viewAdapter = TeamNameAdapter(listOfSwapOptions, true, myOnTeamClickListener)
 
-        val rvTeams:RecyclerView = row.findViewById<RecyclerView>(R.id.rv_team_names).apply {
+        val rvTeams: RecyclerView = row.findViewById<RecyclerView>(R.id.rv_team_names).apply {
             // use this setting to improve performance if you know that changes
             // in content do not change the layout size of the RecyclerView
             setHasFixedSize(true)
@@ -680,7 +681,12 @@ class PitchView : View, GestureDetector.OnGestureListener, GestureDetector.OnDou
             adapter = viewAdapter
 
             // adds a line between each recyclerview item
-            addItemDecoration(DividerItemDecoration(context, LinearLayoutManager.VERTICAL))
+            addItemDecoration(
+                DividerItemDecoration(
+                    context,
+                    LinearLayoutManager.VERTICAL
+                )
+            )
         }
         builder.setView(row)
         val dialogSwapOption = builder.create()

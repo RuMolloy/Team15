@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
+<androidx.constraintlayout.widget.ConstraintLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
@@ -14,7 +14,7 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent">
 
-        <android.support.v4.widget.Space
+        <androidx.legacy.widget.Space
                 android:layout_width="wrap_content"
                 android:layout_height="@dimen/fab_margin"/>
 
@@ -51,7 +51,7 @@
 
             </LinearLayout>
 
-            <android.support.v4.widget.Space
+            <androidx.legacy.widget.Space
                     android:layout_width="@dimen/fab_margin"
                     android:layout_height="wrap_content"/>
 
@@ -79,7 +79,7 @@
 
             </LinearLayout>
 
-            <android.support.v4.widget.Space
+            <androidx.legacy.widget.Space
                     android:layout_width="@dimen/fab_margin"
                     android:layout_height="wrap_content"/>
 
@@ -108,7 +108,7 @@
 
         </LinearLayout>
 
-        <android.support.v4.widget.Space
+        <androidx.legacy.widget.Space
                 android:layout_width="wrap_content"
                 android:layout_height="@dimen/fab_margin"/>
 
@@ -129,7 +129,7 @@
                 android:inputType="text"
                 android:maxLines="1"/>
 
-        <android.support.v4.widget.Space
+        <androidx.legacy.widget.Space
                 android:layout_width="wrap_content"
                 android:layout_height="@dimen/fab_margin"/>
 
@@ -147,4 +147,4 @@
 
     </LinearLayout>
 
-</android.support.constraint.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

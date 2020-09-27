@@ -7,15 +7,15 @@ import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.os.Environment
-import android.support.constraint.ConstraintLayout
-import android.support.v4.app.ActivityCompat
-import android.support.v4.content.ContextCompat
-import android.support.v4.content.FileProvider
-import android.support.v7.app.AlertDialog
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.DividerItemDecoration
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -509,7 +509,12 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(), MatchInfoDialogFr
                 adapter = viewAdapter
 
                 // adds a line between each recyclerview item
-                addItemDecoration(DividerItemDecoration(context, LinearLayoutManager.VERTICAL))
+                addItemDecoration(
+                    DividerItemDecoration(
+                        context,
+                        LinearLayoutManager.VERTICAL
+                    )
+                )
             }
             builder.setView(row)
 

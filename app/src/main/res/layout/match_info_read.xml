@@ -15,7 +15,7 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"/>
 
-    <android.support.v4.widget.Space
+    <androidx.legacy.widget.Space
             android:layout_width="wrap_content"
             android:layout_height="10dp"/>
 
@@ -29,7 +29,7 @@
             android:layout_below="@+id/tv_match_info_team_a"
             android:layout_centerHorizontal="true"/>
 
-    <android.support.v4.widget.Space
+    <androidx.legacy.widget.Space
             android:layout_width="wrap_content"
             android:layout_height="10dp"/>
 
