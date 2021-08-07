@@ -20,7 +20,7 @@ class GridViewAdapter(context: Context,
     private var resourceId = layoutResourceId
     private var selectedPos = -1
 
-    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View? {
+    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
 
         var itemView: View?  = convertView
         var holder: ViewHolder
@@ -44,14 +44,16 @@ class GridViewAdapter(context: Context,
         else{
             holder.imgItem.background = null
         }
-        holder.imgItem.setImageDrawable(context.getDrawable(getItem(position)))
+        holder.imgItem.setImageDrawable(context.getDrawable(getItem(position)!!))
         holder.imgItem.setOnClickListener {
             selectedPos = position
             notifyDataSetChanged()
-            playerJerseyFragmentListener.onJerseySelected(context.resources.getResourceEntryName(getItem(position)))
+            playerJerseyFragmentListener.onJerseySelected(context.resources.getResourceEntryName(
+                getItem(position)!!
+            ))
         }
 
-        return itemView
+        return itemView!!
     }
 
     class ViewHolder
