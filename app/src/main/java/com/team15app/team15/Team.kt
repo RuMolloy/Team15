@@ -1,16 +1,16 @@
 package com.team15app.team15
 
-class Team(private var name: String,
+class Team(private var name: String?,
            private var crest: Int,
-           private var jerseyGoalkeeper: String,
-           private var jerseyOutfield: String){
+           private var jerseyGoalkeeper: String?,
+           private var jerseyOutfield: String?){
 
 
-    fun setName(name: String){
+    fun setName(name: String?){
         this.name = name
     }
 
-    fun getName(): String{
+    fun getName(): String?{
         return name
     }
 
@@ -18,19 +18,19 @@ class Team(private var name: String,
         return crest
     }
 
-    fun setJerseyGoalkeeper(jersey: String){
+    fun setJerseyGoalkeeper(jersey: String?){
         jerseyGoalkeeper = jersey
     }
 
-    fun getJerseyGoalkeeper(): String{
+    fun getJerseyGoalkeeper(): String?{
         return jerseyGoalkeeper
     }
 
-    fun setJerseyOutfield(jersey: String){
+    fun setJerseyOutfield(jersey: String?){
         jerseyOutfield = jersey
     }
 
-    fun getJerseyOutfield(): String{
+    fun getJerseyOutfield(): String?{
         return jerseyOutfield
     }
 }

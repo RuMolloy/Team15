@@ -14,22 +14,6 @@
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
 
-    <style name="MyDialogTheme" parent="android:Theme.Dialog">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-
-        <!-- No backgrounds, titles or window float -->
-        <item name="android:windowBackground">@null</item>
-        <item name="android:windowIsFloating">true</item>
-        <item name="android:windowTitleSize">25dp</item>
-        <!--<item name="android:windowTitleStyle">@style/DialogWindowTitle_Holo</item>-->
-        <item name="android:textColor">@color/colorPrimary</item>
-        <item name="android:textSize">@dimen/font_size_large</item>
-
-        <!-- Just to prove it's working -->
-        <item name="android:background">@color/colorPitchLinesAndText</item>
-    </style>
-
     <!-- Local copy of android:DialogWindowTitle.Holo -->
     <style name="DialogWindowTitle_Holo">
         <item name="android:maxLines">1</item>

@@ -121,15 +121,15 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(), MatchInfoDialogFr
         dialogFragment.show(this.supportFragmentManager, "")
         dialogFragment.setOnFinishEditDialogListener(this)
         supportFragmentManager.executePendingTransactions();
-        dialogFragment.dialog.window.clearFlags(
+        dialogFragment.dialog?.window?.clearFlags(
             WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
                     or WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM
         )
-        dialogFragment.dialog.setCanceledOnTouchOutside(false);
+        dialogFragment.dialog?.setCanceledOnTouchOutside(false);
     }
 
     override fun onFinishEditDialog(bundle: Bundle) {
-        val tvTeamNameA = bundle!!.getString(getString(R.string.default_team_name_a))
+        val tvTeamNameA = bundle.getString(getString(R.string.default_team_name_a))
         val tvTeamNameB = bundle.getString(getString(R.string.default_team_name_b))
         val tvMatchInfo = bundle.getString(getString(R.string.default_match_info))
         val dGoalKeeper = bundle.getString(getString(R.string.goalkeeper))
@@ -187,7 +187,7 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(), MatchInfoDialogFr
         }
     }
 
-    private fun updateJersey(isGoalkeeper: Boolean, resourceName: String){
+    private fun updateJersey(isGoalkeeper: Boolean, resourceName: String?){
         when {
             isGoalkeeper -> {
                 team.setJerseyGoalkeeper(resourceName)
@@ -357,7 +357,7 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(), MatchInfoDialogFr
     }
 
     private fun storeAndShareImage(bitmap: Bitmap) {
-        val imageDir = File(Environment.getExternalStorageDirectory().toString() + "/" + getString(R.string.app_name))
+        val imageDir = File(getExternalFilesDir(null).toString() + "/" + getString(R.string.app_name))
         imageDir.mkdirs()
 
         val dateAndTimeStamp = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
@@ -391,7 +391,7 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(), MatchInfoDialogFr
     }
 
     private fun deleteImages(){
-        val imageDir = File(Environment.getExternalStorageDirectory().toString() + "/" + getString(R.string.app_name))
+        val imageDir = File(getExternalFilesDir(null).toString() + "/" + getString(R.string.app_name))
         if(imageDir.exists()){
             val files = imageDir.listFiles()
             for(file in files.iterator()){
@@ -407,7 +407,7 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(), MatchInfoDialogFr
         fileName = fileName.replace("/", "")
         this.fileName = fileName
 
-        val csvDir = File(Environment.getExternalStorageDirectory().toString() + "/" + getString(R.string.app_name))
+        val csvDir = File(getExternalFilesDir(null).toString() + "/" + getString(R.string.app_name))
         csvDir.mkdirs()
 
         if(csvFile.exists()){
@@ -458,7 +458,7 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(), MatchInfoDialogFr
     }
 
     private fun isFileExisting(fileName: String): Boolean{
-        val csvDir = File(Environment.getExternalStorageDirectory().toString() + "/" + getString(R.string.app_name))
+        val csvDir = File(getExternalFilesDir(null).toString() + "/" + getString(R.string.app_name))
         val csvFile = File(csvDir, "$fileName.csv")
 
         return csvFile.exists()
@@ -467,7 +467,7 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(), MatchInfoDialogFr
     private fun openLoadDialog(){
         val listOfTeamFilesToLoad = ArrayList<String>()
 
-        val csvDir = File(Environment.getExternalStorageDirectory().toString() + "/" + getString(R.string.app_name))
+        val csvDir = File(getExternalFilesDir(null).toString() + "/" + getString(R.string.app_name))
         if(csvDir.exists()){
             val files = csvDir.listFiles()
             if(files != null){
@@ -525,7 +525,7 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(), MatchInfoDialogFr
             val width = (resources.displayMetrics.widthPixels * 0.90).toInt()
             val height = (resources.displayMetrics.heightPixels * 0.75).toInt()
 
-            dialogSelectTeam.window.setLayout(width, height)
+            dialogSelectTeam.window?.setLayout(width, height)
 
             tvDialogTitle = view.findViewById(R.id.tv_dialog_title)
             ivDialogBack = view.findViewById(R.id.iv_dialog_back)
@@ -552,7 +552,7 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(), MatchInfoDialogFr
                     builder.setMessage(R.string.delete_message)
                     builder.apply {
                         setPositiveButton(R.string.ok) { _, _ ->
-                            val csvDir = File(Environment.getExternalStorageDirectory().toString() + "/" + getString(R.string.app_name))
+                            val csvDir = File(getExternalFilesDir(null).toString() + "/" + getString(R.string.app_name))
                             if(csvDir.exists()) {
                                 val files = csvDir.listFiles()
                                 for (file in files.iterator()) {
@@ -618,7 +618,7 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(), MatchInfoDialogFr
     }
 
     private fun loadTeamFromFile(team: String): String{
-        val filePath = Environment.getExternalStorageDirectory().toString() + "/" + getString(R.string.app_name) + "/" + team + ".csv"
+        val filePath = getExternalFilesDir(null).toString() + "/" + getString(R.string.app_name) + "/" + team + ".csv"
         val bufferedReader = File(filePath).bufferedReader()
         try {
             val lineList = mutableListOf<String>()

@@ -51,8 +51,8 @@ class PitchView : View, GestureDetector.OnGestureListener, GestureDetector.OnDou
     private val halfScreenResolutionWidthInPixels = screenResolutionWidthInPixels / 2
     private val textOffsetY = 150
 
-    private var bitmapJerseyGoalkeeper: Bitmap? = null
-    private var bitmapJerseyOutfield: Bitmap? = null
+    private lateinit var bitmapJerseyGoalkeeper: Bitmap
+    private lateinit var bitmapJerseyOutfield: Bitmap
 
     lateinit var mapOfPlayers: TreeMap<Int, Player>
 
@@ -261,8 +261,8 @@ class PitchView : View, GestureDetector.OnGestureListener, GestureDetector.OnDou
 
         val rectJersey = Rect(player.getJerseyPoint()!!.x,
             player.getJerseyPoint()!!.y,
-            player.getJerseyPoint()!!.x + bitmapJerseyOutfield!!.width,
-            player.getJerseyPoint()!!.y + bitmapJerseyOutfield!!.height)
+            player.getJerseyPoint()!!.x + bitmapJerseyOutfield.width,
+            player.getJerseyPoint()!!.y + bitmapJerseyOutfield.height)
         player.setJerseyRectDefault(rectJersey)
         player.setJerseyRectCustom(rectJersey)
         setPlayerNumberAndNameRect(player)
@@ -275,19 +275,19 @@ class PitchView : View, GestureDetector.OnGestureListener, GestureDetector.OnDou
     }
 
     private fun drawHashtag(canvas: Canvas){
-        val centreX = halfScreenResolutionWidthInPixels - bitmapJerseyOutfield!!.width/2
+        val centreX = halfScreenResolutionWidthInPixels - bitmapJerseyOutfield.width/2
         val pitchLeft = (centreX - centreX/1.75).toInt()
         val pitchRight = (centreX + centreX/1.6).toInt()
         val offsetPlayerJersey = (resources.getDimension(R.dimen.player_jersey_offset).toInt())
 
         canvas.drawText(resources.getString(R.string.app_handle),
-            pitchLeft.toFloat() + bitmapJerseyOutfield!!.width/2,
-            (getLineMinusJerseyOffset(0) + offsetPlayerJersey).toFloat() + bitmapJerseyOutfield!!.height/2 + paintPitchHashtag.textSize.toInt(),
+            pitchLeft.toFloat() + bitmapJerseyOutfield.width/2,
+            (getLineMinusJerseyOffset(0) + offsetPlayerJersey).toFloat() + bitmapJerseyOutfield.height/2 + paintPitchHashtag.textSize.toInt(),
             paintPitchHashtag)
 
         canvas.drawText(resources.getString(R.string.app_hashtag),
-            pitchRight.toFloat() + bitmapJerseyOutfield!!.width/2,
-            (getLineMinusJerseyOffset(0) + offsetPlayerJersey).toFloat() + bitmapJerseyOutfield!!.height/2 + paintPitchHashtag.textSize.toInt(),
+            pitchRight.toFloat() + bitmapJerseyOutfield.width/2,
+            (getLineMinusJerseyOffset(0) + offsetPlayerJersey).toFloat() + bitmapJerseyOutfield.height/2 + paintPitchHashtag.textSize.toInt(),
             paintPitchHashtag)
     }
 
@@ -296,12 +296,12 @@ class PitchView : View, GestureDetector.OnGestureListener, GestureDetector.OnDou
         setJerseyOutfieldBitmap(jerseyOutfield)
     }
 
-    fun setJerseyGoalkeeperBitmap(jerseyGoalkeeper: String){
+    fun setJerseyGoalkeeperBitmap(jerseyGoalkeeper: String?){
         val resId = resources.getIdentifier(jerseyGoalkeeper, "drawable", context.packageName)
         bitmapJerseyGoalkeeper = BitmapFactory.decodeResource(context.resources, resId)
     }
 
-    fun setJerseyOutfieldBitmap(jerseyOutfield: String){
+    fun setJerseyOutfieldBitmap(jerseyOutfield: String?){
         val resId = resources.getIdentifier(jerseyOutfield, "drawable", context.packageName)
         bitmapJerseyOutfield = BitmapFactory.decodeResource(context.resources, resId)
     }
@@ -313,8 +313,8 @@ class PitchView : View, GestureDetector.OnGestureListener, GestureDetector.OnDou
             canvas.drawRect(player.getJerseyRect(), getJerseyBorder(player))
             canvas.drawRect(player.getNameRectCustom(), paintPlayerNumberAndNameRect)
             canvas.drawText(player.getName(), player.getNamePointCustom()!!.x.toFloat(), player.getNamePointCustom()!!.y.toFloat(), paintPitchText)
-            canvas.drawText(player.getNumber(), player.getJerseyPoint()!!.x.toFloat() + bitmapJerseyOutfield!!.width/2, player.getJerseyPoint()!!.y.toFloat() + bitmapJerseyOutfield!!.height/2, paintJerseyNumberText)
-            canvas.drawText(player.getNumber(), player.getJerseyPoint()!!.x.toFloat() + bitmapJerseyOutfield!!.width/2, player.getJerseyPoint()!!.y.toFloat() + bitmapJerseyOutfield!!.height/2, paintJerseyNumberStroke)
+            canvas.drawText(player.getNumber(), player.getJerseyPoint()!!.x.toFloat() + bitmapJerseyOutfield.width/2, player.getJerseyPoint()!!.y.toFloat() + bitmapJerseyOutfield.height/2, paintJerseyNumberText)
+            canvas.drawText(player.getNumber(), player.getJerseyPoint()!!.x.toFloat() + bitmapJerseyOutfield.width/2, player.getJerseyPoint()!!.y.toFloat() + bitmapJerseyOutfield.height/2, paintJerseyNumberStroke)
 
             if(isDrawingPitchDebugLines){
                 //canvas.drawRect(rectPitchPerimeter, paintPlayerNumberAndNameRect)
@@ -329,7 +329,7 @@ class PitchView : View, GestureDetector.OnGestureListener, GestureDetector.OnDou
         }
     }
 
-    private fun getJersey(player: Player): Bitmap?{
+    private fun getJersey(player: Player): Bitmap{
         return if(player.getDefaultName() == resources.getStringArray(R.array.team_positions)[0]) bitmapJerseyGoalkeeper else bitmapJerseyOutfield
     }
 
@@ -360,11 +360,11 @@ class PitchView : View, GestureDetector.OnGestureListener, GestureDetector.OnDou
     }
 
     private fun getLineMinusJerseyOffset(line: Int): Int {
-        return getLine(line) - (bitmapJerseyOutfield!!.height)/2
+        return getLine(line) - (bitmapJerseyOutfield.height)/2
     }
 
     private fun getLinePlusJerseyOffset(line: Int): Int {
-        return getLine(line) + (bitmapJerseyOutfield!!.height)/2 + (resources.getDimension(R.dimen.player_name_offset).toInt())
+        return getLine(line) + (bitmapJerseyOutfield.height)/2 + (resources.getDimension(R.dimen.player_name_offset).toInt())
     }
 
     private fun getYmLine(xLineInMetres :Double): Int{
@@ -437,12 +437,12 @@ class PitchView : View, GestureDetector.OnGestureListener, GestureDetector.OnDou
                         dialogFragmentPlayer.arguments = args
                         dialogFragmentPlayer.show(mainActivity.supportFragmentManager, "")
                         mainActivity.supportFragmentManager.executePendingTransactions();
-                        dialogFragmentPlayer.dialog.window.clearFlags(
+                        dialogFragmentPlayer.dialog?.window?.clearFlags(
                             WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
                                     or WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM
                         )
                         dialogFragmentPlayer.setOnFinishEditDialogListener(this)
-                        dialogFragmentPlayer.dialog.setCanceledOnTouchOutside(false);
+                        dialogFragmentPlayer.dialog?.setCanceledOnTouchOutside(false);
                     }
                     else{
                         val isThisPlayerSelected = player.isSelected()
@@ -564,10 +564,10 @@ class PitchView : View, GestureDetector.OnGestureListener, GestureDetector.OnDou
     private fun isPlayerOverlapping(playerSelected: Player): Player? {
         for(player in mapOfPlayers.values) {
             if(player != playerSelected){
-                if(player.getJerseyRect()!!.centerX() < playerSelected.getJerseyRect()!!.centerX() + playerSelected.getJerseyRect()!!.width()
-                    && player.getJerseyRect()!!.centerX() + player.getJerseyRect()!!.width() > playerSelected.getJerseyRect()!!.centerX()
-                    && player.getJerseyRect()!!.centerY() < playerSelected.getJerseyRect()!!.centerY() + playerSelected.getJerseyRect()!!.height()
-                    && player.getJerseyRect()!!.centerY() + player.getJerseyRect()!!.height() > playerSelected.getJerseyRect()!!.centerY()){
+                if(player.getJerseyRect().centerX() < playerSelected.getJerseyRect()!!.centerX() + playerSelected.getJerseyRect()!!.width()
+                    && player.getJerseyRect().centerX() + player.getJerseyRect().width() > playerSelected.getJerseyRect()!!.centerX()
+                    && player.getJerseyRect().centerY() < playerSelected.getJerseyRect().centerY() + playerSelected.getJerseyRect()!!.height()
+                    && player.getJerseyRect().centerY() + player.getJerseyRect().height() > playerSelected.getJerseyRect()!!.centerY()){
                     return player
                 }
             }
@@ -695,7 +695,7 @@ class PitchView : View, GestureDetector.OnGestureListener, GestureDetector.OnDou
         val width = (resources.displayMetrics.widthPixels * 0.75).toInt()
         val height = (resources.displayMetrics.heightPixels * 0.48).toInt()
 
-        dialogSwapOption.window.setLayout(width, height)
+        dialogSwapOption.window?.setLayout(width, height)
     }
 
     override fun onLongPress(event: MotionEvent) {
