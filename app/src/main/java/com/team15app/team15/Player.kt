@@ -18,13 +18,13 @@ class Player(name: String, number: String): Serializable {
     private var pointJerseyCustom: Point? = null
 
     private var rectNameDefault: Rect? = null
-    private var rectNameCustom: Rect? = null
+    private var rectNameCustom: Rect = Rect()
 
     private var pointNameDefault: Point? = null
     private var pointNameCustom: Point? = null
 
-    private var rectJerseyDefault: Rect? = null
-    private var rectJerseyCustom: Rect? = null
+    private var rectJerseyDefault: Rect = Rect()
+    private var rectJerseyCustom: Rect = Rect()
 
     private var isSelected: Boolean = false
     private var isOverlapping: Boolean = false
@@ -121,11 +121,11 @@ class Player(name: String, number: String): Serializable {
         return pointNameDefault
     }
 
-    fun setJerseyRectDefault(rectJersey: Rect?){
+    fun setJerseyRectDefault(rectJersey: Rect){
         this.rectJerseyDefault = rectJersey
     }
 
-    fun setJerseyRectCustom(rectJersey: Rect?){
+    fun setJerseyRectCustom(rectJersey: Rect){
         this.rectJerseyCustom = rectJersey
     }
 
@@ -133,18 +133,18 @@ class Player(name: String, number: String): Serializable {
         return rectJerseyDefault
     }
 
-    fun getJerseyRect(): Rect?{
+    fun getJerseyRect(): Rect{
         if(rectJerseyCustom == rectJerseyDefault){
             return rectJerseyDefault
         }
         return rectJerseyCustom
     }
 
-    fun setNameRectCustom(rectNumberAndName: Rect?){
+    fun setNameRectCustom(rectNumberAndName: Rect){
         this.rectNameCustom = rectNumberAndName
     }
 
-    fun getNameRectCustom(): Rect?{
+    fun getNameRectCustom(): Rect{
         return rectNameCustom
     }
 
