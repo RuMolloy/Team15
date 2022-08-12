@@ -6,7 +6,9 @@ Android app to allow GAA teams (gaelic football and hurling) to publish their st
 
 2. [Figma](https://www.figma.com) used to create higher fidelity mock-ups [here](https://www.figma.com/file/UVTI2edjZDEThpWotpd9LRFP/Team15?node-id=150%3A5414) with a [clickable prototype](https://www.figma.com/proto/UVTI2edjZDEThpWotpd9LRFP/Team15?node-id=151%3A5545&scaling=min-zoom&page-id=150%3A5414&starting-point-node-id=151%3A5545&show-proto-sidebar=1)
 
-3. Public twitter page for the app here [https://twitter.com/Team15App](https://twitter.com/Team15App)
+3. Public twitter page for the app here [here](https://twitter.com/Team15App)
+
+4. App available on the Google Play store here [here](https://play.google.com/store/apps/details?id=com.appteam15.team15)
 
 
 ## Demo
