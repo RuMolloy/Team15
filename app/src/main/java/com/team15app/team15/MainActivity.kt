@@ -2,11 +2,9 @@ package com.team15app.team15
 
 import android.Manifest
 import android.content.Intent
-import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.os.Bundle
-import android.os.Environment
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -16,21 +14,24 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.WindowManager
 import android.widget.ImageView
-import android.widget.RelativeLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.viewModels
+import androidx.lifecycle.lifecycleScope
+import com.team15app.MainViewModel
+import com.team15app.team15.data.Team
 import com.team15app.team15.adapters.TeamNameAdapter
+import com.team15app.team15.databinding.ActivityMainBinding
 import com.team15app.team15.dialogs.MatchInfoDialogFragment
 import com.team15app.team15.listeners.OnTeamClickListener
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.coroutines.flow.collectLatest
 import java.io.*
-import java.text.SimpleDateFormat
 import java.util.*
 
 
@@ -42,10 +43,6 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(), MatchInfoDialogFr
         const val PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE_LOAD = 3
     }
 
-    private lateinit var tvTeamNameA: TextView
-    private lateinit var tvTeamNameB: TextView
-    private lateinit var tvMatchInfo: TextView
-
     private lateinit var viewAdapter: TeamNameAdapter
     private lateinit var viewManager: RecyclerView.LayoutManager
     private lateinit var rvTeams: RecyclerView
@@ -55,39 +52,64 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(), MatchInfoDialogFr
 
     private lateinit var dialogSelectTeam: AlertDialog
 
-    private lateinit var pitchView: PitchView
     private lateinit var team: Team
 
     private var fileName: String = ""
     private var csvFile = File(fileName)
 
+    private lateinit var binding: ActivityMainBinding
+
+    private val viewModel: MainViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true); // show back button on action bar
-        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT //UI only designed for portrait, so disable landscape
 
         loadVars()
         initVars()
         requestPermission(PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE)
         deleteImagesIfHasPermission()
         openLoadDialog()
+
+        lifecycleScope.launchWhenStarted {
+            viewModel.uiTemp.collectLatest {
+                it?.let {
+                    updateTeamASelection(it.teamNameA)
+                    updateTeamBSelection(it.teamNameB)
+                    binding.contentMain.rlMatchInfo.tvMatchInfoNameRead.text = it.matchInfo
+                    it.listOfPlayers.forEachIndexed { index, element ->
+                        val player = binding.contentMain.viewPitch.mapOfPlayers[index]
+                        val number = element.substringBefore("\t")
+                        val name = element.substringAfter("\t")
+                        if (number != element) {
+                            player!!.setDefaultNumber(number)
+                            player.setCustomNumber(number)
+                        }
+                        player!!.setCustomName(name)
+                        binding.contentMain.viewPitch.setPlayerNumberAndNameRect(player)
+                    }
+                    updateJersey(true, it.jerseyGoalkeeper)
+                    updateJersey(false, it.jerseyOutfield)
+                    if(!isDuplicate()){
+                        //only store file path if lineup not to be duplicated
+                        csvFile = File(it.filePath)
+                    }
+                }
+            }
+        }
     }
 
     private fun loadVars(){
-        val rlMatchInfo = findViewById<RelativeLayout>(R.id.rl_match_info)
-        rlMatchInfo.setOnClickListener{
-            pitchView.resetSelectedPlayers()
-            pitchView.invalidate()
+        binding.contentMain.rlMatchInfo.rlMatchInfoRead.setOnClickListener{
+            binding.contentMain.viewPitch.resetSelectedPlayers()
+            binding.contentMain.viewPitch.invalidate()
             openMatchInfoDialog()
         }
-        tvTeamNameA = rlMatchInfo.findViewById(R.id.tv_match_info_team_a)
-        tvTeamNameB = rlMatchInfo.findViewById(R.id.tv_match_info_team_b)
-        tvMatchInfo = rlMatchInfo.findViewById(R.id.tv_match_info_name_read)
-
-        pitchView = findViewById(R.id.view_pitch)
-        pitchView.initJerseyListener(this)
+        binding.contentMain.viewPitch.initJerseyListener(this)
     }
 
     private fun initVars(){
@@ -110,11 +132,12 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(), MatchInfoDialogFr
 
     private fun openMatchInfoDialog(){
         val args = Bundle()
-        args.putString(resources.getString(R.string.default_team_name_a), tvTeamNameA.text.toString())
-        args.putString(resources.getString(R.string.default_team_name_b), tvTeamNameB.text.toString())
-        args.putString(resources.getString(R.string.default_match_info), tvMatchInfo.text.toString())
-        args.putString(resources.getString(R.string.goalkeeper), team.getJerseyGoalkeeper())
-        args.putString(resources.getString(R.string.outfielder), team.getJerseyOutfield())
+
+        args.putString(resources.getString(R.string.default_team_name_a), binding.contentMain.rlMatchInfo.tvMatchInfoTeamA.text.toString())
+        args.putString(resources.getString(R.string.default_team_name_b), binding.contentMain.rlMatchInfo.tvMatchInfoTeamB.text.toString())
+        args.putString(resources.getString(R.string.default_match_info), binding.contentMain.rlMatchInfo.tvMatchInfoNameRead.text.toString())
+        args.putString(resources.getString(R.string.goalkeeper), team.jerseyGoalkeeper)
+        args.putString(resources.getString(R.string.outfielder), team.jerseyOutfield)
 
         val dialogFragment = MatchInfoDialogFragment()
         dialogFragment.arguments = args
@@ -148,11 +171,24 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(), MatchInfoDialogFr
             else -> updateMatchInfo(getString(R.string.default_match_info))
         }
 
-        team.setName(tvTeamNameA)
+        team.name = tvTeamNameA
         updateJersey(true, dGoalKeeper)
         updateJersey(false, dOutfielder)
 
-        if (isLineupChanged()) {
+        if (viewModel.isLineupChanged(
+                teamNameACustom = binding.contentMain.rlMatchInfo.tvMatchInfoTeamA.text.toString(),
+                teamNameBCustom = binding.contentMain.rlMatchInfo.tvMatchInfoTeamB.text.toString(),
+                matchInfoCustom = binding.contentMain.rlMatchInfo.tvMatchInfoNameRead.text.toString(),
+                jerseyGoalkeeper = team.jerseyGoalkeeper.toString(),
+                jerseyOutfield = team.jerseyOutfield.toString(),
+                mapOfPlayers = binding.contentMain.viewPitch.mapOfPlayers.values,
+                teamNameADefault = resources.getResourceEntryName(R.drawable.jersey_default),
+                teamNameBDefault = ("vs. "+getString(R.string.default_team_name_b)),
+                matchInfoDefault = getString(R.string.default_match_info),
+                jerseyGoalkeeperDefault = resources.getResourceEntryName(R.drawable.jersey_default),
+                jerseyOutfieldDefault = resources.getResourceEntryName(R.drawable.jersey_default)
+            )
+        ) {
             checkPermission(PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE_SAVE)
         }
     }
@@ -169,11 +205,8 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(), MatchInfoDialogFr
                 addDuplicate()
             }
             else -> {
-                val filePath = loadTeamFromFile(teamName)
+                loadTeamFromFile(teamName)
                 dialogSelectTeam.dismiss()
-                if(!isDuplicate()){
-                    csvFile = File(filePath) //only store file path if lineup not to be duplicated
-                }
             }
         }
     }
@@ -190,27 +223,27 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(), MatchInfoDialogFr
     private fun updateJersey(isGoalkeeper: Boolean, resourceName: String?){
         when {
             isGoalkeeper -> {
-                team.setJerseyGoalkeeper(resourceName)
-                pitchView.setJerseyGoalkeeperBitmap(resourceName)
+                team.jerseyGoalkeeper = resourceName
+                binding.contentMain.viewPitch.setJerseyGoalkeeperBitmap(resourceName)
             }
             else -> {
-                team.setJerseyOutfield(resourceName)
-                pitchView.setJerseyOutfieldBitmap(resourceName)
+                team.jerseyOutfield = resourceName
+                binding.contentMain.viewPitch.setJerseyOutfieldBitmap(resourceName)
             }
         }
-        pitchView.invalidate()
+        binding.contentMain.viewPitch.invalidate()
     }
 
     private fun updateTeamASelection(teamName: String?){
-        tvTeamNameA.text = teamName
+        binding.contentMain.rlMatchInfo.tvMatchInfoTeamA.text = teamName
     }
 
     private fun updateTeamBSelection(teamName: String?){
-        tvTeamNameB.text = "vs. $teamName"
+        binding.contentMain.rlMatchInfo.tvMatchInfoTeamB.text = "vs. $teamName"
     }
 
     private fun updateMatchInfo(matchInfo: String?){
-        tvMatchInfo.text = matchInfo
+        binding.contentMain.rlMatchInfo.tvMatchInfoNameRead.text = matchInfo
     }
 
     private fun setDefaultTeamAName(){
@@ -222,20 +255,20 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(), MatchInfoDialogFr
     }
 
     private fun setDefaultTeamALineup(){
-        pitchView.setJerseyBitmaps(resources.getResourceEntryName(R.drawable.jersey_default),
+        binding.contentMain.viewPitch.setJerseyBitmaps(resources.getResourceEntryName(R.drawable.jersey_default),
             resources.getResourceEntryName(R.drawable.jersey_default))
         var number = 1
-        for(item in pitchView.mapOfPlayers){
+        for(item in binding.contentMain.viewPitch.mapOfPlayers){
             item.value.setCustomNumber(number.toString())
             item.value.setDefaultNumber(number.toString())
             item.value.setCustomName(item.value.getDefaultName())
             item.value.setNamePointCustom(item.value.getNamePointDefault())
 
-            pitchView.setPlayerNumberAndNameRect(item.value)
+            binding.contentMain.viewPitch.setPlayerNumberAndNameRect(item.value)
             number++
         }
 
-        pitchView.invalidate()
+        binding.contentMain.viewPitch.invalidate()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -249,8 +282,8 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(), MatchInfoDialogFr
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        pitchView.resetSelectedPlayers()
-        pitchView.invalidate()
+        binding.contentMain.viewPitch.resetSelectedPlayers()
+        binding.contentMain.viewPitch.invalidate()
         return when (item.itemId) {
             R.id.menu_item_delete -> {
                 openResetDialog()
@@ -357,24 +390,29 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(), MatchInfoDialogFr
     }
 
     private fun storeAndShareImage(bitmap: Bitmap) {
-        val imageDir = File(getExternalFilesDir(null).toString() + "/" + getString(R.string.app_name))
-        imageDir.mkdirs()
+        val filePath = getExternalFilesDir(null).toString() + "/" + getString(R.string.app_name)
+        val teamNameA = binding.contentMain.rlMatchInfo.tvMatchInfoTeamA.text.toString()
 
-        val dateAndTimeStamp = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
-        val imageFile = File(imageDir, dateAndTimeStamp + "_" +tvTeamNameA.text.toString() +".jpg")
+        viewModel.writeImageToFile(filePath, teamNameA, bitmap)
 
-        try {
-            val fos = FileOutputStream(imageFile)
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos)
-            fos.flush()
-            fos.close()
-        } catch (e: FileNotFoundException) {
-            Log.e("GREC", e.message, e)
-        } catch (e: IOException) {
-            Log.e("GREC", e.message, e)
-        }
+//        val imageDir = File()
+//        imageDir.mkdirs()
+//
+//        val dateAndTimeStamp = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+//        val imageFile = File(imageDir, dateAndTimeStamp + "_" + +".jpg")
+//
+//        try {
+//            val fos = FileOutputStream(imageFile)
+//            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos)
+//            fos.flush()
+//            fos.close()
+//        } catch (e: FileNotFoundException) {
+//            Log.e("GREC", e.message, e)
+//        } catch (e: IOException) {
+//            Log.e("GREC", e.message, e)
+//        }
 
-        shareImage(imageFile)
+        //shareImage(imageFile)
     }
 
     private fun shareImage(imagePath: File) {
@@ -391,77 +429,22 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(), MatchInfoDialogFr
     }
 
     private fun deleteImages(){
-        val imageDir = File(getExternalFilesDir(null).toString() + "/" + getString(R.string.app_name))
-        if(imageDir.exists()){
-            val files = imageDir.listFiles()
-            for(file in files.iterator()){
-                if(file.extension == "jpg"){
-                    file.delete()
-                }
-            }
-        }
+        val filePath = getExternalFilesDir(null).toString() + "/" + getString(R.string.app_name)
+        viewModel.deleteImages(filePath)
     }
 
     private fun writeTeamToFile(){
-        var fileName = tvTeamNameA.text.toString() + " " + tvTeamNameB.text.toString()
-        fileName = fileName.replace("/", "")
-        this.fileName = fileName
-
-        val csvDir = File(getExternalFilesDir(null).toString() + "/" + getString(R.string.app_name))
-        csvDir.mkdirs()
-
-        if(csvFile.exists()){
-            csvFile.delete() //overwrite previous file
-        }
-        fileName = appendNumericToFileNameIfExists(fileName)
-        csvFile = File(csvDir, "$fileName.csv")
-
-        val fileWriter = FileWriter(csvFile, false)
-        val bufferedWriter = BufferedWriter(fileWriter)
-        val matchInfo = tvMatchInfo.text.toString().replace("\n", "")
-
-        bufferedWriter.write(BuildConfig.VERSION_NAME)
-        bufferedWriter.write("\n")
-        bufferedWriter.write(tvTeamNameA.text.toString())
-        bufferedWriter.write("\n")
-        bufferedWriter.write(matchInfo)
-        bufferedWriter.write("\n")
-        bufferedWriter.write(tvTeamNameB.text.toString().substringAfter("vs. "))
-        bufferedWriter.write("\n")
-        for(item in pitchView.mapOfPlayers){
-            bufferedWriter.write(item.value.getNumber() + "\t" + item.value.getName())
-            if(item != pitchView.mapOfPlayers.lastEntry()){
-                bufferedWriter.write("\n")
-            }
-        }
-        bufferedWriter.write("\n")
-        bufferedWriter.write(team.getJerseyGoalkeeper().toString())
-        bufferedWriter.write("\n")
-        bufferedWriter.write(team.getJerseyOutfield().toString())
-
-        bufferedWriter.close()
-        fileWriter.close()
-        //showToast("Team saved as $fileName.csv")
-    }
-
-    private fun appendNumericToFileNameIfExists(fileName: String): String{
-        var fileName = fileName
-
-        var newFileName = fileName
-        var counter = 1
-        while (isFileExisting(newFileName)) {
-            fileName = "$fileName($counter)"
-            newFileName = fileName
-            counter++
-        }
-        return newFileName
-    }
-
-    private fun isFileExisting(fileName: String): Boolean{
-        val csvDir = File(getExternalFilesDir(null).toString() + "/" + getString(R.string.app_name))
-        val csvFile = File(csvDir, "$fileName.csv")
-
-        return csvFile.exists()
+        val filePath = getExternalFilesDir(null).toString() + "/" + getString(R.string.app_name)
+        viewModel.writeTeamToFile(
+            csvFile = csvFile,
+            filePath = filePath,
+            teamNameA = binding.contentMain.rlMatchInfo.tvMatchInfoTeamA.text.toString(),
+            teamNameB = binding.contentMain.rlMatchInfo.tvMatchInfoTeamB.text.toString(),
+            matchInfo = binding.contentMain.rlMatchInfo.tvMatchInfoNameRead.text.toString().replace("\n", ""),
+            jerseyGoalkeeper = team.jerseyGoalkeeper,
+            jerseyOutfield = team.jerseyOutfield,
+            binding.contentMain.viewPitch.mapOfPlayers
+        )
     }
 
     private fun openLoadDialog(){
@@ -472,7 +455,7 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(), MatchInfoDialogFr
             val files = csvDir.listFiles()
             if(files != null){
                 for(file in files.iterator()){
-                    if(isValidFile(file)){
+                    if(viewModel.isValidFile(file, getString(R.string.version))){
                         listOfTeamFilesToLoad.add(file.nameWithoutExtension)
                     }
                 }
@@ -584,17 +567,6 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(), MatchInfoDialogFr
         }
     }
 
-    private fun isValidFile(file: File): Boolean{
-        if(file.extension != "csv"){
-            return false
-        }
-        val version = getString(R.string.version)
-        val bufferedReader = file.bufferedReader()
-        val firstLine = bufferedReader.readLine()
-
-        return firstLine.contains(version)
-    }
-
     private fun addDuplicate(){
         viewAdapter.removeItem(getString(R.string.create_new_team))
         viewAdapter.removeItem(getString(R.string.duplicate_a_team))
@@ -613,65 +585,19 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(), MatchInfoDialogFr
         tvDialogTitle.text = getString(R.string.action_load)
     }
 
-    private fun isDuplicate(): Boolean{
-        return tvDialogTitle.text == getString(R.string.select_team_to_duplicate)
+    private fun isDuplicate(): Boolean {
+        return viewModel.isDuplicate(
+            tvDialogTitle.text.toString(),
+            getString(R.string.select_team_to_duplicate)
+        )
     }
 
-    private fun loadTeamFromFile(team: String): String{
-        val filePath = getExternalFilesDir(null).toString() + "/" + getString(R.string.app_name) + "/" + team + ".csv"
-        val bufferedReader = File(filePath).bufferedReader()
-        try {
-            val lineList = mutableListOf<String>()
-            bufferedReader.useLines { lines -> lines.forEach { lineList.add(it) } }
-            var lineNum = 0
-            var playerIndex = 0
-            var offset = 0
-            var version = getString(R.string.version)
-            lineList.forEach {
-                when (lineNum) {
-                    0 -> {
-                        if(!it.contains(version)){
-                            updateTeamASelection(it)
-                            updateJersey(true, resources.getResourceEntryName(R.drawable.jersey_default))
-                            updateJersey(false, resources.getResourceEntryName(R.drawable.jersey_default))
-                            offset = 1
-                        }
-                    }
-                    1-offset -> updateTeamASelection(it)
-                    2-offset -> tvMatchInfo.text = it
-                    3-offset -> updateTeamBSelection(it)
-                    in 4-offset..18-offset -> {
-                        val player = pitchView.mapOfPlayers[playerIndex]
-                        val numberAndName = it
-                        val number = it.substringBefore("\t")
-                        val name = it.substringAfter("\t")
-                        if(number != numberAndName){
-                            player!!.setDefaultNumber(number)
-                            player!!.setCustomNumber(number)
-                        }
-                        player!!.setCustomName(name)
-                        pitchView.setPlayerNumberAndNameRect(player)
-                        playerIndex++
-                    }
-                    19 -> updateJersey(true, it.toString())
-                    20 -> updateJersey(false, it.toString())
-                }
-                lineNum++
-            }
-
-            fileName = team
-            pitchView.invalidate()
-
-        } catch (e : IOException) {
-            e.printStackTrace()
-        } finally {
-            try {
-                bufferedReader.close()
-            } catch (e: IOException) {
-                e.printStackTrace()
-            }
-        }
-        return filePath
+    private fun loadTeamFromFile(team: String) {
+        val filePath = getExternalFilesDir(null).toString() + "/" + getString(R.string.app_name)
+        viewModel.loadTeamFromFile(
+            filePath,
+            team,
+            getString(R.string.version))
     }
 
     private fun openAboutDialog(){
@@ -686,44 +612,53 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(), MatchInfoDialogFr
     }
 
     override fun onPause() {
-        pitchView.closeEditPlayerDialogIfOpen()
+        binding.contentMain.viewPitch.closeEditPlayerDialogIfOpen()
         super.onPause()
     }
 
     override fun onUserLeaveHint() {
-        pitchView.closeEditPlayerDialogIfOpen()
+        binding.contentMain.viewPitch.closeEditPlayerDialogIfOpen()
         super.onUserLeaveHint()
     }
 
     override fun onBackPressed() {
-        if (isLineupChanged()) {
+        if (viewModel.isLineupChanged(
+                teamNameACustom = binding.contentMain.rlMatchInfo.tvMatchInfoTeamA.text.toString(),
+                teamNameBCustom = binding.contentMain.rlMatchInfo.tvMatchInfoTeamB.text.toString(),
+                matchInfoCustom = binding.contentMain.rlMatchInfo.tvMatchInfoNameRead.text.toString(),
+                jerseyGoalkeeper = team.jerseyGoalkeeper.toString(),
+                jerseyOutfield = team.jerseyOutfield.toString(),
+                mapOfPlayers = binding.contentMain.viewPitch.mapOfPlayers.values,
+                teamNameADefault = resources.getResourceEntryName(R.drawable.jersey_default),
+                teamNameBDefault = ("vs. "+getString(R.string.default_team_name_b)),
+                matchInfoDefault = getString(R.string.default_match_info),
+                jerseyGoalkeeperDefault = resources.getResourceEntryName(R.drawable.jersey_default),
+                jerseyOutfieldDefault = resources.getResourceEntryName(R.drawable.jersey_default)
+            )
+        ) {
             checkPermission(PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE_SAVE)
         }
         openLoadDialog()
     }
 
     override fun onSupportNavigateUp(): Boolean {
-        if (isLineupChanged()) {
+        if (viewModel.isLineupChanged(
+                teamNameACustom = binding.contentMain.rlMatchInfo.tvMatchInfoTeamA.text.toString(),
+                teamNameBCustom = binding.contentMain.rlMatchInfo.tvMatchInfoTeamB.text.toString(),
+                matchInfoCustom = binding.contentMain.rlMatchInfo.tvMatchInfoNameRead.text.toString(),
+                jerseyGoalkeeper = team.jerseyGoalkeeper.toString(),
+                jerseyOutfield = team.jerseyOutfield.toString(),
+                mapOfPlayers = binding.contentMain.viewPitch.mapOfPlayers.values,
+                teamNameADefault = resources.getResourceEntryName(R.drawable.jersey_default),
+                teamNameBDefault = ("vs. "+getString(R.string.default_team_name_b)),
+                matchInfoDefault = getString(R.string.default_match_info),
+                jerseyGoalkeeperDefault = resources.getResourceEntryName(R.drawable.jersey_default),
+                jerseyOutfieldDefault = resources.getResourceEntryName(R.drawable.jersey_default)
+            )
+        ) {
             checkPermission(PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE_SAVE)
         }
         openLoadDialog()
         return true
-    }
-
-    private fun isLineupChanged(): Boolean{
-        when {
-            (tvTeamNameA.text.toString() != getString(R.string.default_team_name_a) ||
-                team.getJerseyGoalkeeper() != resources.getResourceEntryName(R.drawable.jersey_default) ||
-                team.getJerseyOutfield() != resources.getResourceEntryName(R.drawable.jersey_default)) -> return true
-            tvTeamNameB.text.toString() != ("vs. "+getString(R.string.default_team_name_b)) -> return true
-            tvMatchInfo.text.toString() != getString(R.string.default_match_info) -> return true
-            else -> {
-                for (player in pitchView.mapOfPlayers.values) {
-                    if (player.isDefaultName() && player.isDefaultNumber()) continue
-                    return true
-                }
-                return false
-            }
-        }
     }
 }

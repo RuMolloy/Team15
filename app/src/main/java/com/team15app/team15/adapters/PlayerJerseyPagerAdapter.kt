@@ -6,9 +6,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.GridView
-import com.team15app.team15.JerseyEnum
 import com.team15app.team15.dialogs.PlayerJerseyFragmentListener
 import com.team15app.team15.R
+import com.team15app.team15.data.JerseyEnum
 
 class PlayerJerseyPagerAdapter(private val context: Context,
                                private val playerJerseyFragmentListener: PlayerJerseyFragmentListener

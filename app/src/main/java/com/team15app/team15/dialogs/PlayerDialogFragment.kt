@@ -10,7 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import com.team15app.team15.Player
+import com.team15app.team15.data.Player
 import com.team15app.team15.R
 import com.team15app.team15.adapters.PlayerNameAdapter
 import java.util.*

@@ -3,7 +3,7 @@ package com.team15app.team15.adapters
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentStatePagerAdapter
-import com.team15app.team15.Player
+import com.team15app.team15.data.Player
 import com.team15app.team15.dialogs.PlayerFragment
 import java.util.*
 

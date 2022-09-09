@@ -13,6 +13,7 @@ import android.util.AttributeSet
 import android.view.*
 import android.widget.ImageView
 import android.widget.TextView
+import com.team15app.team15.data.Player
 import com.team15app.team15.adapters.TeamNameAdapter
 import com.team15app.team15.dialogs.PlayerDialogFragment
 import com.team15app.team15.dialogs.PlayerDialogFragment.OnFinishEditDialog

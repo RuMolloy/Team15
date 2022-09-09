@@ -1,4 +1,6 @@
-package com.team15app.team15
+package com.team15app.team15.data
+
+import com.team15app.team15.R
 
 var listOfWhiteAndBlack: ArrayList<Int> = object : ArrayList<Int>() {
     init {
