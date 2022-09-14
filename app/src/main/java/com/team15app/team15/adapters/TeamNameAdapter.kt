@@ -12,7 +12,8 @@ import com.team15app.team15.R
 
 class TeamNameAdapter(private var myDataset: ArrayList<String>,
                       private val isDeleteSupportedOnLongPress: Boolean,
-                      private val myOnTeamClickListener: OnTeamClickListener) : RecyclerView.Adapter<TeamNameAdapter.MyViewHolder>(){
+                      private val myOnTeamClickListener: OnTeamClickListener)
+: RecyclerView.Adapter<TeamNameAdapter.MyViewHolder>() {
 
     lateinit var context: Context
     var showCheckBox = false
@@ -60,11 +61,11 @@ class TeamNameAdapter(private var myDataset: ArrayList<String>,
                             listOfSelectedItems.clear()
                             notifyDataSetChanged()
                             showCheckBox = false
-                            myOnTeamClickListener.onTeamLongClick(showCheckBox)
+                            myOnTeamClickListener.onLoadTeamLongClick(showCheckBox)
                         }
                     }
                 }
-                else -> myOnTeamClickListener.onTeamClick(item)
+                else -> myOnTeamClickListener.onLoadTeamClick(item)
             }
         }
         if(isDeleteSupportedOnLongPress && isCheckboxSupported(item)){
@@ -78,7 +79,7 @@ class TeamNameAdapter(private var myDataset: ArrayList<String>,
                     listOfSelectedItems.clear()
                 }
                 notifyDataSetChanged()
-                myOnTeamClickListener.onTeamLongClick(showCheckBox)
+                myOnTeamClickListener.onLoadTeamLongClick(showCheckBox)
                 true
             }
         }
@@ -128,7 +129,7 @@ class TeamNameAdapter(private var myDataset: ArrayList<String>,
 
     fun resetCheckbox(){
         showCheckBox = false
-        myOnTeamClickListener.onTeamLongClick(showCheckBox)
+        myOnTeamClickListener.onLoadTeamLongClick(showCheckBox)
         notifyDataSetChanged()
     }
 

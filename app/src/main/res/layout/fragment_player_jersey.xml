@@ -20,17 +20,18 @@
         </com.team15app.team15.viewpagers.PlayerJerseyViewPager>
 
         <GridView
-                android:id="@+id/gridView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_marginStart="@dimen/util_margin"
+                android:layout_marginTop="@dimen/util_margin"
+                android:layout_marginEnd="@dimen/util_margin"
+                android:layout_marginBottom="@dimen/util_margin"
                 android:columnWidth="80dp"
                 android:gravity="center"
                 android:numColumns="4"
-                android:verticalSpacing="10dp"
                 android:stretchMode="columnWidth"
-                android:layout_alignParentTop="true"
-                android:layout_margin="@dimen/util_margin">
-        </GridView>
+                android:verticalSpacing="10dp" />
 
         <RadioGroup
                 android:id="@+id/rg_jerseys"

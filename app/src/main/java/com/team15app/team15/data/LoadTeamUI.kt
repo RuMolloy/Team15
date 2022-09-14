@@ -1,6 +1,6 @@
 package com.team15app.team15.data
 
-data class UiTemp(
+data class LoadTeamUI(
     var teamNameA: String = "",
     var teamNameB: String = "",
     var matchInfo: String = "",

@@ -63,7 +63,7 @@
 
         <view
                 android:id="@+id/view_pitch"
-                class="com.team15app.team15.PitchView"
+                class="com.team15app.team15.views.PitchView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
 

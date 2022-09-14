@@ -10,9 +10,9 @@
             android:id="@+id/et_match_info_name_write"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/default_match_info"
-            android:textSize="@dimen/font_size_large"
             android:layout_centerHorizontal="true"
-            android:inputType="textMultiLine"/>
+            android:hint="@string/default_match_info"
+            android:inputType="textMultiLine"
+            android:textSize="@dimen/font_size_large" />
 
 </RelativeLayout>

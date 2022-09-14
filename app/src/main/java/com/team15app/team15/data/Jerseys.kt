@@ -2,7 +2,7 @@ package com.team15app.team15.data
 
 import com.team15app.team15.R
 
-var listOfWhiteAndBlack: ArrayList<Int> = object : ArrayList<Int>() {
+val listOfWhiteAndBlack: ArrayList<Int> = object : ArrayList<Int>() {
     init {
         add(R.drawable.jersey_white_with_white_ends)
         add(R.drawable.jersey_white_with_yellow_ends)
@@ -62,7 +62,7 @@ var listOfWhiteAndBlack: ArrayList<Int> = object : ArrayList<Int>() {
     }
 }
 
-var listOfBandsBlackAndWhite: ArrayList<Int> = object : ArrayList<Int>() {
+val listOfBandsBlackAndWhite: ArrayList<Int> = object : ArrayList<Int>() {
     init {
         add(R.drawable.jersey_white_with_green_band)
         add(R.drawable.jersey_white_with_turqoise_band)
@@ -117,7 +117,7 @@ var listOfBandsBlackAndWhite: ArrayList<Int> = object : ArrayList<Int>() {
     }
 }
 
-var listOfWhiteAndBlackWithSleeves: ArrayList<Int> = object : ArrayList<Int>() {
+val listOfWhiteAndBlackWithSleeves: ArrayList<Int> = object : ArrayList<Int>() {
     init {
         add(R.drawable.jersey_white_blue_light_sleeves)
         add(R.drawable.jersey_white_blue_dark_sleeves)
@@ -154,7 +154,7 @@ var listOfWhiteAndBlackWithSleeves: ArrayList<Int> = object : ArrayList<Int>() {
     }
 }
 
-var listOfStripesAndHoops: ArrayList<Int> = object : ArrayList<Int>() {
+val listOfStripesAndHoops: ArrayList<Int> = object : ArrayList<Int>() {
     init {
         //hoops
         add(R.drawable.jersey_blue_white_hoops)
@@ -197,7 +197,7 @@ var listOfStripesAndHoops: ArrayList<Int> = object : ArrayList<Int>() {
     }
 }
 
-var listOfMiscellaneous: ArrayList<Int> = object : ArrayList<Int>() {
+val listOfMiscellaneous: ArrayList<Int> = object : ArrayList<Int>() {
     init {
         add(R.drawable.jersey_white_with_blue_yellow_stripe)
 

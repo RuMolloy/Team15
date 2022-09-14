@@ -19,12 +19,12 @@
         android:visibility="gone"/>
 
     <TextView
-        android:id="@+id/tv_dialog_title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/action_load"
-        android:layout_toEndOf="@id/iv_dialog_back"
-        android:textAppearance="@android:style/TextAppearance.DeviceDefault.DialogWindowTitle"/>
+            android:id="@+id/tv_dialog_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@id/iv_dialog_back"
+            android:text="@string/action_load"
+            android:textAppearance="@android:style/TextAppearance.DeviceDefault.DialogWindowTitle" />
 
     <ImageView
         android:id="@+id/iv_delete_team"

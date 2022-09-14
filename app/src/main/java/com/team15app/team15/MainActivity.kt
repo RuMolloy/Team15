@@ -1,19 +1,13 @@
 package com.team15app.team15
 
 import android.Manifest
+import android.content.ComponentName
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.os.Bundle
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
-import androidx.core.content.FileProvider
-import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -22,20 +16,36 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.viewModels
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import androidx.lifecycle.lifecycleScope
-import com.team15app.MainViewModel
-import com.team15app.team15.data.Team
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.snackbar.Snackbar
 import com.team15app.team15.adapters.TeamNameAdapter
+import com.team15app.team15.data.LoadTeamUI
+import com.team15app.team15.data.Team
 import com.team15app.team15.databinding.ActivityMainBinding
+import com.team15app.team15.databinding.DialogCustomTitleBinding
 import com.team15app.team15.dialogs.MatchInfoDialogFragment
 import com.team15app.team15.listeners.OnTeamClickListener
-import kotlinx.android.synthetic.main.activity_main.*
+import com.team15app.team15.util.Result
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import java.io.*
-import java.util.*
+import kotlin.collections.ArrayList
 
-
-class MainActivity : OnTeamClickListener, AppCompatActivity(), MatchInfoDialogFragment.OnFinishEditDialog {
+@AndroidEntryPoint
+class MainActivity:
+    OnTeamClickListener,
+    AppCompatActivity(),
+    MatchInfoDialogFragment.OnFinishEditDialog
+{
     companion object {
         const val PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 0
         const val PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE_SHARE = 1
@@ -44,8 +54,7 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(), MatchInfoDialogFr
     }
 
     private lateinit var viewAdapter: TeamNameAdapter
-    private lateinit var viewManager: RecyclerView.LayoutManager
-    private lateinit var rvTeams: RecyclerView
+
     private lateinit var tvDialogTitle: TextView
     private lateinit var ivDialogBack: ImageView
     private lateinit var ivDeleteFile: ImageView
@@ -54,57 +63,73 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(), MatchInfoDialogFr
 
     private lateinit var team: Team
 
-    private var fileName: String = ""
-    private var csvFile = File(fileName)
+    private var csvFile = File("")
 
     private lateinit var binding: ActivityMainBinding
+    private lateinit var bindingDialog: DialogCustomTitleBinding
 
     private val viewModel: MainViewModel by viewModels()
+
+    private lateinit var rootPath: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        setSupportActionBar(toolbar)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true); // show back button on action bar
+        setSupportActionBar(binding.toolbar)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true) // show back button on action bar
 
-        loadVars()
-        initVars()
+        rootPath = getExternalFilesDir(null).toString() + "/" + getString(R.string.app_name)
+        setupListeners()
+        initUI()
         requestPermission(PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE)
         deleteImagesIfHasPermission()
-        openLoadDialog()
+        getListOfSaveTeams()
 
-        lifecycleScope.launchWhenStarted {
-            viewModel.uiTemp.collectLatest {
-                it?.let {
-                    updateTeamASelection(it.teamNameA)
-                    updateTeamBSelection(it.teamNameB)
-                    binding.contentMain.rlMatchInfo.tvMatchInfoNameRead.text = it.matchInfo
-                    it.listOfPlayers.forEachIndexed { index, element ->
-                        val player = binding.contentMain.viewPitch.mapOfPlayers[index]
-                        val number = element.substringBefore("\t")
-                        val name = element.substringAfter("\t")
-                        if (number != element) {
-                            player!!.setDefaultNumber(number)
-                            player.setCustomNumber(number)
-                        }
-                        player!!.setCustomName(name)
-                        binding.contentMain.viewPitch.setPlayerNumberAndNameRect(player)
-                    }
-                    updateJersey(true, it.jerseyGoalkeeper)
-                    updateJersey(false, it.jerseyOutfield)
-                    if(!isDuplicate()){
-                        //only store file path if lineup not to be duplicated
-                        csvFile = File(it.filePath)
-                    }
+        lifecycleScope.launch {
+            viewModel.loadTeamUI.collectLatest {
+                when (it) {
+                    is Result.Success -> updateUI(it.data)
+                    is Result.Error -> showSnackbar(it.message)
                 }
+            }
+        }
+
+        lifecycleScope.launch {
+            viewModel.teamImageFileWritten.collectLatest {
+                when(it) {
+                    is Result.Success -> shareImage(it.data)
+                    is Result.Error -> showSnackbar(it.message)
+                }
+            }
+        }
+
+        lifecycleScope.launch {
+            viewModel.teamTextFileWritten.collectLatest {
+                when(it) {
+                    is Result.Success -> {
+                        csvFile = it.data
+                        if(viewModel.isBackPressed.value) { getListOfSaveTeams() }
+                    }
+                    is Result.Error -> showSnackbar(it.message)
+                }
+            }
+        }
+
+        lifecycleScope.launch {
+            viewModel.teamTextFilesLoaded.collectLatest {
+                openLoadTeamsDialog(it)
             }
         }
     }
 
-    private fun loadVars(){
-        binding.contentMain.rlMatchInfo.rlMatchInfoRead.setOnClickListener{
+    private fun showSnackbar(msg: String) {
+        Snackbar.make(binding.root, msg, Snackbar.LENGTH_SHORT).show()
+    }
+
+    private fun setupListeners(){
+        binding.contentMain.rlMatchInfo.rlMatchInfoRead.setOnClickListener {
             binding.contentMain.viewPitch.resetSelectedPlayers()
             binding.contentMain.viewPitch.invalidate()
             openMatchInfoDialog()
@@ -112,32 +137,59 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(), MatchInfoDialogFr
         binding.contentMain.viewPitch.initJerseyListener(this)
     }
 
-    private fun initVars(){
+    private fun initUI(){
         team = Team(getString(R.string.default_team_name_a),
             R.drawable.crest_default,
             resources.getResourceEntryName(R.drawable.jersey_default),
             resources.getResourceEntryName(R.drawable.jersey_default))
+        csvFile = File("")
         setDefaultTeamAName()
         setDefaultTeamALineup()
         setDefaultTeamBName()
         updateMatchInfo(getString(R.string.default_match_info))
-        fileName = ""
-        csvFile = File(fileName)
+    }
+
+    private fun updateUI(loadTeamUI: LoadTeamUI) {
+        updateTeamASelection(loadTeamUI.teamNameA)
+        updateTeamBSelection(loadTeamUI.teamNameB)
+        binding.contentMain.rlMatchInfo.tvMatchInfoNameRead.text = loadTeamUI.matchInfo
+        loadTeamUI.listOfPlayers.forEachIndexed { index, element ->
+            val player = binding.contentMain.viewPitch.mapOfPlayers[index]
+            val number = element.substringBefore("\t")
+            val name = element.substringAfter("\t")
+            if (number != element) {
+                player!!.setDefaultNumber(number)
+                player.setCustomNumber(number)
+            }
+            player!!.setCustomName(name)
+            binding.contentMain.viewPitch.setPlayerNumberAndNameRect(player)
+        }
+        updateJersey(true, loadTeamUI.jerseyGoalkeeper)
+        updateJersey(false, loadTeamUI.jerseyOutfield)
+        if(!isDuplicateTeamOptionSelected()){
+            //only store file path if lineup not to be duplicated
+            csvFile = File(loadTeamUI.filePath)
+        }
     }
 
     private fun deleteImagesIfHasPermission(){
         // delete previously shared images to stop image build up in the user's team15 directory
-        when {isPermissionGranted() -> deleteImages()}
+        when {isPermissionGranted() -> deleteImageFiles()}
     }
 
     private fun openMatchInfoDialog(){
-        val args = Bundle()
-
-        args.putString(resources.getString(R.string.default_team_name_a), binding.contentMain.rlMatchInfo.tvMatchInfoTeamA.text.toString())
-        args.putString(resources.getString(R.string.default_team_name_b), binding.contentMain.rlMatchInfo.tvMatchInfoTeamB.text.toString())
-        args.putString(resources.getString(R.string.default_match_info), binding.contentMain.rlMatchInfo.tvMatchInfoNameRead.text.toString())
-        args.putString(resources.getString(R.string.goalkeeper), team.jerseyGoalkeeper)
-        args.putString(resources.getString(R.string.outfielder), team.jerseyOutfield)
+        val args = Bundle().apply {
+            putString(resources.getString(R.string.default_team_name_a),
+                binding.contentMain.rlMatchInfo.tvMatchInfoTeamA.text.toString())
+            putString(resources.getString(R.string.default_team_name_b),
+                binding.contentMain.rlMatchInfo.tvMatchInfoTeamB.text.toString())
+            putString(resources.getString(R.string.default_match_info),
+                binding.contentMain.rlMatchInfo.tvMatchInfoNameRead.text.toString())
+            putString(resources.getString(R.string.goalkeeper),
+                team.jerseyGoalkeeper)
+            putString(resources.getString(R.string.outfielder),
+                team.jerseyOutfield)
+        }
 
         val dialogFragment = MatchInfoDialogFragment()
         dialogFragment.arguments = args
@@ -151,7 +203,7 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(), MatchInfoDialogFr
         dialogFragment.dialog?.setCanceledOnTouchOutside(false);
     }
 
-    override fun onFinishEditDialog(bundle: Bundle) {
+    override fun onFinishEditMatchInfoDialog(bundle: Bundle) {
         val tvTeamNameA = bundle.getString(getString(R.string.default_team_name_a))
         val tvTeamNameB = bundle.getString(getString(R.string.default_team_name_b))
         val tvMatchInfo = bundle.getString(getString(R.string.default_match_info))
@@ -175,34 +227,91 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(), MatchInfoDialogFr
         updateJersey(true, dGoalKeeper)
         updateJersey(false, dOutfielder)
 
-        if (viewModel.isLineupChanged(
-                teamNameACustom = binding.contentMain.rlMatchInfo.tvMatchInfoTeamA.text.toString(),
-                teamNameBCustom = binding.contentMain.rlMatchInfo.tvMatchInfoTeamB.text.toString(),
-                matchInfoCustom = binding.contentMain.rlMatchInfo.tvMatchInfoNameRead.text.toString(),
-                jerseyGoalkeeper = team.jerseyGoalkeeper.toString(),
-                jerseyOutfield = team.jerseyOutfield.toString(),
-                mapOfPlayers = binding.contentMain.viewPitch.mapOfPlayers.values,
-                teamNameADefault = resources.getResourceEntryName(R.drawable.jersey_default),
-                teamNameBDefault = ("vs. "+getString(R.string.default_team_name_b)),
-                matchInfoDefault = getString(R.string.default_match_info),
-                jerseyGoalkeeperDefault = resources.getResourceEntryName(R.drawable.jersey_default),
-                jerseyOutfieldDefault = resources.getResourceEntryName(R.drawable.jersey_default)
-            )
-        ) {
-            checkPermission(PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE_SAVE)
+        if (isLineupChanged()) {
+            checkPermission(PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE_SAVE, false)
         }
     }
 
-    override fun onTeamClick(teamName: String) {
+    private fun openLoadTeamsDialog(listOfTeamFilesToLoad: ArrayList<String>) {
+        if(listOfTeamFilesToLoad.isNotEmpty()){
+            listOfTeamFilesToLoad.sort()
+            listOfTeamFilesToLoad.add(0, getString(R.string.create_new_team))
+            listOfTeamFilesToLoad.add(1, getString(R.string.duplicate_a_team))
+
+            bindingDialog = DialogCustomTitleBinding.inflate(layoutInflater)
+
+            val builder = AlertDialog.Builder(this)
+            builder.setCustomTitle(bindingDialog.root)
+            builder.setTitle(R.string.swap_name)
+            builder.setOnCancelListener { // if from activity
+                finish()
+            }
+
+            val row = layoutInflater.inflate(R.layout.team_name_view, null)
+
+            val viewManager = LinearLayoutManager(this)
+            viewAdapter = TeamNameAdapter(listOfTeamFilesToLoad,
+                true,
+                this)
+
+            row.findViewById<RecyclerView>(R.id.rv_team_names).apply {
+                // use this setting to improve performance if you know that changes
+                // in content do not change the layout size of the RecyclerView
+                setHasFixedSize(true)
+
+                // use a linear layout manager
+                layoutManager = viewManager
+
+                // specify an viewAdapter (see also next example)
+                adapter = viewAdapter
+
+                // adds a line between each recyclerview item
+                addItemDecoration(
+                    DividerItemDecoration(
+                        context,
+                        LinearLayoutManager.VERTICAL
+                    )
+                )
+            }
+            builder.setView(row)
+
+            dialogSelectTeam = builder.create()
+            dialogSelectTeam.setCanceledOnTouchOutside(false)
+            dialogSelectTeam.show()
+
+            val width = (resources.displayMetrics.widthPixels * 0.90).toInt()
+            val height = (resources.displayMetrics.heightPixels * 0.75).toInt()
+
+            dialogSelectTeam.window?.setLayout(width, height)
+
+            tvDialogTitle = bindingDialog.tvDialogTitle
+            ivDialogBack = bindingDialog.ivDialogBack
+            ivDialogBack.setOnClickListener {
+                removeDuplicateTeamOption()
+            }
+
+            ivDeleteFile = bindingDialog.ivDeleteTeam
+            ivDeleteFile.setOnClickListener {
+                val listOfFiles = viewAdapter.getSelectedItems()
+                if(listOfFiles.isNotEmpty()){
+                    openDeleteDialog(listOfFiles)
+                }
+                else{
+                    showToast(getString(R.string.delete_not_available))
+                }
+            }
+        }
+    }
+
+    override fun onLoadTeamClick(teamName: String) {
         when (teamName) {
             getString(R.string.create_new_team) -> {
-                initVars()
+                initUI()
                 dialogSelectTeam.dismiss()
             }
             getString(R.string.duplicate_a_team) -> {
-                fileName = ""
-                csvFile = File(fileName)
-                addDuplicate()
+                csvFile = File("")
+                addDuplicateTeamOption()
             }
             else -> {
                 loadTeamFromFile(teamName)
@@ -211,7 +320,7 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(), MatchInfoDialogFr
         }
     }
 
-    override fun onTeamLongClick(isSelected: Boolean){
+    override fun onLoadTeamLongClick(isSelected: Boolean){
         if(isSelected){
             ivDeleteFile.visibility = View.VISIBLE
         }
@@ -255,8 +364,10 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(), MatchInfoDialogFr
     }
 
     private fun setDefaultTeamALineup(){
-        binding.contentMain.viewPitch.setJerseyBitmaps(resources.getResourceEntryName(R.drawable.jersey_default),
-            resources.getResourceEntryName(R.drawable.jersey_default))
+        binding.contentMain.viewPitch.setJerseyBitmaps(
+            resources.getResourceEntryName(R.drawable.jersey_default),
+            resources.getResourceEntryName(R.drawable.jersey_default)
+        )
         var number = 1
         for(item in binding.contentMain.viewPitch.mapOfPlayers){
             item.value.setCustomNumber(number.toString())
@@ -290,7 +401,7 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(), MatchInfoDialogFr
                 true
             }
             R.id.menu_item_share -> {
-                checkPermission(PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE_SHARE)
+                checkPermission(PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE_SHARE, false)
                 true
             }
             R.id.menu_item_about -> {
@@ -303,35 +414,18 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(), MatchInfoDialogFr
         }
     }
 
-    private fun openResetDialog(){
-        val builder = AlertDialog.Builder(this)
-        builder.setTitle(R.string.delete_title)
-        builder.setMessage(R.string.reset_message)
-        builder.apply {
-            setPositiveButton(R.string.ok) { _, _ ->
-                if(csvFile.exists()){
-                    csvFile.delete() //overwrite previous file
-                }
-                initVars()
-            }
-            setNegativeButton(R.string.cancel) { _, _ ->
-            }
-        }
-        builder.show()
-    }
-
-    private fun checkPermission(requestCode: Int){
+    private fun checkPermission(requestCode: Int, isBackPressed: Boolean){
         if (!isPermissionGranted()) {
             requestPermission(requestCode)
         } else {
             // Permission has already been granted
             when (requestCode) {
                 PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE_SHARE -> {
-                    writeTeamToFile()
+                    writeTeamToFile(isBackPressed)
                     storeAndShareImage(getScreenImage())
                 }
-                PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE_SAVE -> writeTeamToFile()
-                PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE_LOAD -> openLoadDialog()
+                PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE_SAVE -> writeTeamToFile(isBackPressed)
+                PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE_LOAD -> getListOfSaveTeams()
             }
         }
     }
@@ -357,8 +451,8 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(), MatchInfoDialogFr
             // permission was granted, proceed to operation
             when (requestCode) {
                 PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE_SHARE -> storeAndShareImage(getScreenImage())
-                PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE_SAVE -> writeTeamToFile()
-                PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE_LOAD -> openLoadDialog()
+                PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE_SAVE -> writeTeamToFile(false)
+                PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE_LOAD -> getListOfSaveTeams()
             }
         }
         else {
@@ -382,192 +476,88 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(), MatchInfoDialogFr
     }
 
     private fun getScreenImage(): Bitmap {
-        val rootView = findViewById<ConstraintLayout>(R.id.cl_main) // we don't want the action bar in the screenshot so using the app's main layout
-        rootView.isDrawingCacheEnabled = true
-        val bitmap = rootView.drawingCache.copy(Bitmap.Config.RGB_565, false)
-        rootView.isDrawingCacheEnabled = false
+        // we don't want the action bar in the screenshot so using the app's main layout
+        val bitmap = Bitmap.createBitmap(
+            binding.contentMain.clMain.width,
+            binding.contentMain.clMain.height,
+            Bitmap.Config.ARGB_8888
+        )
+        val canvas = Canvas(bitmap)
+        binding.contentMain.clMain.draw(canvas)
         return bitmap
     }
 
     private fun storeAndShareImage(bitmap: Bitmap) {
-        val filePath = getExternalFilesDir(null).toString() + "/" + getString(R.string.app_name)
         val teamNameA = binding.contentMain.rlMatchInfo.tvMatchInfoTeamA.text.toString()
-
-        viewModel.writeImageToFile(filePath, teamNameA, bitmap)
-
-//        val imageDir = File()
-//        imageDir.mkdirs()
-//
-//        val dateAndTimeStamp = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
-//        val imageFile = File(imageDir, dateAndTimeStamp + "_" + +".jpg")
-//
-//        try {
-//            val fos = FileOutputStream(imageFile)
-//            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos)
-//            fos.flush()
-//            fos.close()
-//        } catch (e: FileNotFoundException) {
-//            Log.e("GREC", e.message, e)
-//        } catch (e: IOException) {
-//            Log.e("GREC", e.message, e)
-//        }
-
-        //shareImage(imageFile)
+        viewModel.writeImageToFile(rootPath, teamNameA, bitmap)
     }
 
     private fun shareImage(imagePath: File) {
-        val uri = FileProvider.getUriForFile(this, "com.codepath.fileprovider", imagePath)
+        val provider = getFileProviderAuthorities(this)
+        val uri = FileProvider.getUriForFile(
+            this,
+            provider,
+            imagePath
+        )
 
         val sharingIntent = Intent(Intent.ACTION_SEND)
         sharingIntent.type = "image/*"
         val shareBody = "#" + getString(R.string.app_name)
-        sharingIntent.putExtra(Intent.EXTRA_SUBJECT, fileName)
+        sharingIntent.putExtra(Intent.EXTRA_SUBJECT, csvFile.name)
         sharingIntent.putExtra(Intent.EXTRA_TEXT, shareBody)
         sharingIntent.putExtra(Intent.EXTRA_STREAM, uri)
 
-        startActivity(Intent.createChooser(sharingIntent, getString(R.string.share)))
+        // Added as we have a file provider for the debug build flavor too
+        val intentChooser = Intent.createChooser(sharingIntent, getString(R.string.share))
+        val resInfoList = this.packageManager.queryIntentActivities(
+            intentChooser,
+            PackageManager.MATCH_DEFAULT_ONLY
+        )
+        for (resolveInfo in resInfoList) {
+            val packageName = resolveInfo.activityInfo.packageName
+            grantUriPermission(
+                packageName,
+                uri,
+                Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+                        or Intent.FLAG_GRANT_READ_URI_PERMISSION
+            )
+        }
+
+        startActivity(intentChooser)
     }
 
-    private fun deleteImages(){
-        val filePath = getExternalFilesDir(null).toString() + "/" + getString(R.string.app_name)
-        viewModel.deleteImages(filePath)
+    private fun getFileProviderAuthorities(context: Context): String {
+        val component = ComponentName(context, FileProvider::class.java)
+        val info = context.packageManager.getProviderInfo(component, PackageManager.GET_META_DATA)
+        return info.authority
     }
 
-    private fun writeTeamToFile(){
-        val filePath = getExternalFilesDir(null).toString() + "/" + getString(R.string.app_name)
+    private fun deleteImageFiles(){
+        viewModel.deleteImageFiles(rootPath)
+    }
+
+    private fun writeTeamToFile(isBackPressed: Boolean){
+        viewModel.isBackPressed.value = isBackPressed
         viewModel.writeTeamToFile(
             csvFile = csvFile,
-            filePath = filePath,
+            filePath = rootPath,
             teamNameA = binding.contentMain.rlMatchInfo.tvMatchInfoTeamA.text.toString(),
             teamNameB = binding.contentMain.rlMatchInfo.tvMatchInfoTeamB.text.toString(),
-            matchInfo = binding.contentMain.rlMatchInfo.tvMatchInfoNameRead.text.toString().replace("\n", ""),
+            matchInfo = binding.contentMain.rlMatchInfo.tvMatchInfoNameRead.text.toString()
+                .replace("\n", ""),
             jerseyGoalkeeper = team.jerseyGoalkeeper,
             jerseyOutfield = team.jerseyOutfield,
             binding.contentMain.viewPitch.mapOfPlayers
         )
     }
 
-    private fun openLoadDialog(){
-        val listOfTeamFilesToLoad = ArrayList<String>()
-
-        val csvDir = File(getExternalFilesDir(null).toString() + "/" + getString(R.string.app_name))
-        if(csvDir.exists()){
-            val files = csvDir.listFiles()
-            if(files != null){
-                for(file in files.iterator()){
-                    if(viewModel.isValidFile(file, getString(R.string.version))){
-                        listOfTeamFilesToLoad.add(file.nameWithoutExtension)
-                    }
-                }
-            }
-        }
-
-        if(listOfTeamFilesToLoad.isNotEmpty()){
-            listOfTeamFilesToLoad.sort()
-            listOfTeamFilesToLoad.add(0, getString(R.string.create_new_team))
-            listOfTeamFilesToLoad.add(1, getString(R.string.duplicate_a_team))
-            val view = View.inflate(this, R.layout.dialog_custom_title, null)
-
-            val builder = AlertDialog.Builder(this)
-            builder.setCustomTitle(view)
-            builder.setTitle(R.string.swap_name)
-            builder.setOnCancelListener { // if from activity
-                finish()
-            }
-
-            val row = layoutInflater.inflate(R.layout.team_name_view, null)
-
-            viewManager = LinearLayoutManager(this)
-            viewAdapter = TeamNameAdapter(listOfTeamFilesToLoad, true, this)
-
-            rvTeams = row.findViewById<RecyclerView>(R.id.rv_team_names).apply {
-                // use this setting to improve performance if you know that changes
-                // in content do not change the layout size of the RecyclerView
-                setHasFixedSize(true)
-
-                // use a linear layout manager
-                layoutManager = viewManager
-
-                // specify an viewAdapter (see also next example)
-                adapter = viewAdapter
-
-                // adds a line between each recyclerview item
-                addItemDecoration(
-                    DividerItemDecoration(
-                        context,
-                        LinearLayoutManager.VERTICAL
-                    )
-                )
-            }
-            builder.setView(row)
-
-            dialogSelectTeam = builder.create()
-            dialogSelectTeam.setCanceledOnTouchOutside(false);
-            dialogSelectTeam.show()
-
-            val width = (resources.displayMetrics.widthPixels * 0.90).toInt()
-            val height = (resources.displayMetrics.heightPixels * 0.75).toInt()
-
-            dialogSelectTeam.window?.setLayout(width, height)
-
-            tvDialogTitle = view.findViewById(R.id.tv_dialog_title)
-            ivDialogBack = view.findViewById(R.id.iv_dialog_back)
-            ivDialogBack.setOnClickListener {
-                removeDuplicate()
-            }
-
-            ivDeleteFile = view.findViewById(R.id.iv_delete_team)
-            ivDeleteFile.setOnClickListener {
-                val listOfFiles = viewAdapter.getSelectedItems()
-                if(listOfFiles.isNotEmpty()){
-                    val builder = AlertDialog.Builder(this)
-                    var msgPre = listOfFiles.size.toString()
-                    var msgPost = listOfFiles.size.toString()
-                    msgPre += when (listOfFiles.size) {
-                        1 -> " team?"
-                        else -> " teams?"
-                    }
-                    msgPost += when (listOfFiles.size) {
-                        1 -> " team has"
-                        else -> " teams have"
-                    }
-                    builder.setTitle(getString(R.string.delete_title) + " " + msgPre)
-                    builder.setMessage(R.string.delete_message)
-                    builder.apply {
-                        setPositiveButton(R.string.ok) { _, _ ->
-                            val csvDir = File(getExternalFilesDir(null).toString() + "/" + getString(R.string.app_name))
-                            if(csvDir.exists()) {
-                                val files = csvDir.listFiles()
-                                for (file in files.iterator()) {
-                                    if(listOfFiles.contains(file.nameWithoutExtension)){
-                                        file.delete()
-                                        viewAdapter.removeItem(file.nameWithoutExtension)
-                                    }
-                                }
-                                viewAdapter.notifyDataSetChanged()
-                                if(viewAdapter.itemCount == 2){ //size of two means only 'create new' and 'duplicate' options available
-                                    dialogSelectTeam.dismiss()
-                                    showToast(getString(R.string.delete_all_success))
-                                }
-                                else{
-                                    viewAdapter.resetCheckbox()
-                                    showToast("$msgPost been deleted!")
-                                }
-                            }
-                        }
-                        setNegativeButton(R.string.cancel) { _, _ ->
-                        }
-                    }
-                    builder.show()
-                }
-                else{
-                    showToast(getString(R.string.delete_not_available))
-                }
-            }
-        }
+    private fun getListOfSaveTeams(){
+        viewModel.getListOfSavedTeams(
+            rootPath,
+            getString(R.string.version))
     }
 
-    private fun addDuplicate(){
+    private fun addDuplicateTeamOption(){
         viewAdapter.removeItem(getString(R.string.create_new_team))
         viewAdapter.removeItem(getString(R.string.duplicate_a_team))
         viewAdapter.notifyDataSetChanged()
@@ -576,7 +566,7 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(), MatchInfoDialogFr
         tvDialogTitle.text = getString(R.string.select_team_to_duplicate)
     }
 
-    private fun removeDuplicate(){
+    private fun removeDuplicateTeamOption(){
         viewAdapter.addItem(getString(R.string.duplicate_a_team))
         viewAdapter.addItem(getString(R.string.create_new_team))
         viewAdapter.notifyDataSetChanged()
@@ -585,7 +575,7 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(), MatchInfoDialogFr
         tvDialogTitle.text = getString(R.string.action_load)
     }
 
-    private fun isDuplicate(): Boolean {
+    private fun isDuplicateTeamOptionSelected(): Boolean {
         return viewModel.isDuplicate(
             tvDialogTitle.text.toString(),
             getString(R.string.select_team_to_duplicate)
@@ -593,11 +583,68 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(), MatchInfoDialogFr
     }
 
     private fun loadTeamFromFile(team: String) {
-        val filePath = getExternalFilesDir(null).toString() + "/" + getString(R.string.app_name)
         viewModel.loadTeamFromFile(
-            filePath,
+            rootPath,
             team,
             getString(R.string.version))
+    }
+
+    private fun openResetDialog(){
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle(R.string.delete_title)
+        builder.setMessage(R.string.reset_message)
+        builder.apply {
+            setPositiveButton(R.string.ok) { _, _ ->
+                //overwrite previous file
+                viewModel.deleteTextFile(csvFile)
+                initUI()
+            }
+            setNegativeButton(R.string.cancel) { _, _ ->
+            }
+        }
+        builder.show()
+    }
+
+    private fun openDeleteDialog(listOfFiles: ArrayList<String>) {
+        val builder = AlertDialog.Builder(this)
+        var msgPre = listOfFiles.size.toString()
+        var msgPost = listOfFiles.size.toString()
+        msgPre += when (listOfFiles.size) {
+            1 -> " team?"
+            else -> " teams?"
+        }
+        msgPost += when (listOfFiles.size) {
+            1 -> " team has"
+            else -> " teams have"
+        }
+        builder.setTitle(getString(R.string.delete_title) + " " + msgPre)
+        builder.setMessage(R.string.delete_message)
+        builder.apply {
+            setPositiveButton(R.string.ok) { _, _ ->
+                val csvDir = File(rootPath)
+                if(csvDir.exists()) {
+                    for (file in csvDir.listFiles()) {
+                        if(listOfFiles.contains(file.nameWithoutExtension)){
+                            viewModel.deleteTextFile(file)
+                            viewAdapter.removeItem(file.nameWithoutExtension)
+                        }
+                    }
+                    viewAdapter.notifyDataSetChanged()
+                    //size of two means only 'create new' and 'duplicate' options available
+                    if(viewAdapter.itemCount == 2){
+                        dialogSelectTeam.dismiss()
+                        showToast(getString(R.string.delete_all_success))
+                    }
+                    else{
+                        viewAdapter.resetCheckbox()
+                        showToast("$msgPost been deleted!")
+                    }
+                }
+            }
+            setNegativeButton(R.string.cancel) { _, _ ->
+            }
+        }
+        builder.show()
     }
 
     private fun openAboutDialog(){
@@ -622,43 +669,36 @@ class MainActivity : OnTeamClickListener, AppCompatActivity(), MatchInfoDialogFr
     }
 
     override fun onBackPressed() {
-        if (viewModel.isLineupChanged(
-                teamNameACustom = binding.contentMain.rlMatchInfo.tvMatchInfoTeamA.text.toString(),
-                teamNameBCustom = binding.contentMain.rlMatchInfo.tvMatchInfoTeamB.text.toString(),
-                matchInfoCustom = binding.contentMain.rlMatchInfo.tvMatchInfoNameRead.text.toString(),
-                jerseyGoalkeeper = team.jerseyGoalkeeper.toString(),
-                jerseyOutfield = team.jerseyOutfield.toString(),
-                mapOfPlayers = binding.contentMain.viewPitch.mapOfPlayers.values,
-                teamNameADefault = resources.getResourceEntryName(R.drawable.jersey_default),
-                teamNameBDefault = ("vs. "+getString(R.string.default_team_name_b)),
-                matchInfoDefault = getString(R.string.default_match_info),
-                jerseyGoalkeeperDefault = resources.getResourceEntryName(R.drawable.jersey_default),
-                jerseyOutfieldDefault = resources.getResourceEntryName(R.drawable.jersey_default)
-            )
-        ) {
-            checkPermission(PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE_SAVE)
-        }
-        openLoadDialog()
+        handleOnBack()
     }
 
     override fun onSupportNavigateUp(): Boolean {
-        if (viewModel.isLineupChanged(
-                teamNameACustom = binding.contentMain.rlMatchInfo.tvMatchInfoTeamA.text.toString(),
-                teamNameBCustom = binding.contentMain.rlMatchInfo.tvMatchInfoTeamB.text.toString(),
-                matchInfoCustom = binding.contentMain.rlMatchInfo.tvMatchInfoNameRead.text.toString(),
-                jerseyGoalkeeper = team.jerseyGoalkeeper.toString(),
-                jerseyOutfield = team.jerseyOutfield.toString(),
-                mapOfPlayers = binding.contentMain.viewPitch.mapOfPlayers.values,
-                teamNameADefault = resources.getResourceEntryName(R.drawable.jersey_default),
-                teamNameBDefault = ("vs. "+getString(R.string.default_team_name_b)),
-                matchInfoDefault = getString(R.string.default_match_info),
-                jerseyGoalkeeperDefault = resources.getResourceEntryName(R.drawable.jersey_default),
-                jerseyOutfieldDefault = resources.getResourceEntryName(R.drawable.jersey_default)
-            )
-        ) {
-            checkPermission(PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE_SAVE)
-        }
-        openLoadDialog()
+        handleOnBack()
         return true
+    }
+
+    private fun handleOnBack() {
+        if(isLineupChanged()) {
+            checkPermission(PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE_SAVE, true)
+        }
+        else{
+            getListOfSaveTeams()
+        }
+    }
+
+    private fun isLineupChanged(): Boolean {
+        return viewModel.isLineupChanged(
+            teamNameACustom = binding.contentMain.rlMatchInfo.tvMatchInfoTeamA.text.toString(),
+            teamNameBCustom = binding.contentMain.rlMatchInfo.tvMatchInfoTeamB.text.toString(),
+            matchInfoCustom = binding.contentMain.rlMatchInfo.tvMatchInfoNameRead.text.toString(),
+            jerseyGoalkeeper = team.jerseyGoalkeeper.toString(),
+            jerseyOutfield = team.jerseyOutfield.toString(),
+            mapOfPlayers = binding.contentMain.viewPitch.mapOfPlayers.values,
+            teamNameADefault = getString(R.string.default_team_name_a),
+            teamNameBDefault = getString(R.string.default_team_name_b),
+            matchInfoDefault = getString(R.string.default_match_info),
+            jerseyGoalkeeperDefault = resources.getResourceEntryName(R.drawable.jersey_default),
+            jerseyOutfieldDefault = resources.getResourceEntryName(R.drawable.jersey_default)
+        )
     }
 }
