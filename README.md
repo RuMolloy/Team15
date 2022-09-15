@@ -23,7 +23,7 @@ Android app to allow GAA teams (gaelic football and hurling) to publish their st
 ![](demo.gif)
 
 
-## Screenshots!
+## Screenshots
 
 <p float="left">
 <img src="https://user-images.githubusercontent.com/9675246/184333950-8f25ea61-d1a5-42f6-baa3-405cc6158e9b.jpg" width="20%" height="20%" />
