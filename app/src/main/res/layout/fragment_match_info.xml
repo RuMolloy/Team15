@@ -142,8 +142,8 @@
                 android:layout_height="wrap_content"/>
 
         <include
-                android:id="@+id/rl_match_info_write"
-                layout="@layout/match_info_write"/>
+                layout="@layout/match_info_write"
+                android:id="@+id/rl_match_info_write"/>
 
     </LinearLayout>
 

@@ -28,12 +28,12 @@
             app:layout_constraintVertical_weight="1.5">
 
         <include
-             android:id="@+id/rl_match_info"
-             android:layout_height="wrap_content"
-             android:layout_width="wrap_content"
-             android:layout_marginLeft="@dimen/util_margin"
-             android:layout_marginRight="@dimen/util_margin"
-             layout="@layout/match_info_read"/>
+                android:id="@+id/rl_match_info"
+                layout="@layout/match_info_read"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/util_margin"
+                android:layout_marginRight="@dimen/util_margin" />
 
     </RelativeLayout>
 
@@ -63,7 +63,7 @@
 
         <view
                 android:id="@+id/view_pitch"
-                class="com.team15app.team15.PitchView"
+                class="com.team15app.team15.views.PitchView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
 

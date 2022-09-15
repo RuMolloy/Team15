@@ -5,42 +5,45 @@ import android.app.Dialog
 import android.os.Bundle
 import com.google.android.material.tabs.TabLayout
 import androidx.fragment.app.DialogFragment
-import androidx.viewpager.widget.ViewPager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.InputMethodManager
 import com.team15app.team15.R
 import com.team15app.team15.adapters.MatchInfoAdapter
+import com.team15app.team15.databinding.DialogEditMatchInfoBinding
+import com.team15app.team15.fragments.MatchInfoFragment
+import com.team15app.team15.fragments.PlayerJerseyFragment
 
-class MatchInfoDialogFragment(): DialogFragment(),
+class MatchInfoDialogFragment : DialogFragment(),
     MatchInfoFragment.MatchInfoFragmentListener,
-    PlayerJerseyFragment.Temp {
-
-    lateinit var customView: View
-    private lateinit var imm: InputMethodManager
-    private lateinit var tabLayout: TabLayout
+    PlayerJerseyFragment.PlayerJerseyFragmentListener
+{
     private lateinit var onFinishEditDialogListener: OnFinishEditDialog
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return customView
+    private var _binding: DialogEditMatchInfoBinding? = null
+    private lateinit var binding: DialogEditMatchInfoBinding
+
+    override fun onCreateView(inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        return binding.root
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val bundle = this.arguments
+        _binding = DialogEditMatchInfoBinding.inflate(layoutInflater)
+        binding = _binding!!
 
         val alertDialogBuilder: AlertDialog.Builder = AlertDialog.Builder(activity)
         alertDialogBuilder.setTitle(R.string.set_match_details)
 
-        val inflater = LayoutInflater.from(context)
-        customView = inflater.inflate(R.layout.dialog_edit_match_info, null)
-        tabLayout = customView.findViewById(R.id.tl_match_info)
-        val viewPagerTabs = customView.findViewById<ViewPager>(R.id.vp_tabs)
-        val matchInfoAdapter = MatchInfoAdapter(childFragmentManager, tabLayout.tabCount, bundle)
-        viewPagerTabs.adapter = matchInfoAdapter
-        viewPagerTabs.offscreenPageLimit = 3
-        viewPagerTabs.addOnPageChangeListener(TabLayout.TabLayoutOnPageChangeListener(tabLayout))
-        tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+        val matchInfoAdapter = MatchInfoAdapter(childFragmentManager,
+            binding.tlMatchInfo.tabCount,
+            arguments)
+        binding.vpTabs.adapter = matchInfoAdapter
+        binding.vpTabs.offscreenPageLimit = 3
+        binding.vpTabs.addOnPageChangeListener(TabLayout.TabLayoutOnPageChangeListener(binding.tlMatchInfo))
+        binding.tlMatchInfo.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabReselected(p0: TabLayout.Tab?) {
             }
 
@@ -49,13 +52,13 @@ class MatchInfoDialogFragment(): DialogFragment(),
             }
 
             override fun onTabSelected(p0: TabLayout.Tab?) {
-                viewPagerTabs.currentItem = tabLayout.selectedTabPosition
+                binding.vpTabs.currentItem = binding.tlMatchInfo.selectedTabPosition
             }
         })
 
-        alertDialogBuilder.setView(customView)
+        alertDialogBuilder.setView(binding.root)
         alertDialogBuilder.setPositiveButton(R.string.ok) { _, _ ->
-            onFinishEditDialogListener.onFinishEditDialog(getMatchInfoBundle())
+            onFinishEditDialogListener.onFinishEditMatchInfoDialog(getMatchInfoBundle())
         }
         alertDialogBuilder.setNegativeButton(R.string.cancel) { _, _ ->
 
@@ -65,23 +68,22 @@ class MatchInfoDialogFragment(): DialogFragment(),
     }
 
     override fun onJerseyPressed(source: String) {
-        var tabNum = 0
-        tabNum = if (source == getString(R.string.goalkeeper)) 1 else 2
-        tabLayout.getTabAt(tabNum)!!.select();
+        val tabNum = if (source == getString(R.string.goalkeeper)) 1 else 2
+        binding.tlMatchInfo.getTabAt(tabNum)!!.select()
     }
 
-    override fun onJerseyTemp(resourceName: String) {
+    override fun onJerseySelected(drawable: String) {
         for(frag in childFragmentManager.fragments){
             if (frag is MatchInfoFragment){
-                frag.updateJersey(tabLayout.selectedTabPosition, resourceName)
+                frag.updateJersey(binding.tlMatchInfo.selectedTabPosition, drawable)
             }
             break
         }
-        tabLayout.getTabAt(0)!!.select();
+        binding.tlMatchInfo.getTabAt(0)!!.select();
     }
 
     interface OnFinishEditDialog {
-        fun onFinishEditDialog(bundle: Bundle)
+        fun onFinishEditMatchInfoDialog(bundle: Bundle)
     }
 
     fun setOnFinishEditDialogListener(listener: OnFinishEditDialog) {
@@ -89,14 +91,10 @@ class MatchInfoDialogFragment(): DialogFragment(),
     }
 
     private fun getMatchInfoBundle(): Bundle{
-        val bundle = Bundle()
+        var bundle = Bundle()
         for(frag in childFragmentManager.fragments){
             if (frag is MatchInfoFragment){
-                bundle.putString(resources.getString(R.string.default_team_name_a), frag.etTeamNameA.text.toString())
-                bundle.putString(resources.getString(R.string.default_team_name_b), frag.etTeamNameB.text.toString())
-                bundle.putString(resources.getString(R.string.default_match_info), frag.etMatchInfo.text.toString())
-                bundle.putString(resources.getString(R.string.goalkeeper), frag.ivGoalkeeper.tag.toString())
-                bundle.putString(resources.getString(R.string.outfielder), frag.ivOutfielder.tag.toString())
+                bundle = frag.getBundle()
                 break
             }
         }

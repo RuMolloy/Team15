@@ -8,12 +8,12 @@
 
     <TextView
             android:id="@+id/tv_match_info_team_a"
-            android:text="@string/default_team_name_a"
-            android:textSize="@dimen/font_team_name_primary"
-            android:textStyle="bold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"/>
+            android:layout_centerHorizontal="true"
+            android:text="@string/default_team_name_a"
+            android:textSize="@dimen/font_team_name_primary"
+            android:textStyle="bold" />
 
     <androidx.legacy.widget.Space
             android:layout_width="wrap_content"
@@ -21,13 +21,13 @@
 
     <TextView
             android:id="@+id/tv_match_info_team_b"
-            android:text="@string/default_team_name_b"
-            android:textSize="@dimen/font_team_name_secondary"
-            android:textStyle="bold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/tv_match_info_team_a"
-            android:layout_centerHorizontal="true"/>
+            android:layout_centerHorizontal="true"
+            android:text="@string/default_team_name_b"
+            android:textSize="@dimen/font_team_name_secondary"
+            android:textStyle="bold" />
 
     <androidx.legacy.widget.Space
             android:layout_width="wrap_content"
@@ -35,13 +35,13 @@
 
     <TextView
             android:id="@+id/tv_match_info_name_read"
-            android:text="@string/default_match_info"
-            android:textSize="@dimen/font_match_info"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/tv_match_info_team_b"
             android:layout_centerHorizontal="true"
+            android:layout_gravity="center_horizontal"
             android:gravity="center_horizontal"
-            android:layout_gravity="center_horizontal"/>
+            android:text="@string/default_match_info"
+            android:textSize="@dimen/font_match_info" />
 
 </RelativeLayout>

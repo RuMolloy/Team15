@@ -1,4 +1,4 @@
-package com.team15app.team15
+package com.team15app.team15.views
 
 import android.content.Context
 import android.graphics.*
@@ -13,14 +13,20 @@ import android.util.AttributeSet
 import android.view.*
 import android.widget.ImageView
 import android.widget.TextView
+import com.team15app.team15.MainActivity
+import com.team15app.team15.R
+import com.team15app.team15.data.Player
 import com.team15app.team15.adapters.TeamNameAdapter
 import com.team15app.team15.dialogs.PlayerDialogFragment
 import com.team15app.team15.dialogs.PlayerDialogFragment.OnFinishEditDialog
 import com.team15app.team15.listeners.OnTeamClickListener
 import java.util.*
 
-
-class PitchView : View, GestureDetector.OnGestureListener, GestureDetector.OnDoubleTapListener, OnFinishEditDialog {
+class PitchView : View,
+    GestureDetector.OnGestureListener,
+    GestureDetector.OnDoubleTapListener,
+    OnFinishEditDialog
+{
     private val line13m = 13.0
     private val pitchWidthInMetres = 90.0
     private val pitchLengthInMetres = 145.0
@@ -100,14 +106,18 @@ class PitchView : View, GestureDetector.OnGestureListener, GestureDetector.OnDou
         paintPitchText.textAlign = Paint.Align.CENTER
 
         paintJerseyNumberText = Paint()
-        paintJerseyNumberText.color = ContextCompat.getColor(context, R.color.colorPitchLinesAndText)
+        paintJerseyNumberText.color = ContextCompat.getColor(context,
+            R.color.colorPitchLinesAndText
+        )
         paintJerseyNumberText.textSize = resources.getDimension(R.dimen.font_player_number)
         paintJerseyNumberText.textAlign = Paint.Align.CENTER
         paintJerseyNumberText.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
         paintJerseyNumberText.isAntiAlias = true
 
         paintJerseyNumberStroke = Paint()
-        paintJerseyNumberStroke.color = ContextCompat.getColor(context, R.color.colorPlayerNameBackground)
+        paintJerseyNumberStroke.color = ContextCompat.getColor(context,
+            R.color.colorPlayerNameBackground
+        )
         paintJerseyNumberStroke.style = Paint.Style.STROKE
         paintJerseyNumberStroke.strokeWidth = 2f
         paintJerseyNumberStroke.textSize = resources.getDimension(R.dimen.font_player_number)
@@ -142,7 +152,9 @@ class PitchView : View, GestureDetector.OnGestureListener, GestureDetector.OnDou
         paintTranslucent.isAntiAlias = true
 
         paintPlayerNumberAndNameRect = Paint()
-        paintPlayerNumberAndNameRect.color = ContextCompat.getColor(context, R.color.colorPlayerNameBackground)
+        paintPlayerNumberAndNameRect.color = ContextCompat.getColor(context,
+            R.color.colorPlayerNameBackground
+        )
         paintPlayerNumberAndNameRect.alpha = 50
 
         bitmapJerseyGoalkeeper = BitmapFactory.decodeResource(resources, R.drawable.jersey_default)
@@ -384,8 +396,16 @@ class PitchView : View, GestureDetector.OnGestureListener, GestureDetector.OnDou
                 timeWhenDownPressed = System.currentTimeMillis()
                 val playerSelected = getSelectedPlayer()
                 if(playerSelected != null) {
-                    playerSelected.setJerseyPointCustom(Point(eventX-(bitmapJerseyOutfield!!.width/2), eventY-(bitmapJerseyOutfield!!.height/2)))
-                    playerSelected.setJerseyRectCustom(Rect(playerSelected.getJerseyPoint()!!.x, playerSelected.getJerseyPoint()!!.y, playerSelected.getJerseyPoint()!!.x + bitmapJerseyOutfield!!.width, playerSelected.getJerseyPoint()!!.y + bitmapJerseyOutfield!!.height))
+                    playerSelected.setJerseyPointCustom(Point(
+                        eventX - (bitmapJerseyOutfield.width / 2),
+                        eventY - (bitmapJerseyOutfield.height / 2)
+                    ))
+                    playerSelected.setJerseyRectCustom(Rect(
+                        playerSelected.getJerseyPoint()!!.x,
+                        playerSelected.getJerseyPoint()!!.y,
+                        playerSelected.getJerseyPoint()!!.x + bitmapJerseyOutfield.width,
+                        playerSelected.getJerseyPoint()!!.y + bitmapJerseyOutfield.height
+                    ))
                     invalidate()
 
                     resetOverlappedPlayers()
@@ -399,7 +419,7 @@ class PitchView : View, GestureDetector.OnGestureListener, GestureDetector.OnDou
                   if current position differs much then press positon then discard whole thing
                   if position change is minimal then after 0.5s that is a longpress. You can now process your other gestures*/
                 val timeNow = System.currentTimeMillis()
-                if(timeNow - timeWhenDownPressed > 200){
+                if(timeNow - timeWhenDownPressed > 200) {
                     timeWhenDownPressed = timeNow
                     val player = isMouseEventOnThePlayer(eventX, eventY)
                     if(player != null && !player.isSelected()){
@@ -564,10 +584,10 @@ class PitchView : View, GestureDetector.OnGestureListener, GestureDetector.OnDou
     private fun isPlayerOverlapping(playerSelected: Player): Player? {
         for(player in mapOfPlayers.values) {
             if(player != playerSelected){
-                if(player.getJerseyRect().centerX() < playerSelected.getJerseyRect()!!.centerX() + playerSelected.getJerseyRect()!!.width()
-                    && player.getJerseyRect().centerX() + player.getJerseyRect().width() > playerSelected.getJerseyRect()!!.centerX()
-                    && player.getJerseyRect().centerY() < playerSelected.getJerseyRect().centerY() + playerSelected.getJerseyRect()!!.height()
-                    && player.getJerseyRect().centerY() + player.getJerseyRect().height() > playerSelected.getJerseyRect()!!.centerY()){
+                if(player.getJerseyRect().centerX() < playerSelected.getJerseyRect().centerX() + playerSelected.getJerseyRect().width()
+                    && player.getJerseyRect().centerX() + player.getJerseyRect().width() > playerSelected.getJerseyRect().centerX()
+                    && player.getJerseyRect().centerY() < playerSelected.getJerseyRect().centerY() + playerSelected.getJerseyRect().height()
+                    && player.getJerseyRect().centerY() + player.getJerseyRect().height() > playerSelected.getJerseyRect().centerY()){
                     return player
                 }
             }
@@ -607,18 +627,10 @@ class PitchView : View, GestureDetector.OnGestureListener, GestureDetector.OnDou
             val np = playerSelected.getNamePointCustom()
             val nr = playerSelected.getNameRectCustom()
 
-//            playerSelected.setJerseyPointDefault(playerOverlapped.getJerseyPointDefault())
-//            playerSelected.setJerseyRectDefault(playerOverlapped.getJerseyRectDefault())
-//            playerSelected.setJerseyPointCustom(playerOverlapped.getJerseyPointDefault())
-//            playerSelected.setJerseyRectCustom(playerOverlapped.getJerseyRectDefault())
             playerSelected.setNamePointCustom(playerOverlapped.getNamePointCustom())
             playerSelected.setNameRectCustom(playerOverlapped.getNameRectCustom())
             setPlayerNumberAndNameRect(playerSelected)
 
-//            playerOverlapped.setJerseyPointDefault(p)
-//            playerOverlapped.setJerseyRectDefault(r)
-//            playerOverlapped.setJerseyPointCustom(p)
-//            playerOverlapped.setJerseyRectCustom(r)
             playerOverlapped.setNamePointCustom(np)
             playerOverlapped.setNameRectCustom(nr)
             setPlayerNumberAndNameRect(playerOverlapped)
@@ -630,6 +642,7 @@ class PitchView : View, GestureDetector.OnGestureListener, GestureDetector.OnDou
         }
     }
 
+    //TODO for future use
     private fun openSwapPlayer(playerA: Player, playerB: Player){
         val view = inflate(context, R.layout.dialog_custom_title, null)
         val tvTitle = view.findViewById<TextView>(R.id.tv_dialog_title)
@@ -639,7 +652,7 @@ class PitchView : View, GestureDetector.OnGestureListener, GestureDetector.OnDou
         builder.setCustomTitle(view)
         builder.setTitle(R.string.action_swap)
 
-        var mainActivity = (mContext as MainActivity)
+        val mainActivity = (mContext as MainActivity)
         val row = mainActivity.layoutInflater.inflate(R.layout.dialog_swap_player, null)
         var isGoalkeeper = playerA.getDefaultName().contains(resources.getString(R.string.goalkeeper))
         val ivPlayerA = row.findViewById<ImageView>(R.id.iv_goalkeeper)

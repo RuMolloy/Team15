@@ -4,12 +4,14 @@ import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentStatePagerAdapter
-import com.team15app.team15.dialogs.MatchInfoFragment
-import com.team15app.team15.dialogs.PlayerJerseyFragment
+import com.team15app.team15.fragments.MatchInfoFragment
+import com.team15app.team15.fragments.PlayerJerseyFragment
 
-class MatchInfoAdapter(fragmentManager: FragmentManager,
-                       private val numTabs: Int,
-                       private val argsMatchInfo: Bundle?) : FragmentStatePagerAdapter(fragmentManager) {
+class MatchInfoAdapter(
+    fragmentManager: FragmentManager,
+    private val numTabs: Int,
+    private val argsMatchInfo: Bundle?
+) : FragmentStatePagerAdapter(fragmentManager) {
 
     override fun getItem(position: Int): Fragment {
         when (position) {

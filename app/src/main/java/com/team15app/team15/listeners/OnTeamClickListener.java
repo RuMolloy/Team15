@@ -1,7 +1,7 @@
 package com.team15app.team15.listeners;
 
 public interface OnTeamClickListener {
-    void onTeamClick(String teamName);
+    void onLoadTeamClick(String teamName);
 
-    void onTeamLongClick(boolean isSelected);
+    void onLoadTeamLongClick(boolean isSelected);
 }

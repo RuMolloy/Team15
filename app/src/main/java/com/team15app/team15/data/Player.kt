@@ -1,4 +1,4 @@
-package com.team15app.team15
+package com.team15app.team15.data
 
 import android.graphics.Point
 import android.graphics.Rect
