@@ -10,6 +10,13 @@ Android app to allow GAA teams (gaelic football and hurling) to publish their st
 
 4. App available on the Google Play store here [here](https://play.google.com/store/apps/details?id=com.appteam15.team15)
 
+## Main Features
+1. Kotlin
+1. Single Activity Architecture
+1. MVVM
+1. Coroutines + Flow
+1. Hilt
+1. Instrumented tests (Espresso) + unit tests
 
 ## Demo
 
@@ -33,7 +40,6 @@ Android app to allow GAA teams (gaelic football and hurling) to publish their st
 <p float="left">
 <img src="https://user-images.githubusercontent.com/9675246/184335193-f2f3afd0-d532-4763-b668-403f922b51f9.jpg" width="20%" height="20%" />
 <img src="https://user-images.githubusercontent.com/9675246/184336394-c77e89e2-049c-46bb-8210-4e6c2410041e.jpg" width="20%" height="20%" />
-
 
 ## Copyright and license
 
