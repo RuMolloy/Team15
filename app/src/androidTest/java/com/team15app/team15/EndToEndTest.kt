@@ -11,24 +11,34 @@ import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
+import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltAndroidTest
 import org.hamcrest.CoreMatchers.anything
 import org.hamcrest.Matchers.allOf
 import org.junit.After
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
+@HiltAndroidTest
 class EndToEndTest {
+
+    companion object {
+        private const val teamA = "Mayo"
+        private const val teamB = "Dublin"
+        private const val matchInfo = "Croke Park"
+    }
+
+    @get:Rule
+    var hiltRule = HiltAndroidRule(this)
 
     private lateinit var context: Context
 
-    private val teamA = "Mayo"
-    private val teamB = "Dublin"
-    private val matchInfo = "Croke Park"
-
     @Before
     fun setup() {
+        hiltRule.inject()
         context = getInstrumentation().targetContext
         clearFiles()
     }
@@ -81,10 +91,7 @@ class EndToEndTest {
         Espresso.pressBack()
 
         // 12. select saved team from file (created in 6.)
-        onView(withText(teamA + " " +
-                context.getString(R.string.versus) + " " +
-                teamB))
-            .perform(click())
+        onView(withText(teamA + " " + context.getString(R.string.versus) + " " + teamB)).perform(click())
 
         // 13. check custom UI is shown with values entered by user for the match
         checkCustomUI()
@@ -111,7 +118,8 @@ class EndToEndTest {
     private fun checkCustomUI() {
         onView(withId(R.id.tv_match_info_team_a)).check(matches(withText(teamA)))
         onView(withId(R.id.tv_match_info_team_b)).check(matches(withText(
-            context.getString(R.string.versus) + " " +teamB)))
+            context.getString(R.string.versus) + " " + teamB
+        )))
         onView(withId(R.id.tv_match_info_name_read)).check(matches(withText(matchInfo)))
     }
 
