@@ -1,14 +1,11 @@
 # Team15
-
 Android app to allow GAA teams (gaelic football and hurling) to publish their starting 15 players for any given game along with fixture info to their social media accounts.
 
-1. Inspiration from similar apps for other sports, websites, tv shows, social media etc. collated [here](https://projects.invisionapp.com/boards/FH3SJMFPAC5/) by creating a 'board' on [InVision](https://www.invisionapp.com/), then used the 'freehand' tool to create some low fidelity mock-ups [here](https://projects.invisionapp.com/freehand/document/NQsES8All)
-
-2. [Figma](https://www.figma.com) used to create higher fidelity mock-ups [here](https://www.figma.com/file/UVTI2edjZDEThpWotpd9LRFP/Team15?node-id=150%3A5414) with a [clickable prototype](https://www.figma.com/proto/UVTI2edjZDEThpWotpd9LRFP/Team15?node-id=153%3A6564&scaling=min-zoom&page-id=150%3A5414&starting-point-node-id=151%3A5545&show-proto-sidebar=1)
-
-3. Public twitter page for the app here [here](https://twitter.com/Team15App)
-
-4. App available on the Google Play store here [here](https://play.google.com/store/apps/details?id=com.appteam15.team15)
+[![Build Status](https://app.bitrise.io/app/f164224533f6d3e1/status.svg?token=fDsXUHxWisbWlzE7OdELIw&branch=dev)](https://app.bitrise.io/app/f164224533f6d3e1)
+[![Invision](https://img.shields.io/badge/invision-FF3366?style=for-the-badge&logo=invision&logoColor=white)](https://projects.invisionapp.com/freehand/document/NQsES8All)
+[![Figma](https://img.shields.io/badge/figma-%23F24E1E.svg?style=for-the-badge&logo=figma&logoColor=white)](https://www.figma.com/file/UVTI2edjZDEThpWotpd9LRFP/Team15?node-id=150%3A5414)
+[![Twitter](https://img.shields.io/badge/Twitter-%231DA1F2.svg?style=for-the-badge&logo=Twitter&logoColor=white)](https://twitter.com/Team15App)
+[![Play Store](https://img.shields.io/badge/Google_Play-414141?style=for-the-badge&logo=google-play&logoColor=white)](https://play.google.com/store/apps/details?id=com.appteam15.team15)
 
 ## Main Features
 1. Kotlin
