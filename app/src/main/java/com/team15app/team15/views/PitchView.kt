@@ -183,12 +183,12 @@ class PitchView : View,
     }
 
     private fun setPlayerLocationParameters(player: Player){
-        val centreX = halfScreenResolutionWidthInPixels - bitmapJerseyOutfield!!.width/2
-        val centreY = rectPitchPerimeter.bottom/2 - bitmapJerseyOutfield!!.height/2
+        val centreX = halfScreenResolutionWidthInPixels - bitmapJerseyOutfield.width/2
+        val centreY = rectPitchPerimeter.bottom/2 - bitmapJerseyOutfield.height/2
         val pitchCentre = Point(centreX.toInt(), centreY)
         val pitchLeft = (centreX - centreX/1.5).toInt()
         val pitchRight = (centreX + centreX/1.5).toInt()
-        val offsetPlayerText = bitmapJerseyOutfield!!.width/2
+        val offsetPlayerText = bitmapJerseyOutfield.width/2
         val offsetPlayerJersey = (resources.getDimension(R.dimen.player_jersey_offset).toInt())
 
         val midfielderLeft = (centreX - centreX/3.0).toInt()
@@ -573,8 +573,8 @@ class PitchView : View,
 
     private fun isMouseEventOnThePlayer(eventX: Int, eventY: Int): Player? {
         for(player in mapOfPlayers.values) {
-            if(player.getJerseyRect()!!.contains(eventX, eventY) ||
-                    player.getNameRectCustom()!!.contains(eventX, eventY)){
+            if(player.getJerseyRect().contains(eventX, eventY) ||
+                    player.getNameRectCustom().contains(eventX, eventY)){
                 return player
             }
         }
@@ -682,7 +682,7 @@ class PitchView : View,
             LinearLayoutManager(context)
         val viewAdapter = TeamNameAdapter(listOfSwapOptions, true, myOnTeamClickListener)
 
-        val rvTeams: RecyclerView = row.findViewById<RecyclerView>(R.id.rv_team_names).apply {
+        row.findViewById<RecyclerView>(R.id.rv_team_names).apply {
             // use this setting to improve performance if you know that changes
             // in content do not change the layout size of the RecyclerView
             setHasFixedSize(true)

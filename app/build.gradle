@@ -6,11 +6,11 @@ plugins {
 }
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 31
     defaultConfig {
         applicationId "com.appteam15.team15"
         minSdkVersion 21
-        targetSdkVersion 30
+        targetSdkVersion 31
         versionCode 23
         versionName "Version 2.1.9"
         testInstrumentationRunner = "com.team15app.team15.HiltTestRunner"

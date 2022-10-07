@@ -13,9 +13,9 @@ class PlayerJerseyViewPager : ViewPager {
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         val numRows = 3.25
-        var heightMeasureSpec = heightMeasureSpec
+        var hms = heightMeasureSpec
 
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
+        super.onMeasure(widthMeasureSpec, hms)
 
         var height = 0
         for (i in 0 until childCount) {
@@ -30,9 +30,9 @@ class PlayerJerseyViewPager : ViewPager {
 
         }
 
-        heightMeasureSpec = MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY)
+        hms = MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY)
 
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
+        super.onMeasure(widthMeasureSpec, hms)
     }
 
 }
