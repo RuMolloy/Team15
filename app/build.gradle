@@ -6,15 +6,29 @@ plugins {
 }
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 31
     defaultConfig {
         applicationId "com.appteam15.team15"
         minSdkVersion 21
-        targetSdkVersion 30
+        targetSdkVersion 31
         versionCode 23
         versionName "Version 2.1.9"
         testInstrumentationRunner = "com.team15app.team15.HiltTestRunner"
         signingConfig signingConfigs.debug
+    }
+    signingConfigs {
+        debug {
+            storeFile file('C:\\Users\\rmoll\\OneDrive\\Documents\\Android\\upload-keystore.jks')
+            keyPassword 'Dyer6eats123'
+            storePassword 'Dyer6eats123'
+            keyAlias 'upload'
+        }
+        release {
+            storeFile file('C:\\Users\\rmoll\\OneDrive\\Documents\\Android\\upload-keystore.jks')
+            keyAlias 'upload'
+            storePassword 'Dyer6eats123'
+            keyPassword 'Dyer6eats123'
+        }
     }
     buildTypes {
         release {
