@@ -17,6 +17,7 @@ Android app to allow GAA teams (gaelic football and hurling) to publish their st
 1. Coroutines + Flow
 1. Hilt
 1. Instrumented tests (Espresso) + unit tests
+1. Bitrise CI/CD
 
 ## Demo
 
